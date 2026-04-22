@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Yap!</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ── THEME VARIABLES ── */
+[data-theme="dark"] {
+  --bg:#0d0d0d; --bg2:#1a1a1a; --bg3:#222; --bg4:#2a2a2a;
+  --text:#ffffff; --text2:#a0a0a0; --text3:#555;
+  --border:rgba(255,255,255,0.07); --border-o:rgba(249,115,22,0.35);
+  --shadow:0 8px 32px rgba(0,0,0,0.5);
+  --bubble-in:#222; --bubble-in-text:#fff;
+}
+[data-theme="light"] {
+  --bg:#f5f5f5; --bg2:#ffffff; --bg3:#eeeeee; --bg4:#e0e0e0;
+  --text:#111111; --text2:#666666; --text3:#aaaaaa;
+  --border:rgba(0,0,0,0.08); --border-o:rgba(249,115,22,0.4);
+  --shadow:0 4px 20px rgba(0,0,0,0.1);
+  --bubble-in:#e8e8e8; --bubble-in-text:#111;
+}
+:root {
+  --orange:#f97316; --orange2:#ea6c0a;
+  --orange-soft:rgba(249,115,22,0.15);
+  --radius:20px; --rsm:14px; --rmsg:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;transition:background .3s,color .3s}
+.screen{display:none;width:100%;height:100vh}
+.screen.active{display:flex}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+
+/* ── AUTH ── */
+#screen-auth{flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow-y:auto;
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(249,115,22,0.1) 0%,transparent 60%),var(--bg)}
+.auth-logo{display:flex;flex-direction:column;align-items:center;margin-bottom:32px;animation:fadeUp .5s ease}
+.logo-icon-big{width:78px;height:78px;border-radius:22px;background:var(--orange);display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 8px 32px rgba(249,115,22,.4)}
+.logo-icon-big svg{width:40px;height:40px}
+.app-name{font-size:44px;font-weight:800;color:var(--orange);letter-spacing:-1px}
+.app-tagline{font-size:14px;color:var(--text2);margin-top:4px}
+.auth-card{width:100%;max-width:420px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;animation:fadeUp .5s .1s ease both;box-shadow:var(--shadow)}
+.tabs{display:flex;background:var(--bg3);border-radius:50px;padding:4px;margin-bottom:22px;gap:4px}
+.tab{flex:1;padding:11px;border-radius:50px;border:none;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;color:var(--text2)}
+.tab.active{background:var(--orange);color:#000}
+.panel{display:none;flex-direction:column;gap:16px}
+.panel.active{display:flex}
+.lbl{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
+.fgrp{display:flex;flex-direction:column}
+.row{display:flex;gap:8px}
+.inp{width:100%;padding:14px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;outline:none;transition:border-color .2s,background .3s}
+.inp:focus{border-color:var(--orange)}
+.inp::placeholder{color:var(--text3)}
+select.inp{cursor:pointer}
+.hint{font-size:12px;color:var(--text2);margin-top:5px}
+.btnp{width:100%;padding:15px;background:var(--orange);border:none;border-radius:50px;color:#000;font-family:'Inter',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:4px}
+.btnp:hover{background:var(--orange2);transform:translateY(-1px)}
+.btnp:active{transform:translateY(0)}
+
+/* ── MAIN APP ── */
+#screen-app{flex-direction:row}
+.sidebar{width:360px;min-width:360px;height:100vh;background:var(--bg);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:background .3s}
+.s-top{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px}
+.s-logo{display:flex;align-items:center;gap:10px}
+.s-icon{width:36px;height:36px;border-radius:10px;background:var(--orange);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.s-name{font-size:22px;font-weight:800;color:var(--orange)}
+.s-acts{display:flex;gap:8px}
+.ibtn{width:38px;height:38px;border-radius:10px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:all .2s;flex-shrink:0}
+.ibtn:hover{background:var(--bg3);color:var(--text)}
+.srch{margin:0 16px 12px;display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;transition:background .3s}
+.srch svg{color:var(--text3);flex-shrink:0}
+.srch input{background:none;border:none;outline:none;font-family:'Inter',sans-serif;font-size:14px;color:var(--text);flex:1}
+.srch input::placeholder{color:var(--text3)}
+.add-btn{margin:0 16px 16px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--orange);border:none;border-radius:14px;padding:14px;cursor:pointer;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;color:#000;transition:background .2s}
+.add-btn:hover{background:var(--orange2)}
+.clist{flex:1;overflow-y:auto}
+.clist::-webkit-scrollbar{width:0}
+.ci{display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;transition:background .15s}
+.ci:hover{background:var(--bg2)}
+.ci.active{background:var(--orange-soft)}
+.av{width:50px;height:50px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;position:relative;overflow:hidden;background-size:cover;background-position:center}
+.av.on::after{content:'';position:absolute;bottom:1px;right:1px;width:12px;height:12px;border-radius:50%;background:#22c55e;border:2px solid var(--bg)}
+.cinfo{flex:1;min-width:0}
+.cname{font-size:15px;font-weight:600;margin-bottom:3px}
+.cprev{font-size:13px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.caside{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.ctime{font-size:12px;color:var(--text3)}
+.cbadge{min-width:20px;height:20px;border-radius:10px;background:var(--orange);color:#000;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px}
+
+/* ── CHAT AREA ── */
+.chat-area{flex:1;height:100vh;display:flex;flex-direction:column;background:var(--bg);transition:background .3s}
+.c-topbar{padding:14px 20px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;transition:background .3s}
+.c-back{width:36px;height:36px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2)}
+.c-info{flex:1}
+.c-name{font-size:16px;font-weight:700}
+.c-id{font-size:12px;color:var(--text2);font-family:monospace}
+.c-acts{display:flex;gap:8px}
+.msgs{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:6px}
+.msgs::-webkit-scrollbar{width:0}
+.dsep{text-align:center;font-size:12px;color:var(--text3);margin:8px 0;display:flex;align-items:center;gap:10px}
+.dsep::before,.dsep::after{content:'';flex:1;height:1px;background:var(--border)}
+.mrow{display:flex;margin-bottom:2px}
+.mrow.out{justify-content:flex-end}
+.mrow.in{justify-content:flex-start}
+.bbl{max-width:72%;padding:11px 15px;border-radius:var(--rmsg);font-size:15px;line-height:1.5}
+.mrow.out .bbl{background:var(--orange);color:#000;font-weight:500;border-bottom-right-radius:4px}
+.mrow.in .bbl{background:var(--bubble-in);color:var(--bubble-in-text);border:1px solid var(--border);border-bottom-left-radius:4px}
+.btime{font-size:11px;margin-top:4px;display:flex;align-items:center;justify-content:flex-end;gap:3px;opacity:.7}
+.mrow.in .btime{justify-content:flex-start}
+.img-bbl{max-width:220px;border-radius:14px;overflow:hidden;border:2px solid var(--orange);cursor:pointer}
+.img-bbl img{width:100%;display:block}
+.inp-row{padding:12px 16px;background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;transition:background .3s}
+.att-btn{width:44px;height:44px;border-radius:12px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--orange);flex-shrink:0}
+.minp{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:50px;padding:12px 18px;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;outline:none;resize:none;height:46px;transition:border-color .2s,background .3s}
+.minp:focus{border-color:var(--orange)}
+.minp::placeholder{color:var(--text3)}
+.sbtn{width:46px;height:46px;border-radius:50%;background:var(--orange);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;color:#000}
+.sbtn:hover{background:var(--orange2);transform:scale(1.05)}
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text3);gap:12px;text-align:center;padding:24px}
+.empty-ic{width:72px;height:72px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.empty h3{font-size:18px;color:var(--text2);font-weight:600}
+.empty p{font-size:14px;max-width:240px;line-height:1.6}
+
+/* ── PROFILE SCREEN ── */
+#screen-profile{flex-direction:column;align-items:center;background:var(--bg);overflow-y:auto;padding:24px;transition:background .3s}
+.pwrap{width:100%;max-width:440px;animation:fadeUp .4s ease}
+.pbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.pbar-left{display:flex;align-items:center;gap:14px}
+.bbtn{width:38px;height:38px;border-radius:10px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2)}
+.pbar h2{font-size:18px;font-weight:700}
+
+/* DP section */
+.dp-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:8px;position:relative}
+.pav{width:90px;height:90px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;color:#fff;margin:0 auto;box-shadow:0 0 40px rgba(249,115,22,.4);overflow:hidden;background-size:cover;background-position:center;cursor:pointer;position:relative}
+.pav-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.pav:hover .pav-overlay{opacity:1}
+.dp-edit-ring{position:absolute;bottom:0;right:0;width:28px;height:28px;border-radius:50%;background:var(--orange);border:3px solid var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.pname{font-size:22px;font-weight:700;text-align:center;margin:10px 0 4px}
+.psub{font-size:14px;color:var(--text2);text-align:center;margin-bottom:20px}
+
+/* Profile sections */
+.psect{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rsm);overflow:hidden;margin-bottom:14px;transition:background .3s}
+.psect-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:14px 16px 8px}
+.prow{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-top:1px solid var(--border)}
+.prow-left{display:flex;align-items:center;gap:10px;color:var(--text2);font-size:14px}
+.prow-left svg{color:var(--orange)}
+.prow-val{font-size:14px;font-weight:500}
+.prow-edit{font-size:12px;color:var(--orange);cursor:pointer;font-weight:600;padding:4px 8px;border-radius:6px;transition:background .2s}
+.prow-edit:hover{background:var(--orange-soft)}
+
+/* YAP ID card */
+.yid-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rsm);padding:16px;margin-bottom:14px;transition:background .3s}
+.yid-lbl{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.yid-val{display:flex;align-items:center;justify-content:space-between;background:var(--orange);border-radius:12px;padding:14px 16px;font-size:20px;font-weight:800;color:#000;letter-spacing:1px;font-family:monospace}
+.cpybtn{cursor:pointer;opacity:.7}
+.cpybtn:hover{opacity:1}
+.qr-box{background:#fff;border-radius:16px;padding:14px;width:180px;height:180px;margin:16px auto 8px;display:grid;grid-template-columns:repeat(9,1fr);gap:3px}
+.qr-cell{border-radius:2px}
+.qr-hint{font-size:13px;color:var(--text2);text-align:center;margin-bottom:4px}
+
+/* Theme toggle */
+.theme-toggle{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-top:1px solid var(--border)}
+.theme-toggle-left{display:flex;align-items:center;gap:10px;color:var(--text2);font-size:14px}
+.toggle-switch{width:48px;height:26px;border-radius:13px;background:var(--bg3);border:1px solid var(--border);cursor:pointer;position:relative;transition:background .3s}
+.toggle-switch.on{background:var(--orange)}
+.toggle-knob{width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .3s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.toggle-switch.on .toggle-knob{transform:translateX(22px)}
+
+.sobt{width:100%;padding:14px;border-radius:50px;background:transparent;border:1px solid rgba(239,68,68,.3);color:#ef4444;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:6px}
+.sobt:hover{background:rgba(239,68,68,.1)}
+
+/* ── MODALS ── */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;z-index:100;animation:fadeIn .2s ease}
+.ov.hidden{display:none}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:28px 24px 36px;width:100%;max-width:480px;animation:fadeUp .3s ease;transition:background .3s}
+.mtitle{font-size:18px;font-weight:700;margin-bottom:6px}
+.msub{font-size:14px;color:var(--text2);margin-bottom:20px}
+.mtabs{display:flex;background:var(--bg3);border-radius:50px;padding:4px;margin-bottom:20px;gap:4px}
+.mtab{flex:1;padding:10px;border-radius:50px;border:none;background:transparent;color:var(--text2);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.mtab.active{background:var(--orange);color:#000}
+.mpanel{display:none}
+.mpanel.active{display:block}
+.macts{display:flex;gap:10px;margin-top:20px}
+.btng{flex:1;padding:14px;border-radius:50px;background:transparent;border:1px solid var(--border);color:var(--text2);font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s}
+.btng:hover{background:var(--bg3)}
+.scan-a{background:var(--bg3);border:2px dashed var(--border-o);border-radius:16px;padding:40px;text-align:center;cursor:pointer;transition:background .2s}
+.scan-a:hover{background:var(--bg4)}
+.scan-a svg{color:var(--orange);margin-bottom:10px}
+.scan-a p{font-size:14px;color:var(--text2)}
+.scan-a span{font-size:12px;color:var(--text3)}
+
+/* Edit modal (center popup) */
+.ov-center{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:200;animation:fadeIn .2s ease;padding:20px}
+.ov-center.hidden{display:none}
+.modal-center{background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:28px 24px;width:100%;max-width:400px;animation:scaleIn .25s ease;transition:background .3s}
+.modal-center .mtitle{margin-bottom:20px}
+.edit-field{margin-bottom:16px}
+.edit-field .lbl{margin-bottom:8px}
+
+/* DP modal options */
+.dp-options{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.dp-opt{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg3);border-radius:14px;cursor:pointer;border:1px solid var(--border);transition:background .2s}
+.dp-opt:hover{background:var(--bg4);border-color:var(--border-o)}
+.dp-opt-icon{width:40px;height:40px;border-radius:10px;background:var(--orange-soft);display:flex;align-items:center;justify-content:center;color:var(--orange);flex-shrink:0}
+.dp-opt-text .dp-opt-title{font-size:15px;font-weight:600}
+.dp-opt-text .dp-opt-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.dp-preview{width:80px;height:80px;border-radius:50%;margin:0 auto 16px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;overflow:hidden;background-size:cover;background-position:center}
+.color-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:12px}
+.color-dot{width:36px;height:36px;border-radius:50%;cursor:pointer;transition:transform .2s;border:3px solid transparent}
+.color-dot:hover{transform:scale(1.15)}
+.color-dot.selected{border-color:#fff;transform:scale(1.1)}
+
+#finp{display:none}
+
+@media(max-width:700px){
+  .sidebar{width:100%;min-width:unset}
+  .sidebar.h{display:none}
+  .chat-area.h{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ AUTH ══ -->
+<div id="screen-auth" class="screen active">
+  <div class="auth-logo">
+    <div class="logo-icon-big"><svg viewBox="0 0 24 24" fill="black"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>
+    <div class="app-name">Yap!</div>
+    <div class="app-tagline">Private messaging. No phone numbers shared.</div>
+  </div>
+  <div class="auth-card">
+    <div class="tabs">
+      <button class="tab active" onclick="swtab('si')">Sign in</button>
+      <button class="tab" onclick="swtab('su')">Sign up</button>
+    </div>
+    <!-- Sign in -->
+    <div id="psi" class="panel active">
+      <div class="fgrp"><div class="lbl">Mobile number</div>
+        <div class="row">
+          <select class="inp" id="si-cc" style="width:105px;flex-shrink:0;"><option>🇮🇳 +91</option><option>🇺🇸 +1</option><option>🇬🇧 +44</option><option>🇦🇪 +971</option><option>🇸🇬 +65</option><option>🇦🇺 +61</option></select>
+          <input class="inp" type="tel" placeholder="1234567890" id="si-ph" maxlength="15"/>
+        </div>
+      </div>
+      <div class="fgrp"><div class="lbl">Personal code</div><input class="inp" type="password" placeholder="At least 6 characters" id="si-cd"/></div>
+      <button class="btnp" onclick="doSI()">Sign in</button>
+    </div>
+    <!-- Sign up -->
+    <div id="psu" class="panel">
+      <div class="fgrp"><div class="lbl">Full name</div><input class="inp" type="text" placeholder="Jane Doe" id="su-nm"/></div>
+      <div class="fgrp"><div class="lbl">Mobile number</div>
+        <div class="row">
+          <select class="inp" id="su-cc" style="width:105px;flex-shrink:0;"><option>🇮🇳 +91</option><option>🇺🇸 +1</option><option>🇬🇧 +44</option><option>🇦🇪 +971</option><option>🇸🇬 +65</option><option>🇦🇺 +61</option></select>
+          <input class="inp" type="tel" placeholder="1234567890" id="su-ph" maxlength="15"/>
+        </div>
+      </div>
+      <div class="fgrp"><div class="lbl">Date of birth</div><input class="inp" type="date" id="su-db"/></div>
+      <div class="fgrp"><div class="lbl">Personal code</div><input class="inp" type="password" placeholder="At least 6 characters" id="su-cd"/><div class="hint">You'll use this to sign in on any device.</div></div>
+      <button class="btnp" onclick="doSU()">Create account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div id="screen-app" class="screen">
+  <!-- Sidebar -->
+  <div class="sidebar" id="sb">
+    <div class="s-top">
+      <div class="s-logo">
+        <div class="s-icon"><svg viewBox="0 0 24 24" fill="black" width="20" height="20"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>
+        <div class="s-name">Yap!</div>
+      </div>
+      <div class="s-acts">
+        <div class="ibtn" onclick="toggleTheme()" id="theme-btn" title="Toggle theme">
+          <svg id="theme-icon-moon" width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          <svg id="theme-icon-sun" width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </div>
+        <div class="ibtn" onclick="showProf()" title="Profile"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+        <div class="ibtn" onclick="logout()" title="Sign out"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg></div>
+      </div>
+    </div>
+    <div class="srch">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input placeholder="Search contacts" oninput="filterC(this.value)"/>
+    </div>
+    <button class="add-btn" onclick="openAdd()">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      Add contact
+    </button>
+    <div class="clist" id="clist"></div>
+  </div>
+
+  <!-- Chat Area -->
+  <div class="chat-area" id="ca">
+    <div class="empty" id="est">
+      <div class="empty-ic"><svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="rgba(249,115,22,.5)" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+      <h3>Select a chat</h3>
+      <p>Choose a conversation or add a contact via their YAP ID or QR code.</p>
+    </div>
+    <div id="ac" style="display:none;flex-direction:column;height:100%;">
+      <div class="c-topbar">
+        <div class="c-back" onclick="backList()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="av" id="tav" style="width:40px;height:40px;font-size:15px;cursor:pointer;" onclick="viewContactProfile(actCid)"></div>
+        <div class="c-info" style="cursor:pointer;" onclick="viewContactProfile(actCid)"><div class="c-name" id="tnm"></div><div class="c-id" id="tid"></div></div>
+        <div class="c-acts">
+          <div class="ibtn"><svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 5.18a2 2 0 011.99-2H8"/></svg></div>
+          <div class="ibtn"><svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+        </div>
+      </div>
+      <div class="msgs" id="msgs"></div>
+      <div class="inp-row">
+        <div class="att-btn" onclick="document.getElementById('finp').click()"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg></div>
+        <input type="file" id="finp" accept="image/*" onchange="handleFile(event)"/>
+        <textarea class="minp" id="minp" placeholder="Type a message" rows="1" onkeydown="hkey(event)" oninput="agrow(this)"></textarea>
+        <button class="sbtn" onclick="sendMsg()"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PROFILE SCREEN ══ -->
+<div id="screen-profile" class="screen" style="flex-direction:column;align-items:center;">
+  <div class="pwrap">
+    <div class="pbar">
+      <div class="pbar-left">
+        <div class="bbtn" onclick="goBack()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <h2>Your profile</h2>
+      </div>
+      <div class="ibtn" onclick="toggleTheme()" title="Toggle theme">
+        <svg id="profile-moon" width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg id="profile-sun" width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </div>
+    </div>
+
+    <!-- DP -->
+    <div class="dp-wrap">
+      <label for="dpfinp" style="cursor:pointer;display:block;width:fit-content;margin:0 auto;position:relative;">
+        <div class="pav" id="pav">
+          <span id="pav-txt"></span>
+          <div class="pav-overlay"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+        </div>
+        <div class="dp-edit-ring"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="black" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+      </label>
+    </div>
+    <div class="pname" id="pnm"></div>
+    <div class="psub">Tap photo to change your profile picture</div>
+
+    <!-- YAP ID -->
+    <div class="yid-card">
+      <div class="yid-lbl">Your YAP ID</div>
+      <div class="yid-val"><span id="pyid"></span><span class="cpybtn" onclick="cpyId()"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></div>
+      <div class="qr-box" id="pqr"></div>
+      <div class="qr-hint">Scan to add as a contact</div>
+    </div>
+
+    <!-- Personal Details -->
+    <div class="psect">
+      <div class="psect-title">Personal Details</div>
+      <div class="prow">
+        <div class="prow-left"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Full Name</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="prow-val" id="p-name-val"></div>
+          <div class="prow-edit" onclick="openEdit('name')">Edit</div>
+        </div>
+      </div>
+      <div class="prow">
+        <div class="prow-left"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 5.18a2 2 0 011.99-2H8"/></svg>Mobile</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="prow-val" id="p-phone-val"></div>
+          <div class="prow-edit" onclick="openEdit('phone')">Edit</div>
+        </div>
+      </div>
+      <div class="prow">
+        <div class="prow-left"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Date of Birth</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="prow-val" id="p-dob-val"></div>
+          <div class="prow-edit" onclick="openEdit('dob')">Edit</div>
+        </div>
+      </div>
+      <div class="prow">
+        <div class="prow-left"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Personal Code</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="prow-val">••••••</div>
+          <div class="prow-edit" onclick="openEdit('code')">Change</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appearance -->
+    <div class="psect">
+      <div class="psect-title">Appearance</div>
+      <div class="theme-toggle">
+        <div class="theme-toggle-left">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--orange)" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          Dark Mode
+        </div>
+        <div class="toggle-switch" id="dark-toggle" onclick="toggleTheme()">
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="sobt" onclick="logout()">Sign out</button>
+  </div>
+</div>
+
+<!-- ══ MODAL: Add Contact ══ -->
+<div class="ov hidden" id="madd">
+  <div class="modal">
+    <div class="mtitle">Add a contact</div>
+    <div class="msub">No phone numbers needed — just their YAP ID or QR.</div>
+    <div class="mtabs">
+      <button class="mtab active" onclick="smtab('id')"># YAP ID</button>
+      <button class="mtab" onclick="smtab('qr')">⬛ Scan QR</button>
+    </div>
+    <div id="mpid" class="mpanel active">
+      <div class="lbl" style="margin-bottom:8px;">Their YAP ID</div>
+      <input class="inp" type="text" placeholder="ABC-12345" id="ayid" style="width:100%;"/>
+    </div>
+    <div id="mpqr" class="mpanel">
+      <div class="scan-a" onclick="simScan()">
+        <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h.01M14 17h3M17 14v3M20 20h.01"/></svg>
+        <p>Tap to simulate QR scan</p><span>Camera access required on real device</span>
+      </div>
+    </div>
+    <div class="macts">
+      <button class="btng" onclick="closeM('madd')">Cancel</button>
+      <button class="btnp" style="flex:1;margin-top:0;border-radius:50px;" onclick="addC()">Add contact</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Edit Field ══ -->
+<div class="ov-center hidden" id="medit">
+  <div class="modal-center">
+    <div class="mtitle" id="edit-title">Edit</div>
+    <div class="edit-field">
+      <div class="lbl" id="edit-lbl">Value</div>
+      <input class="inp" id="edit-inp" style="width:100%;" type="text"/>
+      <input class="inp" id="edit-inp2" style="width:100%;margin-top:10px;display:none;" type="password" placeholder="Confirm new code"/>
+    </div>
+    <div class="macts">
+      <button class="btng" onclick="closeM('medit')">Cancel</button>
+      <button class="btnp" style="flex:1;margin-top:0;border-radius:50px;" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Change DP ══ -->
+<div class="ov-center hidden" id="mdp">
+  <div class="modal-center">
+    <div class="mtitle">Change Profile Photo</div>
+    <div class="dp-preview" id="dp-preview"></div>
+    <div class="dp-options">
+      <label for="dpfinp" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg3);border-radius:14px;cursor:pointer;border:1px solid var(--border);transition:background .2s;" onmouseover="this.style.borderColor='var(--border-o)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div class="dp-opt-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+        <div class="dp-opt-text"><div class="dp-opt-title">Upload Photo</div><div class="dp-opt-sub">Choose from your gallery</div></div>
+      </label>
+      <div class="dp-opt" onclick="showColorPicker()">
+        <div class="dp-opt-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 011.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></div>
+        <div class="dp-opt-text"><div class="dp-opt-title">Choose Color</div><div class="dp-opt-sub">Pick an avatar color</div></div>
+      </div>
+      <div class="dp-opt" onclick="removeDP()" id="remove-dp-opt" style="display:none;">
+        <div class="dp-opt-icon" style="background:rgba(239,68,68,.15);color:#ef4444;"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></div>
+        <div class="dp-opt-text"><div class="dp-opt-title" style="color:#ef4444;">Remove Photo</div><div class="dp-opt-sub">Go back to initials avatar</div></div>
+      </div>
+    </div>
+    <div id="color-picker-wrap" style="display:none;">
+      <div class="lbl" style="margin-bottom:8px;">Pick avatar color</div>
+      <div class="color-grid" id="color-grid"></div>
+    </div>
+    <input type="file" id="dpfinp" accept="image/*" onchange="handleDP(event)" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;"/>
+    <div class="macts" style="margin-top:16px;">
+      <button class="btng" onclick="closeM('mdp')">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let U=null, contacts=[], chats={}, actCid=null, editField=null;
+const COLS=['#f97316','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ec4899','#ef4444','#14b8a6'];
+const AVATAR_COLORS=['#f97316','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ec4899','#ef4444','#14b8a6','#3b82f6','#a855f7','#f43f5e','#84cc16'];
+
+const yid=()=>['YAP','YWK','FDQ','ZXA','MNB'][Math.floor(Math.random()*5)]+'-'+Math.floor(10000+Math.random()*89999);
+const ini=n=>n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+const fmt=d=>d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true});
+const fmtD=v=>{if(!v)return'—';const d=new Date(v);return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})};
+const relT=d=>(new Date()-d)<86400000?fmt(d):'Yesterday';
+
+// ── THEME ──
+let isDark = true;
+function toggleTheme(){
+  isDark=!isDark;
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  // moon/sun icons
+  ['theme-icon-moon','profile-moon'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=isDark?'block':'none'});
+  ['theme-icon-sun','profile-sun'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=isDark?'none':'block'});
+  // toggle switch state
+  const t=document.getElementById('dark-toggle');
+  if(t) t.classList.toggle('on',isDark);
+}
+// init toggle on
+const _dt=document.getElementById('dark-toggle');
+if(_dt) _dt.classList.add('on');
+
+// ── AUTH ──
+function swtab(t){
+  document.querySelectorAll('.tab').forEach((e,i)=>e.classList.toggle('active',(i===0&&t==='si')||(i===1&&t==='su')));
+  document.getElementById('psi').classList.toggle('active',t==='si');
+  document.getElementById('psu').classList.toggle('active',t==='su');
+}
+function shake(id){const e=document.getElementById(id);e.style.borderColor='#ef4444';e.style.animation='shake .3s ease';e.focus();setTimeout(()=>{e.style.borderColor='';e.style.animation=''},900)}
+
+function doSI(){
+  const ph=document.getElementById('si-ph').value.trim();
+  const cd=document.getElementById('si-cd').value;
+  if(!ph||ph.length<7){shake('si-ph');return}
+  if(cd.length<6){shake('si-cd');return}
+  const cc=document.getElementById('si-cc').value.replace(/[^+\d]/g,'');
+  U={name:'User '+ph.slice(-4),phone:cc+ph,dob:'',id:yid(),dpColor:'#f97316',dpImg:null};
+  enterApp();
+}
+function doSU(){
+  const nm=document.getElementById('su-nm').value.trim();
+  const ph=document.getElementById('su-ph').value.trim();
+  const db=document.getElementById('su-db').value;
+  const cd=document.getElementById('su-cd').value;
+  if(!nm){shake('su-nm');return}
+  if(!ph||ph.length<7){shake('su-ph');return}
+  if(!db){shake('su-db');return}
+  if(cd.length<6){shake('su-cd');return}
+  const cc=document.getElementById('su-cc').value.replace(/[^+\d]/g,'');
+  U={name:nm,phone:cc+ph,dob:db,id:yid(),dpColor:'#f97316',dpImg:null};
+  enterApp();
+}
+
+function enterApp(){
+  contacts=[
+    {id:yid(),name:'Leo dass',color:'#f97316',online:false,dpImg:null},
+    {id:yid(),name:'Dhiviya S',color:'#8b5cf6',online:true,dpImg:null},
+    {id:yid(),name:'Keerthana G',color:'#06b6d4',online:false,dpImg:null},
+  ];
+  chats[contacts[0].id]=[
+    {type:'text',text:'Hi',out:true,time:new Date(Date.now()-3600000)},
+    {type:'text',text:'Ee',out:true,time:new Date(Date.now()-1800000)},
+  ];
+  contacts.slice(1).forEach(c=>chats[c.id]=[]);
+  showScr('screen-app');
+  renderList();
+  if(window.innerWidth<=700) document.getElementById('ca').classList.add('h');
+}
+
+// ── SCREENS ──
+function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function goBack(){showScr('screen-app')}
+function logout(){U=null;contacts=[];chats={};actCid=null;showScr('screen-auth')}
+function backList(){if(window.innerWidth<=700){document.getElementById('sb').classList.remove('h');document.getElementById('ca').classList.add('h')}}
+
+// ── CHAT LIST ──
+function setAv(el, dpImg, color, name){
+  if(dpImg){el.style.backgroundImage=`url(${dpImg})`;el.style.backgroundColor='transparent';el.textContent=''}
+  else{el.style.backgroundImage='none';el.style.backgroundColor=color;el.textContent=ini(name)}
+}
+function renderList(f=''){
+  const el=document.getElementById('clist');el.innerHTML='';
+  contacts.filter(c=>c.name.toLowerCase().includes(f.toLowerCase())).forEach(c=>{
+    const msgs=chats[c.id]||[];const last=msgs[msgs.length-1];
+    const div=document.createElement('div');
+    div.className='ci'+(c.id===actCid?' active':'');
+    const avBg=c.dpImg?`style="background-image:url(${c.dpImg});background-size:cover;background-color:transparent;"`:`style="background:${c.color};"`;
+    div.innerHTML=`<div class="av ${c.online?'on':''}" ${avBg}>${c.dpImg?'':ini(c.name)}</div>
+      <div class="cinfo"><div class="cname">${c.name}</div><div class="cprev">${last?(last.type==='image'?'📷 Photo':last.text):'No messages yet'}</div></div>
+      <div class="caside"><div class="ctime">${last?relT(last.time):''}</div></div>`;
+    div.onclick=()=>openChat(c.id);
+    el.appendChild(div);
+  });
+}
+function filterC(v){renderList(v)}
+
+// ── CHAT ──
+function openChat(cid){
+  actCid=cid;const c=contacts.find(x=>x.id===cid);if(!c)return;
+  document.getElementById('est').style.display='none';
+  const a=document.getElementById('ac');a.style.display='flex';
+  const tav=document.getElementById('tav');
+  setAv(tav,c.dpImg,c.color,c.name);
+  document.getElementById('tnm').textContent=c.name;
+  document.getElementById('tid').textContent=c.id;
+  if(window.innerWidth<=700){document.getElementById('sb').classList.add('h');document.getElementById('ca').classList.remove('h')}
+  renderMsgs(cid);renderList();
+}
+function renderMsgs(cid){
+  const area=document.getElementById('msgs');
+  const msgs=chats[cid]||[];area.innerHTML='';
+  const sep=document.createElement('div');sep.className='dsep';sep.textContent='Today';area.appendChild(sep);
+  msgs.forEach(m=>{
+    const row=document.createElement('div');row.className='mrow '+(m.out?'out':'in');
+    if(m.type==='image'){
+      row.innerHTML=`<div class="bbl" style="padding:0;overflow:hidden;background:transparent;border:none;"><div class="img-bbl"><img src="${m.src}"/></div><div class="btime" style="padding:4px 4px 0;">${fmt(m.time)}</div></div>`;
+    } else {
+      row.innerHTML=`<div class="bbl">${m.text}<div class="btime">${fmt(m.time)}</div></div>`;
+    }
+    area.appendChild(row);
+  });
+  area.scrollTop=area.scrollHeight;
+}
+function sendMsg(){
+  const inp=document.getElementById('minp');const text=inp.value.trim();
+  if(!text||!actCid)return;
+  if(!chats[actCid])chats[actCid]=[];
+  chats[actCid].push({type:'text',text,out:true,time:new Date()});
+  inp.value='';inp.style.height='46px';
+  renderMsgs(actCid);renderList();
+  setTimeout(()=>{
+    const r=['Got it! 👍','Sure!','Let me check.','Okay!','Nice 🔥','On it!'];
+    chats[actCid].push({type:'text',text:r[Math.floor(Math.random()*r.length)],out:false,time:new Date()});
+    renderMsgs(actCid);renderList();
+  },1200);
+}
+function hkey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg()}}
+function agrow(el){el.style.height='46px';el.style.height=Math.min(el.scrollHeight,120)+'px'}
+function handleFile(e){
+  const f=e.target.files[0];if(!f||!actCid)return;
+  const r=new FileReader();
+  r.onload=ev=>{chats[actCid].push({type:'image',src:ev.target.result,out:true,time:new Date()});renderMsgs(actCid);renderList()};
+  r.readAsDataURL(f);e.target.value='';
+}
+
+// ── PROFILE ──
+function showProf(){
+  updateProfileUI();
+  renderQR('pqr');
+  showScr('screen-profile');
+}
+function updateProfileUI(){
+  const pav=document.getElementById('pav');
+  const pavTxt=document.getElementById('pav-txt');
+  if(U.dpImg){pav.style.backgroundImage=`url(${U.dpImg})`;pav.style.backgroundColor='transparent';pavTxt.textContent=''}
+  else{pav.style.backgroundImage='none';pav.style.backgroundColor=U.dpColor;pavTxt.textContent=ini(U.name)}
+  document.getElementById('pnm').textContent=U.name;
+  document.getElementById('pyid').textContent=U.id;
+  document.getElementById('p-name-val').textContent=U.name;
+  document.getElementById('p-phone-val').textContent=U.phone;
+  document.getElementById('p-dob-val').textContent=fmtD(U.dob);
+}
+function cpyId(){navigator.clipboard?.writeText(U.id);const e=document.getElementById('pyid');e.textContent='Copied!';setTimeout(()=>e.textContent=U.id,1500)}
+
+// ── EDIT FIELD ──
+const editConfig={
+  name:{title:'Edit Name',label:'Full Name',type:'text',get:()=>U.name,set:(v)=>{U.name=v;updateProfileUI()}},
+  phone:{title:'Edit Mobile',label:'Mobile Number',type:'tel',get:()=>U.phone,set:(v)=>{U.phone=v;updateProfileUI()}},
+  dob:{title:'Edit Date of Birth',label:'Date of Birth',type:'date',get:()=>U.dob,set:(v)=>{U.dob=v;updateProfileUI()}},
+  code:{title:'Change Personal Code',label:'New Code (min 6 chars)',type:'password',get:()=>'',set:(v)=>{/* would update password */alert('Code updated! (In real app this updates your login code)')}}
+};
+function openEdit(field){
+  editField=field;
+  const cfg=editConfig[field];
+  document.getElementById('edit-title').textContent=cfg.title;
+  document.getElementById('edit-lbl').textContent=cfg.label;
+  const inp=document.getElementById('edit-inp');
+  inp.type=cfg.type;
+  inp.value=cfg.type==='password'?'':cfg.get();
+  inp.placeholder=cfg.type==='date'?'':inp.placeholder;
+  const inp2=document.getElementById('edit-inp2');
+  inp2.style.display=field==='code'?'block':'none';
+  document.getElementById('medit').classList.remove('hidden');
+  setTimeout(()=>inp.focus(),100);
+}
+function saveEdit(){
+  if(!editField)return;
+  const cfg=editConfig[editField];
+  const val=document.getElementById('edit-inp').value.trim();
+  if(!val){shake('edit-inp');return}
+  if(editField==='code'&&val.length<6){shake('edit-inp');return}
+  cfg.set(val);
+  closeM('medit');
+  updateProfileUI();
+}
+
+// ── DP MODAL ──
+function openDPModal(){
+  const prev=document.getElementById('dp-preview');
+  if(U.dpImg){prev.style.backgroundImage=`url(${U.dpImg})`;prev.style.backgroundColor='transparent';prev.textContent=''}
+  else{prev.style.backgroundImage='none';prev.style.backgroundColor=U.dpColor;prev.textContent=ini(U.name)}
+  document.getElementById('remove-dp-opt').style.display=U.dpImg?'flex':'none';
+  document.getElementById('color-picker-wrap').style.display='none';
+  document.getElementById('mdp').classList.remove('hidden');
+}
+function showColorPicker(){
+  const wrap=document.getElementById('color-picker-wrap');
+  const grid=document.getElementById('color-grid');
+  wrap.style.display='block';
+  grid.innerHTML='';
+  AVATAR_COLORS.forEach(c=>{
+    const dot=document.createElement('div');
+    dot.className='color-dot'+(U.dpColor===c&&!U.dpImg?' selected':'');
+    dot.style.background=c;
+    dot.onclick=()=>{
+      U.dpColor=c;U.dpImg=null;
+      document.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('selected'));
+      dot.classList.add('selected');
+      const prev=document.getElementById('dp-preview');
+      prev.style.backgroundImage='none';prev.style.backgroundColor=c;prev.textContent=ini(U.name);
+      updateProfileUI();renderList();
+    };
+    grid.appendChild(dot);
+  });
+}
+function handleDP(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    U.dpImg=ev.target.result;
+    const prev=document.getElementById('dp-preview');
+    prev.style.backgroundImage=`url(${ev.target.result})`;prev.style.backgroundColor='transparent';prev.textContent='';
+    document.getElementById('remove-dp-opt').style.display='flex';
+    updateProfileUI();renderList();
+  };
+  r.readAsDataURL(f);e.target.value='';
+}
+function removeDP(){U.dpImg=null;updateProfileUI();renderList();openDPModal()}
+
+// ── QR ──
+function renderQR(id){
+  const b=document.getElementById(id);if(!b)return;b.innerHTML='';
+  const cors=new Set();
+  [[0,0],[0,1],[0,2],[1,0],[2,0],[1,2],[2,1],[2,2],[0,6],[0,7],[0,8],[1,6],[2,6],[1,8],[2,7],[2,8],[6,0],[7,0],[8,0],[6,1],[6,2],[8,1],[7,2],[8,2]].forEach(([r,c])=>cors.add(r*9+c));
+  for(let r=0;r<9;r++)for(let c=0;c<9;c++){const e=document.createElement('div');e.className='qr-cell';e.style.background=cors.has(r*9+c)?'#111':Math.random()>.48?'#111':'#f0f0f0';b.appendChild(e)}
+}
+
+// ── ADD CONTACT ──
+function openAdd(){document.getElementById('madd').classList.remove('hidden')}
+function closeM(id){document.getElementById(id).classList.add('hidden')}
+function smtab(t){
+  document.querySelectorAll('.mtab').forEach((e,i)=>e.classList.toggle('active',(i===0&&t==='id')||(i===1&&t==='qr')));
+  document.getElementById('mpid').classList.toggle('active',t==='id');
+  document.getElementById('mpqr').classList.toggle('active',t==='qr');
+}
+function simScan(){document.getElementById('ayid').value=yid();smtab('id')}
+function addC(){
+  const v=document.getElementById('ayid').value.trim();
+  const c={id:v||yid(),name:'User '+(v?v.slice(-5):'New'),color:COLS[contacts.length%COLS.length],online:false,dpImg:null};
+  contacts.push(c);chats[c.id]=[];
+  closeM('madd');renderList();openChat(c.id);
+  document.getElementById('ayid').value='';
+}
+
+// Close modals on overlay click
+['madd','medit','mdp'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener('click',e=>{if(e.target===el)closeM(id)});
+});
+</script>
+
+<!-- ══ MODAL: View Contact Profile ══ -->
+<div class="ov-center hidden" id="mcontact">
+  <div class="modal-center" style="max-width:360px;text-align:center;padding:32px 24px;">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+      <div class="ibtn" onclick="closeM('mcontact')" style="margin-left:auto;">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+
+    <!-- Avatar -->
+    <div id="cp-av" style="width:90px;height:90px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#fff;overflow:hidden;background-size:cover;background-position:center;box-shadow:0 0 32px rgba(249,115,22,.35);"></div>
+
+    <!-- Name & Status -->
+    <div id="cp-name" style="font-size:22px;font-weight:700;margin-bottom:4px;"></div>
+    <div id="cp-status" style="font-size:13px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:6px;">
+      <span id="cp-status-dot" style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
+      <span id="cp-status-txt">Online</span>
+    </div>
+
+    <!-- YAP ID -->
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:14px;text-align:left;">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">YAP ID</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div id="cp-yid" style="font-family:monospace;font-size:16px;font-weight:700;color:var(--orange);"></div>
+        <div onclick="cpContactId()" style="cursor:pointer;color:var(--text2);padding:4px;" title="Copy">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- QR Code -->
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;text-align:left;">QR Code</div>
+      <div class="qr-box" id="cp-qr" style="margin:0 auto 8px;"></div>
+      <div style="font-size:12px;color:var(--text2);">Scan to add as contact</div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="display:flex;gap:10px;">
+      <button onclick="closeM('mcontact')" class="btng" style="flex:1;">Close</button>
+      <button onclick="msgContact()" class="btnp" style="flex:1;margin-top:0;border-radius:50px;padding:13px;">
+        Message
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── VIEW CONTACT PROFILE ──
+function viewContactProfile(cid){
+  const c=contacts.find(x=>x.id===cid);if(!c)return;
+
+  // Avatar
+  const av=document.getElementById('cp-av');
+  if(c.dpImg){av.style.backgroundImage=`url(${c.dpImg})`;av.style.backgroundColor='transparent';av.textContent=''}
+  else{av.style.backgroundImage='none';av.style.backgroundColor=c.color;av.textContent=ini(c.name)}
+
+  // Name & status
+  document.getElementById('cp-name').textContent=c.name;
+  const dot=document.getElementById('cp-status-dot');
+  const txt=document.getElementById('cp-status-txt');
+  dot.style.background=c.online?'#22c55e':'#6b7280';
+  txt.textContent=c.online?'Online':'Offline';
+  txt.style.color=c.online?'#22c55e':'var(--text3)';
+
+  // YAP ID
+  document.getElementById('cp-yid').textContent=c.id;
+
+  // QR
+  renderQR('cp-qr');
+
+  document.getElementById('mcontact').classList.remove('hidden');
+}
+
+function cpContactId(){
+  const id=document.getElementById('cp-yid').textContent;
+  navigator.clipboard?.writeText(id);
+  const el=document.getElementById('cp-yid');
+  el.textContent='Copied!';
+  setTimeout(()=>el.textContent=id,1500);
+}
+
+function msgContact(){
+  closeM('mcontact');
+  // already in the chat, just close
+}
+
+// register mcontact for overlay-click close
+document.getElementById('mcontact').addEventListener('click',e=>{
+  if(e.target===document.getElementById('mcontact'))closeM('mcontact');
+});
+</script>
+
+</body>
+</html>
