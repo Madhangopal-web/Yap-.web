@@ -672,6 +672,7 @@ async function doSU(){
 async function enterApp(){
   showScr('screen-app');
   await loadContacts();
+  startGlobalSubscription();
   if(window.innerWidth<=700)document.getElementById('ca').classList.add('h');
 }
 
@@ -694,8 +695,9 @@ function goBack(){showScr('screen-app');}
 async function logout(){
   await supa.auth.signOut();
   if(realtimeSub){supa.removeChannel(realtimeSub);realtimeSub=null;}
-  U=null;contacts=[];chats={};actCid=null;
+  U=null;contacts=[];chats={};actCid=null;selectMode=false;selectedIds=new Set();
   showScr('screen-auth');
+  showToast('Signed out ✅');
 }
 function backList(){if(window.innerWidth<=700){document.getElementById('sb').classList.remove('h');document.getElementById('ca').classList.add('h');}}
 
@@ -828,23 +830,45 @@ async function loadMessages(cid){
 }
 
 // ── REALTIME SUBSCRIBE ──
-function subscribeMessages(cid){
+// ── GLOBAL REALTIME SUBSCRIPTION ──
+// Listens for ALL incoming messages for this user — not just the open chat
+function startGlobalSubscription(){
   if(realtimeSub){supa.removeChannel(realtimeSub);}
-  realtimeSub=supa.channel('messages-'+cid)
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{
+  realtimeSub=supa.channel('global-messages-'+U.id)
+    .on('postgres_changes',{
+      event:'INSERT',
+      schema:'public',
+      table:'messages',
+      filter:`receiver_id=eq.${U.id}`
+    },payload=>{
       const m=payload.new;
-      if((m.sender_id===U.id&&m.receiver_id===cid)||(m.sender_id===cid&&m.receiver_id===U.id)){
-        if(!chats[cid])chats[cid]=[];
-        // avoid duplicate
-        if(!chats[cid].find(x=>x.id===m.id)){
-          chats[cid].push(m);
-          renderMsgs(cid);
-          renderList();
+      const senderId=m.sender_id;
+      // Store message in the right chat
+      if(!chats[senderId])chats[senderId]=[];
+      if(!chats[senderId].find(x=>x.id===m.id)){
+        chats[senderId].push(m);
+        // If this chat is currently open, render it
+        if(actCid===senderId) renderMsgs(senderId);
+        // Update chat list preview
+        renderList();
+        // Show notification toast if chat is not open
+        if(actCid!==senderId){
+          const sender=contacts.find(c=>c.id===senderId);
+          const name=sender?sender.name:'Someone';
+          showToast('💬 '+name+': '+m.content.slice(0,30),'#1a1a1a');
         }
       }
     })
-    .subscribe();
+    .subscribe(status=>{
+      if(status==='SUBSCRIBED') console.log('✅ Realtime connected');
+    });
 }
+
+function subscribeMessages(cid){
+  // No-op — global subscription handles everything now
+  // Just make sure messages are loaded when opening chat
+}
+
 
 // ── RENDER MESSAGES ──
 function renderMsgs(cid){
