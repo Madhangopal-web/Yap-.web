@@ -4,6 +4,8 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"/>
 <title>Yap!</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23f97316'/><path d='M20 25 C20 20 24 16 29 16 L71 16 C76 16 80 20 80 25 L80 58 C80 63 76 67 71 67 L38 67 L25 80 L25 67 L29 67 C24 67 20 63 20 58 Z' fill='black'/></svg>"/>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23f97316'/><path d='M20 25 C20 20 24 16 29 16 L71 16 C76 16 80 20 80 25 L80 58 C80 63 76 67 71 67 L38 67 L25 80 L25 67 L29 67 C24 67 20 63 20 58 Z' fill='black'/></svg>"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -840,9 +842,33 @@ function startGlobalSubscription(){
       schema:'public',
       table:'messages',
       filter:`receiver_id=eq.${U.id}`
-    },payload=>{
+    },async payload=>{
       const m=payload.new;
       const senderId=m.sender_id;
+
+      // ── AUTO ADD CONTACT ──
+      // If sender is not in contacts yet, fetch their profile and add them
+      const alreadyContact=contacts.find(c=>c.id===senderId);
+      if(!alreadyContact){
+        // Fetch sender profile
+        const {data:senderProfile}=await supa.from('profiles').select('*').eq('id',senderId).maybeSingle();
+        if(senderProfile){
+          // Add to contacts table in DB
+          await supa.from('contacts').insert({user_id:U.id,contact_id:senderId}).throwOnError().catch(()=>{});
+          // Add to local contacts array
+          const newContact={
+            id:senderProfile.id,
+            name:senderProfile.full_name,
+            yapId:senderProfile.yap_id,
+            color:senderProfile.dp_color||'#f97316',
+            dpImg:senderProfile.dp_url||null,
+            online:false
+          };
+          contacts.push(newContact);
+          showToast('💬 '+senderProfile.full_name+' messaged you! Added to contacts','#f97316');
+        }
+      }
+
       // Store message in the right chat
       if(!chats[senderId])chats[senderId]=[];
       if(!chats[senderId].find(x=>x.id===m.id)){
@@ -855,7 +881,7 @@ function startGlobalSubscription(){
         if(actCid!==senderId){
           const sender=contacts.find(c=>c.id===senderId);
           const name=sender?sender.name:'Someone';
-          showToast('💬 '+name+': '+m.content.slice(0,30),'#1a1a1a');
+          showToast('💬 '+name+': '+m.content.slice(0,40),'#1a1a1a');
         }
       }
     })
