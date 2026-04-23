@@ -564,7 +564,32 @@ async function doSI(){
 
   showToast('Signing in...','#333');
   const {data,error}=await supa.auth.signInWithPassword({email:fakeEmail,password:cd});
-  if(error){showToast('Wrong number or code ❌','#ef4444');return;}
+
+  if(error){
+    // Check if user doesn't exist → auto switch to sign up
+    if(error.message.toLowerCase().includes('invalid') || error.message.toLowerCase().includes('not found') || error.message.toLowerCase().includes('credentials')){
+      // Check if account exists at all
+      const {data:check}=await supa.from('profiles').select('id').eq('phone',phone).maybeSingle();
+      if(!check){
+        // No account found → show message and switch to sign up
+        showToast('No account found! Redirecting to Sign up...','#f97316');
+        setTimeout(()=>{
+          swtab('su');
+          // Pre-fill phone number in sign up form
+          const ccVal=document.getElementById('si-cc').value;
+          document.getElementById('su-cc').value=ccVal;
+          document.getElementById('su-ph').value=ph;
+          // Highlight the name field to guide user
+          setTimeout(()=>document.getElementById('su-nm').focus(),300);
+          showToast('Fill in your details to create account 👆','#f97316');
+        },1500);
+        return;
+      }
+    }
+    showToast('Wrong personal code ❌','#ef4444');
+    shake('si-cd');
+    return;
+  }
 
   const {data:profile}=await supa.from('profiles').select('*').eq('id',data.user.id).single();
   U={id:data.user.id,name:profile.full_name,phone:profile.phone,dob:profile.dob,yapId:profile.yap_id,dpColor:profile.dp_color||'#f97316',dpImg:profile.dp_url||null};
