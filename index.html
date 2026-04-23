@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"/>
 <title>Yap!</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPA_URL = 'https://jcmwinzrvqdqdgnmkzoo.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjbXdpbnpydnFkcWRnbm1rem9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4Mzc5NDIsImV4cCI6MjA5MjQxMzk0Mn0.oz54LWLw6sB4hOw4916IdlPk6ISFgcO1rawFtpjulvc';
+const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+</script>
 <style>
 /* ── THEME VARIABLES ── */
 [data-theme="dark"] {
@@ -80,6 +86,19 @@ select.inp{cursor:pointer}
 .clist{flex:1;overflow-y:auto}
 .clist::-webkit-scrollbar{width:0}
 .ci{display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;transition:background .15s}
+.ci.selected{background:rgba(249,115,22,0.2);}
+.sel-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:none;align-items:center;justify-content:center;transition:all .2s;background:transparent;}
+.sel-check.checked{background:var(--orange);border-color:var(--orange);}
+.select-mode .sel-check{display:flex;}
+.select-mode .caside{display:none;}
+.sel-bar{display:none;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--orange);color:#000;}
+.sel-bar.active{display:flex;}
+.sel-bar-left{font-size:15px;font-weight:700;}
+.sel-bar-right{display:flex;gap:8px;}
+.sel-bar-btn{padding:8px 16px;border-radius:50px;border:none;font-family:"Inter",sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;}
+.sel-cancel{background:rgba(0,0,0,0.15);color:#000;}
+.sel-delete{background:#000;color:#fff;}
+.sel-delete:hover{background:#1a1a1a;}
 .ci:hover{background:var(--bg2)}
 .ci.active{background:var(--orange-soft)}
 .av{width:50px;height:50px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;position:relative;overflow:hidden;background-size:cover;background-position:center}
@@ -286,10 +305,24 @@ select.inp{cursor:pointer}
       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input placeholder="Search contacts" oninput="filterC(this.value)"/>
     </div>
-    <button class="add-btn" onclick="openAdd()">
-      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-      Add contact
-    </button>
+    <!-- Normal bar -->
+    <div id="normal-bar">
+      <button class="add-btn" onclick="openAdd()">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        Add contact
+      </button>
+    </div>
+    <!-- Select mode bar -->
+    <div class="sel-bar" id="sel-bar">
+      <div class="sel-bar-left"><span id="sel-count">0</span> selected</div>
+      <div class="sel-bar-right">
+        <button class="sel-bar-btn sel-cancel" onclick="exitSelectMode()">Cancel</button>
+        <button class="sel-bar-btn sel-delete" onclick="deleteSelected()">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:4px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+          Delete
+        </button>
+      </div>
+    </div>
     <div class="clist" id="clist"></div>
   </div>
 
@@ -481,217 +514,393 @@ select.inp{cursor:pointer}
 
 <script>
 // ── STATE ──
-let U=null, contacts=[], chats={}, actCid=null, editField=null;
+let U=null, contacts=[], chats={}, actCid=null, editField=null, realtimeSub=null;
 const COLS=['#f97316','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ec4899','#ef4444','#14b8a6'];
 const AVATAR_COLORS=['#f97316','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ec4899','#ef4444','#14b8a6','#3b82f6','#a855f7','#f43f5e','#84cc16'];
 
-const yid=()=>['YAP','YWK','FDQ','ZXA','MNB'][Math.floor(Math.random()*5)]+'-'+Math.floor(10000+Math.random()*89999);
+function genYapId(){ return ['YAP','YWK','FDQ','ZXA','MNB'][Math.floor(Math.random()*5)]+'-'+Math.floor(10000+Math.random()*89999); }
 const ini=n=>n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-const fmt=d=>d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true});
+const fmt=d=>new Date(d).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true});
 const fmtD=v=>{if(!v)return'—';const d=new Date(v);return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})};
-const relT=d=>(new Date()-d)<86400000?fmt(d):'Yesterday';
+const relT=d=>(new Date()-new Date(d))<86400000?fmt(d):'Yesterday';
 
 // ── THEME ──
-let isDark = true;
+let isDark=true;
 function toggleTheme(){
   isDark=!isDark;
   document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
-  // moon/sun icons
   ['theme-icon-moon','profile-moon'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=isDark?'block':'none'});
   ['theme-icon-sun','profile-sun'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=isDark?'none':'block'});
-  // toggle switch state
   const t=document.getElementById('dark-toggle');
-  if(t) t.classList.toggle('on',isDark);
+  if(t)t.classList.toggle('on',isDark);
 }
-// init toggle on
 const _dt=document.getElementById('dark-toggle');
-if(_dt) _dt.classList.add('on');
+if(_dt)_dt.classList.add('on');
 
-// ── AUTH ──
+// ── AUTH TABS ──
 function swtab(t){
   document.querySelectorAll('.tab').forEach((e,i)=>e.classList.toggle('active',(i===0&&t==='si')||(i===1&&t==='su')));
   document.getElementById('psi').classList.toggle('active',t==='si');
   document.getElementById('psu').classList.toggle('active',t==='su');
 }
-function shake(id){const e=document.getElementById(id);e.style.borderColor='#ef4444';e.style.animation='shake .3s ease';e.focus();setTimeout(()=>{e.style.borderColor='';e.style.animation=''},900)}
+function shake(id){const e=document.getElementById(id);if(!e)return;e.style.borderColor='#ef4444';e.style.animation='shake .3s ease';e.focus();setTimeout(()=>{e.style.borderColor='';e.style.animation=''},900)}
 
-function doSI(){
+function showToast(msg, color='#f97316'){
+  let t=document.getElementById('toast');
+  if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);padding:12px 20px;border-radius:50px;font-size:14px;font-weight:600;z-index:9999;transition:opacity .3s;color:#000;';document.body.appendChild(t);}
+  t.style.background=color;t.textContent=msg;t.style.opacity='1';
+  setTimeout(()=>t.style.opacity='0',2500);
+}
+
+// ── SIGN IN ──
+async function doSI(){
   const ph=document.getElementById('si-ph').value.trim();
   const cd=document.getElementById('si-cd').value;
-  if(!ph||ph.length<7){shake('si-ph');return}
-  if(cd.length<6){shake('si-cd');return}
+  if(!ph||ph.length<7){shake('si-ph');return;}
+  if(cd.length<6){shake('si-cd');return;}
   const cc=document.getElementById('si-cc').value.replace(/[^+\d]/g,'');
-  U={name:'User '+ph.slice(-4),phone:cc+ph,dob:'',id:yid(),dpColor:'#f97316',dpImg:null};
-  enterApp();
+  const phone=cc+ph;
+  const fakeEmail=phone.replace(/[^\d]/g,'')+'@yap.app';
+
+  showToast('Signing in...','#333');
+  const {data,error}=await supa.auth.signInWithPassword({email:fakeEmail,password:cd});
+  if(error){showToast('Wrong number or code ❌','#ef4444');return;}
+
+  const {data:profile}=await supa.from('profiles').select('*').eq('id',data.user.id).single();
+  U={id:data.user.id,name:profile.full_name,phone:profile.phone,dob:profile.dob,yapId:profile.yap_id,dpColor:profile.dp_color||'#f97316',dpImg:profile.dp_url||null};
+  await enterApp();
 }
-function doSU(){
+
+// ── SIGN UP ──
+async function doSU(){
   const nm=document.getElementById('su-nm').value.trim();
   const ph=document.getElementById('su-ph').value.trim();
   const db=document.getElementById('su-db').value;
   const cd=document.getElementById('su-cd').value;
-  if(!nm){shake('su-nm');return}
-  if(!ph||ph.length<7){shake('su-ph');return}
-  if(!db){shake('su-db');return}
-  if(cd.length<6){shake('su-cd');return}
+  if(!nm){shake('su-nm');return;}
+  if(!ph||ph.length<7){shake('su-ph');return;}
+  if(!db){shake('su-db');return;}
+  if(cd.length<6){shake('su-cd');return;}
   const cc=document.getElementById('su-cc').value.replace(/[^+\d]/g,'');
-  U={name:nm,phone:cc+ph,dob:db,id:yid(),dpColor:'#f97316',dpImg:null};
-  enterApp();
+  const phone=cc+ph;
+  const fakeEmail=phone.replace(/[^\d]/g,'')+'@yap.app';
+  const yapId=genYapId();
+
+  showToast('Creating account...','#333');
+  const {data,error}=await supa.auth.signUp({email:fakeEmail,password:cd});
+  if(error){showToast('Account already exists. Try sign in ❌','#ef4444');return;}
+
+  await supa.from('profiles').insert({
+    id:data.user.id, yap_id:yapId, full_name:nm,
+    phone:phone, dob:db, dp_color:'#f97316', dp_url:null
+  });
+
+  U={id:data.user.id,name:nm,phone:phone,dob:db,yapId:yapId,dpColor:'#f97316',dpImg:null};
+  await enterApp();
 }
 
-function enterApp(){
-  contacts=[];
+// ── ENTER APP ──
+async function enterApp(){
   showScr('screen-app');
-  renderList();
-  if(window.innerWidth<=700) document.getElementById('ca').classList.add('h');
+  await loadContacts();
+  if(window.innerWidth<=700)document.getElementById('ca').classList.add('h');
 }
+
+// ── CHECK SESSION ON LOAD ──
+async function checkSession(){
+  const {data:{session}}=await supa.auth.getSession();
+  if(session){
+    const {data:profile}=await supa.from('profiles').select('*').eq('id',session.user.id).single();
+    if(profile){
+      U={id:session.user.id,name:profile.full_name,phone:profile.phone,dob:profile.dob,yapId:profile.yap_id,dpColor:profile.dp_color||'#f97316',dpImg:profile.dp_url||null};
+      await enterApp();
+    }
+  }
+}
+checkSession();
 
 // ── SCREENS ──
-function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
-function goBack(){showScr('screen-app')}
-function logout(){U=null;contacts=[];chats={};actCid=null;showScr('screen-auth')}
-function backList(){if(window.innerWidth<=700){document.getElementById('sb').classList.remove('h');document.getElementById('ca').classList.add('h')}}
+function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function goBack(){showScr('screen-app');}
+async function logout(){
+  await supa.auth.signOut();
+  if(realtimeSub){supa.removeChannel(realtimeSub);realtimeSub=null;}
+  U=null;contacts=[];chats={};actCid=null;
+  showScr('screen-auth');
+}
+function backList(){if(window.innerWidth<=700){document.getElementById('sb').classList.remove('h');document.getElementById('ca').classList.add('h');}}
+
+// ── LOAD CONTACTS ──
+async function loadContacts(){
+  const {data}=await supa.from('contacts').select('contact_id, profiles!contacts_contact_id_fkey(id,full_name,yap_id,dp_color,dp_url)').eq('user_id',U.id);
+  contacts=(data||[]).map(r=>({
+    id:r.profiles.id,
+    name:r.profiles.full_name,
+    yapId:r.profiles.yap_id,
+    color:r.profiles.dp_color||'#f97316',
+    dpImg:r.profiles.dp_url||null,
+    online:false
+  }));
+  renderList();
+}
 
 // ── CHAT LIST ──
-function setAv(el, dpImg, color, name){
-  if(dpImg){el.style.backgroundImage=`url(${dpImg})`;el.style.backgroundColor='transparent';el.textContent=''}
-  else{el.style.backgroundImage='none';el.style.backgroundColor=color;el.textContent=ini(name)}
+// ── SELECT MODE ──
+let selectMode=false;
+let selectedIds=new Set();
+
+function enterSelectMode(cid){
+  selectMode=true;
+  selectedIds=new Set([cid]);
+  document.getElementById('clist').classList.add('select-mode');
+  document.getElementById('normal-bar').style.display='none';
+  document.getElementById('sel-bar').classList.add('active');
+  updateSelCount();
+  renderList();
 }
+function exitSelectMode(){
+  selectMode=false;
+  selectedIds=new Set();
+  document.getElementById('clist').classList.remove('select-mode');
+  document.getElementById('normal-bar').style.display='block';
+  document.getElementById('sel-bar').classList.remove('active');
+  renderList();
+}
+function toggleSelect(cid){
+  if(selectedIds.has(cid)) selectedIds.delete(cid);
+  else selectedIds.add(cid);
+  updateSelCount();
+  renderList();
+}
+function updateSelCount(){
+  document.getElementById('sel-count').textContent=selectedIds.size;
+}
+async function deleteSelected(){
+  if(selectedIds.size===0) return;
+  const names=contacts.filter(c=>selectedIds.has(c.id)).map(c=>c.name).join(', ');
+  if(!confirm(`Remove ${names} from contacts?`)) return;
+  showToast('Deleting...','#333');
+  for(const cid of selectedIds){
+    await supa.from('contacts').delete().eq('user_id',U.id).eq('contact_id',cid);
+    contacts=contacts.filter(c=>c.id!==cid);
+    delete chats[cid];
+    if(actCid===cid){
+      actCid=null;
+      document.getElementById('est').style.display='flex';
+      document.getElementById('ac').style.display='none';
+    }
+  }
+  exitSelectMode();
+  showToast(`Deleted ${selectedIds.size||names.split(',').length} contact(s) ✅`);
+  renderList();
+}
+
+let pressTimer=null;
 function renderList(f=''){
   const el=document.getElementById('clist');el.innerHTML='';
-  contacts.filter(c=>c.name.toLowerCase().includes(f.toLowerCase())).forEach(c=>{
+  const filtered=contacts.filter(c=>c.name.toLowerCase().includes(f.toLowerCase()));
+  if(filtered.length===0){
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--text3);font-size:14px;">No contacts yet.<br/>Tap Add contact to start!</div>';
+    return;
+  }
+  filtered.forEach(c=>{
     const msgs=chats[c.id]||[];const last=msgs[msgs.length-1];
     const div=document.createElement('div');
-    div.className='ci'+(c.id===actCid?' active':'');
-    const avBg=c.dpImg?`style="background-image:url(${c.dpImg});background-size:cover;background-color:transparent;"`:`style="background:${c.color};"`;
-    div.innerHTML=`<div class="av ${c.online?'on':''}" ${avBg}>${c.dpImg?'':ini(c.name)}</div>
-      <div class="cinfo"><div class="cname">${c.name}</div><div class="cprev">${last?(last.type==='image'?'📷 Photo':last.text):'No messages yet'}</div></div>
-      <div class="caside"><div class="ctime">${last?relT(last.time):''}</div></div>`;
-    div.onclick=()=>openChat(c.id);
+    const isSelected=selectedIds.has(c.id);
+    div.className='ci'+(c.id===actCid&&!selectMode?' active':'')+(isSelected?' selected':'');
+    const avBg=c.dpImg?`style="background-image:url(${c.dpImg});background-size:cover;background-color:transparent;"` :`style="background:${c.color};"`;
+    div.innerHTML=`
+      <div class="sel-check ${isSelected?'checked':''}">
+        ${isSelected?'<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="black" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>':''}
+      </div>
+      <div class="av ${c.online?'on':''}" ${avBg}>${c.dpImg?'':ini(c.name)}</div>
+      <div class="cinfo"><div class="cname">${c.name}</div><div class="cprev">${last?(last.type==='image'?'📷 Photo':last.content):'No messages yet'}</div></div>
+      <div class="caside"><div class="ctime">${last?relT(last.created_at):''}</div></div>`;
+    // long press to enter select mode
+    div.addEventListener('pointerdown',()=>{
+      pressTimer=setTimeout(()=>{ if(!selectMode) enterSelectMode(c.id); },500);
+    });
+    div.addEventListener('pointerup',()=>clearTimeout(pressTimer));
+    div.addEventListener('pointercancel',()=>clearTimeout(pressTimer));
+    div.onclick=()=>{
+      if(selectMode){ toggleSelect(c.id); }
+      else { openChat(c.id); }
+    };
     el.appendChild(div);
   });
 }
-function filterC(v){renderList(v)}
+function filterC(v){renderList(v);}
 
-// ── CHAT ──
-function openChat(cid){
-  actCid=cid;const c=contacts.find(x=>x.id===cid);if(!c)return;
+// ── OPEN CHAT ──
+async function openChat(cid){
+  actCid=cid;
+  const c=contacts.find(x=>x.id===cid);if(!c)return;
   document.getElementById('est').style.display='none';
   const a=document.getElementById('ac');a.style.display='flex';
   const tav=document.getElementById('tav');
-  setAv(tav,c.dpImg,c.color,c.name);
+  if(c.dpImg){tav.style.backgroundImage=`url(${c.dpImg})`;tav.style.backgroundColor='transparent';tav.textContent='';}
+  else{tav.style.backgroundImage='none';tav.style.backgroundColor=c.color;tav.textContent=ini(c.name);}
   document.getElementById('tnm').textContent=c.name;
-  document.getElementById('tid').textContent=c.id;
-  if(window.innerWidth<=700){document.getElementById('sb').classList.add('h');document.getElementById('ca').classList.remove('h')}
-  renderMsgs(cid);renderList();
+  document.getElementById('tid').textContent=c.yapId||c.id.slice(0,8);
+  if(window.innerWidth<=700){document.getElementById('sb').classList.add('h');document.getElementById('ca').classList.remove('h');}
+  await loadMessages(cid);
+  subscribeMessages(cid);
+  renderList();
 }
+
+// ── LOAD MESSAGES ──
+async function loadMessages(cid){
+  const {data}=await supa.from('messages')
+    .select('*')
+    .or(`and(sender_id.eq.${U.id},receiver_id.eq.${cid}),and(sender_id.eq.${cid},receiver_id.eq.${U.id})`)
+    .order('created_at',{ascending:true});
+  chats[cid]=data||[];
+  renderMsgs(cid);
+}
+
+// ── REALTIME SUBSCRIBE ──
+function subscribeMessages(cid){
+  if(realtimeSub){supa.removeChannel(realtimeSub);}
+  realtimeSub=supa.channel('messages-'+cid)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{
+      const m=payload.new;
+      if((m.sender_id===U.id&&m.receiver_id===cid)||(m.sender_id===cid&&m.receiver_id===U.id)){
+        if(!chats[cid])chats[cid]=[];
+        // avoid duplicate
+        if(!chats[cid].find(x=>x.id===m.id)){
+          chats[cid].push(m);
+          renderMsgs(cid);
+          renderList();
+        }
+      }
+    })
+    .subscribe();
+}
+
+// ── RENDER MESSAGES ──
 function renderMsgs(cid){
   const area=document.getElementById('msgs');
   const msgs=chats[cid]||[];area.innerHTML='';
+  if(msgs.length===0){
+    const empty=document.createElement('div');
+    empty.style.cssText='text-align:center;color:var(--text3);font-size:13px;margin-top:40px;';
+    empty.textContent='No messages yet. Say hi! 👋';
+    area.appendChild(empty);return;
+  }
   const sep=document.createElement('div');sep.className='dsep';sep.textContent='Today';area.appendChild(sep);
   msgs.forEach(m=>{
-    const row=document.createElement('div');row.className='mrow '+(m.out?'out':'in');
+    const out=m.sender_id===U.id;
+    const row=document.createElement('div');row.className='mrow '+(out?'out':'in');
     if(m.type==='image'){
-      row.innerHTML=`<div class="bbl" style="padding:0;overflow:hidden;background:transparent;border:none;"><div class="img-bbl"><img src="${m.src}"/></div><div class="btime" style="padding:4px 4px 0;">${fmt(m.time)}</div></div>`;
+      row.innerHTML=`<div class="bbl" style="padding:0;overflow:hidden;background:transparent;border:none;"><div class="img-bbl"><img src="${m.file_url}"/></div><div class="btime" style="padding:4px 4px 0;">${fmt(m.created_at)}</div></div>`;
     } else {
-      row.innerHTML=`<div class="bbl">${m.text}<div class="btime">${fmt(m.time)}</div></div>`;
+      row.innerHTML=`<div class="bbl">${m.content}<div class="btime">${fmt(m.created_at)}</div></div>`;
     }
     area.appendChild(row);
   });
   area.scrollTop=area.scrollHeight;
 }
-function sendMsg(){
+
+// ── SEND MESSAGE ──
+async function sendMsg(){
   const inp=document.getElementById('minp');const text=inp.value.trim();
   if(!text||!actCid)return;
-  if(!chats[actCid])chats[actCid]=[];
-  chats[actCid].push({type:'text',text,out:true,time:new Date()});
   inp.value='';inp.style.height='46px';
+
+  const msg={sender_id:U.id,receiver_id:actCid,content:text,type:'text',file_url:null};
+  // Optimistic UI
+  const tempMsg={...msg,id:'temp-'+Date.now(),created_at:new Date().toISOString()};
+  if(!chats[actCid])chats[actCid]=[];
+  chats[actCid].push(tempMsg);
   renderMsgs(actCid);renderList();
-  setTimeout(()=>{
-    const r=['Got it! 👍','Sure!','Let me check.','Okay!','Nice 🔥','On it!'];
-    chats[actCid].push({type:'text',text:r[Math.floor(Math.random()*r.length)],out:false,time:new Date()});
-    renderMsgs(actCid);renderList();
-  },1200);
+
+  const {data,error}=await supa.from('messages').insert(msg).select().single();
+  if(!error&&data){
+    // replace temp with real
+    const idx=chats[actCid].findIndex(m=>m.id===tempMsg.id);
+    if(idx>-1)chats[actCid][idx]=data;
+    renderMsgs(actCid);
+  }
 }
-function hkey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg()}}
-function agrow(el){el.style.height='46px';el.style.height=Math.min(el.scrollHeight,120)+'px'}
-function handleFile(e){
+function hkey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function agrow(el){el.style.height='46px';el.style.height=Math.min(el.scrollHeight,120)+'px';}
+
+// ── FILE UPLOAD ──
+async function handleFile(e){
   const f=e.target.files[0];if(!f||!actCid)return;
-  const r=new FileReader();
-  r.onload=ev=>{chats[actCid].push({type:'image',src:ev.target.result,out:true,time:new Date()});renderMsgs(actCid);renderList()};
-  r.readAsDataURL(f);e.target.value='';
+  showToast('Uploading...','#333');
+  const path=`${U.id}/${Date.now()}-${f.name}`;
+  const {error:upErr}=await supa.storage.from('yap-files').upload(path,f);
+  if(upErr){showToast('Upload failed ❌','#ef4444');return;}
+  const {data:{publicUrl}}=supa.storage.from('yap-files').getPublicUrl(path);
+  const msg={sender_id:U.id,receiver_id:actCid,content:'📷 Photo',type:'image',file_url:publicUrl};
+  await supa.from('messages').insert(msg);
+  showToast('Sent! ✅');
+  e.target.value='';
 }
 
 // ── PROFILE ──
 function showProf(){
-  updateProfileUI();
-  renderQR('pqr');
-  showScr('screen-profile');
+  updateProfileUI();renderQR('pqr');showScr('screen-profile');
 }
 function updateProfileUI(){
-  const pav=document.getElementById('pav');
-  const pavTxt=document.getElementById('pav-txt');
-  if(U.dpImg){pav.style.backgroundImage=`url(${U.dpImg})`;pav.style.backgroundColor='transparent';pavTxt.textContent=''}
-  else{pav.style.backgroundImage='none';pav.style.backgroundColor=U.dpColor;pavTxt.textContent=ini(U.name)}
+  const pav=document.getElementById('pav');const pavTxt=document.getElementById('pav-txt');
+  if(U.dpImg){pav.style.backgroundImage=`url(${U.dpImg})`;pav.style.backgroundColor='transparent';pavTxt.textContent='';}
+  else{pav.style.backgroundImage='none';pav.style.backgroundColor=U.dpColor;pavTxt.textContent=ini(U.name);}
   document.getElementById('pnm').textContent=U.name;
-  document.getElementById('pyid').textContent=U.id;
+  document.getElementById('pyid').textContent=U.yapId;
   document.getElementById('p-name-val').textContent=U.name;
   document.getElementById('p-phone-val').textContent=U.phone;
   document.getElementById('p-dob-val').textContent=fmtD(U.dob);
 }
-function cpyId(){navigator.clipboard?.writeText(U.id);const e=document.getElementById('pyid');e.textContent='Copied!';setTimeout(()=>e.textContent=U.id,1500)}
+function cpyId(){navigator.clipboard?.writeText(U.yapId);const e=document.getElementById('pyid');e.textContent='Copied!';setTimeout(()=>e.textContent=U.yapId,1500);}
 
 // ── EDIT FIELD ──
 const editConfig={
-  name:{title:'Edit Name',label:'Full Name',type:'text',get:()=>U.name,set:(v)=>{U.name=v;updateProfileUI()}},
-  phone:{title:'Edit Mobile',label:'Mobile Number',type:'tel',get:()=>U.phone,set:(v)=>{U.phone=v;updateProfileUI()}},
-  dob:{title:'Edit Date of Birth',label:'Date of Birth',type:'date',get:()=>U.dob,set:(v)=>{U.dob=v;updateProfileUI()}},
-  code:{title:'Change Personal Code',label:'New Code (min 6 chars)',type:'password',get:()=>'',set:(v)=>{/* would update password */alert('Code updated! (In real app this updates your login code)')}}
+  name:{title:'Edit Name',label:'Full Name',type:'text',get:()=>U.name,set:async(v)=>{await supa.from('profiles').update({full_name:v}).eq('id',U.id);U.name=v;updateProfileUI();}},
+  phone:{title:'Edit Mobile',label:'Mobile Number',type:'tel',get:()=>U.phone,set:async(v)=>{await supa.from('profiles').update({phone:v}).eq('id',U.id);U.phone=v;updateProfileUI();}},
+  dob:{title:'Edit Date of Birth',label:'Date of Birth',type:'date',get:()=>U.dob,set:async(v)=>{await supa.from('profiles').update({dob:v}).eq('id',U.id);U.dob=v;updateProfileUI();}},
+  code:{title:'Change Personal Code',label:'New Code (min 6 chars)',type:'password',get:()=>'',set:async(v)=>{await supa.auth.updateUser({password:v});showToast('Code updated! ✅');}}
 };
 function openEdit(field){
-  editField=field;
-  const cfg=editConfig[field];
+  editField=field;const cfg=editConfig[field];
   document.getElementById('edit-title').textContent=cfg.title;
   document.getElementById('edit-lbl').textContent=cfg.label;
   const inp=document.getElementById('edit-inp');
-  inp.type=cfg.type;
-  inp.value=cfg.type==='password'?'':cfg.get();
-  inp.placeholder=cfg.type==='date'?'':inp.placeholder;
-  const inp2=document.getElementById('edit-inp2');
-  inp2.style.display=field==='code'?'block':'none';
+  inp.type=cfg.type;inp.value=cfg.type==='password'?'':cfg.get();
+  document.getElementById('edit-inp2').style.display=field==='code'?'block':'none';
   document.getElementById('medit').classList.remove('hidden');
   setTimeout(()=>inp.focus(),100);
 }
-function saveEdit(){
+async function saveEdit(){
   if(!editField)return;
   const cfg=editConfig[editField];
   const val=document.getElementById('edit-inp').value.trim();
-  if(!val){shake('edit-inp');return}
-  if(editField==='code'&&val.length<6){shake('edit-inp');return}
-  cfg.set(val);
-  closeM('medit');
-  updateProfileUI();
+  if(!val){shake('edit-inp');return;}
+  if(editField==='code'&&val.length<6){shake('edit-inp');return;}
+  await cfg.set(val);
+  closeM('medit');showToast('Saved! ✅');
 }
 
-// ── DP MODAL ──
+// ── DP ──
 function openDPModal(){
   const prev=document.getElementById('dp-preview');
-  if(U.dpImg){prev.style.backgroundImage=`url(${U.dpImg})`;prev.style.backgroundColor='transparent';prev.textContent=''}
-  else{prev.style.backgroundImage='none';prev.style.backgroundColor=U.dpColor;prev.textContent=ini(U.name)}
+  if(U.dpImg){prev.style.backgroundImage=`url(${U.dpImg})`;prev.style.backgroundColor='transparent';prev.textContent='';}
+  else{prev.style.backgroundImage='none';prev.style.backgroundColor=U.dpColor;prev.textContent=ini(U.name);}
   document.getElementById('remove-dp-opt').style.display=U.dpImg?'flex':'none';
   document.getElementById('color-picker-wrap').style.display='none';
   document.getElementById('mdp').classList.remove('hidden');
 }
 function showColorPicker(){
-  const wrap=document.getElementById('color-picker-wrap');
-  const grid=document.getElementById('color-grid');
-  wrap.style.display='block';
-  grid.innerHTML='';
+  const wrap=document.getElementById('color-picker-wrap');const grid=document.getElementById('color-grid');
+  wrap.style.display='block';grid.innerHTML='';
   AVATAR_COLORS.forEach(c=>{
     const dot=document.createElement('div');
     dot.className='color-dot'+(U.dpColor===c&&!U.dpImg?' selected':'');
     dot.style.background=c;
-    dot.onclick=()=>{
+    dot.onclick=async()=>{
       U.dpColor=c;U.dpImg=null;
+      await supa.from('profiles').update({dp_color:c,dp_url:null}).eq('id',U.id);
       document.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('selected'));
       dot.classList.add('selected');
       const prev=document.getElementById('dp-preview');
@@ -701,50 +910,92 @@ function showColorPicker(){
     grid.appendChild(dot);
   });
 }
-function handleDP(e){
+async function handleDP(e){
   const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=ev=>{
-    U.dpImg=ev.target.result;
-    const prev=document.getElementById('dp-preview');
-    prev.style.backgroundImage=`url(${ev.target.result})`;prev.style.backgroundColor='transparent';prev.textContent='';
-    document.getElementById('remove-dp-opt').style.display='flex';
-    updateProfileUI();renderList();
-  };
-  r.readAsDataURL(f);e.target.value='';
+  showToast('Uploading photo...','#333');
+  const path=`avatars/${U.id}/${Date.now()}-${f.name}`;
+  const {error}=await supa.storage.from('yap-files').upload(path,f,{upsert:true});
+  if(error){showToast('Upload failed ❌','#ef4444');return;}
+  const {data:{publicUrl}}=supa.storage.from('yap-files').getPublicUrl(path);
+  U.dpImg=publicUrl;
+  await supa.from('profiles').update({dp_url:publicUrl}).eq('id',U.id);
+  const prev=document.getElementById('dp-preview');
+  prev.style.backgroundImage=`url(${publicUrl})`;prev.style.backgroundColor='transparent';prev.textContent='';
+  document.getElementById('remove-dp-opt').style.display='flex';
+  updateProfileUI();renderList();showToast('Photo updated! ✅');
+  e.target.value='';
 }
-function removeDP(){U.dpImg=null;updateProfileUI();renderList();openDPModal()}
+async function removeDP(){
+  U.dpImg=null;
+  await supa.from('profiles').update({dp_url:null}).eq('id',U.id);
+  updateProfileUI();renderList();openDPModal();
+}
 
 // ── QR ──
 function renderQR(id){
   const b=document.getElementById(id);if(!b)return;b.innerHTML='';
   const cors=new Set();
   [[0,0],[0,1],[0,2],[1,0],[2,0],[1,2],[2,1],[2,2],[0,6],[0,7],[0,8],[1,6],[2,6],[1,8],[2,7],[2,8],[6,0],[7,0],[8,0],[6,1],[6,2],[8,1],[7,2],[8,2]].forEach(([r,c])=>cors.add(r*9+c));
-  for(let r=0;r<9;r++)for(let c=0;c<9;c++){const e=document.createElement('div');e.className='qr-cell';e.style.background=cors.has(r*9+c)?'#111':Math.random()>.48?'#111':'#f0f0f0';b.appendChild(e)}
+  for(let r=0;r<9;r++)for(let c=0;c<9;c++){const e=document.createElement('div');e.className='qr-cell';e.style.background=cors.has(r*9+c)?'#111':Math.random()>.48?'#111':'#f0f0f0';b.appendChild(e);}
 }
 
 // ── ADD CONTACT ──
-function openAdd(){document.getElementById('madd').classList.remove('hidden')}
-function closeM(id){document.getElementById(id).classList.add('hidden')}
+function openAdd(){document.getElementById('madd').classList.remove('hidden');}
+function closeM(id){document.getElementById(id).classList.add('hidden');}
 function smtab(t){
   document.querySelectorAll('.mtab').forEach((e,i)=>e.classList.toggle('active',(i===0&&t==='id')||(i===1&&t==='qr')));
   document.getElementById('mpid').classList.toggle('active',t==='id');
   document.getElementById('mpqr').classList.toggle('active',t==='qr');
 }
-function simScan(){document.getElementById('ayid').value=yid();smtab('id')}
-function addC(){
-  const v=document.getElementById('ayid').value.trim();
-  const c={id:v||yid(),name:'User '+(v?v.slice(-5):'New'),color:COLS[contacts.length%COLS.length],online:false,dpImg:null};
+function simScan(){document.getElementById('ayid').value='YAP-12345';smtab('id');}
+async function addC(){
+  const val=document.getElementById('ayid').value.trim();
+  if(!val){shake('ayid');return;}
+  showToast('Searching...','#333');
+  // Find user by YAP ID
+  const {data:found}=await supa.from('profiles').select('*').eq('yap_id',val).single();
+  if(!found){showToast('YAP ID not found ❌','#ef4444');return;}
+  if(found.id===U.id){showToast('Thats your own ID! ❌','#ef4444');return;}
+  // Check if already a contact
+  const {data:existing}=await supa.from('contacts').select('id').eq('user_id',U.id).eq('contact_id',found.id).single();
+  if(existing){showToast('Already in contacts!','#f97316');closeM('madd');return;}
+  // Add contact
+  await supa.from('contacts').insert({user_id:U.id,contact_id:found.id});
+  const c={id:found.id,name:found.full_name,yapId:found.yap_id,color:found.dp_color||'#f97316',dpImg:found.dp_url||null,online:false};
   contacts.push(c);chats[c.id]=[];
   closeM('madd');renderList();openChat(c.id);
   document.getElementById('ayid').value='';
+  showToast('Contact added! ✅');
 }
+
+// ── VIEW CONTACT PROFILE ──
+function viewContactProfile(cid){
+  const c=contacts.find(x=>x.id===cid);if(!c)return;
+  const av=document.getElementById('cp-av');
+  if(c.dpImg){av.style.backgroundImage=`url(${c.dpImg})`;av.style.backgroundColor='transparent';av.textContent='';}
+  else{av.style.backgroundImage='none';av.style.backgroundColor=c.color;av.textContent=ini(c.name);}
+  document.getElementById('cp-name').textContent=c.name;
+  const dot=document.getElementById('cp-status-dot');const txt=document.getElementById('cp-status-txt');
+  dot.style.background=c.online?'#22c55e':'#6b7280';
+  txt.textContent=c.online?'Online':'Offline';txt.style.color=c.online?'#22c55e':'var(--text3)';
+  document.getElementById('cp-yid').textContent=c.yapId||c.id.slice(0,8);
+  renderQR('cp-qr');
+  document.getElementById('mcontact').classList.remove('hidden');
+}
+function cpContactId(){
+  const id=document.getElementById('cp-yid').textContent;
+  navigator.clipboard?.writeText(id);
+  const el=document.getElementById('cp-yid');el.textContent='Copied!';setTimeout(()=>el.textContent=id,1500);
+}
+function msgContact(){closeM('mcontact');}
 
 // Close modals on overlay click
 ['madd','medit','mdp'].forEach(id=>{
   const el=document.getElementById(id);
-  if(el) el.addEventListener('click',e=>{if(e.target===el)closeM(id)});
+  if(el)el.addEventListener('click',e=>{if(e.target===el)closeM(id);});
 });
+const _mc=document.getElementById('mcontact');
+if(_mc)_mc.addEventListener('click',e=>{if(e.target===_mc)closeM('mcontact');});
 </script>
 
 <!-- ══ MODAL: View Contact Profile ══ -->
