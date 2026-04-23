@@ -675,7 +675,68 @@ async function enterApp(){
   showScr('screen-app');
   await loadContacts();
   startGlobalSubscription();
+  requestNotificationPermission();
   if(window.innerWidth<=700)document.getElementById('ca').classList.add('h');
+}
+
+// ── PUSH NOTIFICATIONS ──
+// ── MESSAGE TONE ──
+function playMsgTone(){
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    // First beep
+    const o1=ctx.createOscillator();
+    const g1=ctx.createGain();
+    o1.connect(g1);g1.connect(ctx.destination);
+    o1.frequency.value=820;
+    o1.type='sine';
+    g1.gain.setValueAtTime(0,ctx.currentTime);
+    g1.gain.linearRampToValueAtTime(0.3,ctx.currentTime+0.01);
+    g1.gain.linearRampToValueAtTime(0,ctx.currentTime+0.15);
+    o1.start(ctx.currentTime);o1.stop(ctx.currentTime+0.15);
+    // Second beep
+    const o2=ctx.createOscillator();
+    const g2=ctx.createGain();
+    o2.connect(g2);g2.connect(ctx.destination);
+    o2.frequency.value=1020;
+    o2.type='sine';
+    g2.gain.setValueAtTime(0,ctx.currentTime+0.18);
+    g2.gain.linearRampToValueAtTime(0.3,ctx.currentTime+0.19);
+    g2.gain.linearRampToValueAtTime(0,ctx.currentTime+0.35);
+    o2.start(ctx.currentTime+0.18);o2.stop(ctx.currentTime+0.35);
+  } catch(e){ console.log('Audio not supported'); }
+}
+
+function requestNotificationPermission(){
+  if(!('Notification' in window)) return;
+  if(Notification.permission==='default'){
+    Notification.requestPermission().then(perm=>{
+      if(perm==='granted') showToast('🔔 Notifications enabled!','#22c55e');
+    });
+  }
+}
+
+function sendPushNotification(title, body, senderId){
+  if(!('Notification' in window)) return;
+  if(Notification.permission!=='granted') return;
+  // Only notify if app is in background or different chat is open
+  if(document.visibilityState==='visible' && actCid===senderId) return;
+  const notif = new Notification(title, {
+    body: body,
+    icon: 'data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><rect width=\'100\' height=\'100\' rx=\'22\' fill=\'%23f97316\'/><path d=\'M20 25 C20 20 24 16 29 16 L71 16 C76 16 80 20 80 25 L80 58 C80 63 76 67 71 67 L38 67 L25 80 L25 67 L29 67 C24 67 20 63 20 58 Z\' fill=\'black\'/></svg>',
+    badge: 'data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><rect width=\'100\' height=\'100\' rx=\'22\' fill=\'%23f97316\'/></svg>',
+    tag: 'yap-msg-'+senderId,
+    renotify: true,
+    vibrate: [200, 100, 200],
+    silent: false
+  });
+  notif.onclick=()=>{
+    window.focus();
+    notif.close();
+    // Open that chat
+    const c=contacts.find(x=>x.id===senderId);
+    if(c) openChat(c.id);
+  };
 }
 
 // ── CHECK SESSION ON LOAD ──
@@ -882,6 +943,10 @@ function startGlobalSubscription(){
           const sender=contacts.find(c=>c.id===senderId);
           const name=sender?sender.name:'Someone';
           showToast('💬 '+name+': '+m.content.slice(0,40),'#1a1a1a');
+          playMsgTone();
+          sendPushNotification('Yap! — '+name, m.content, senderId);
+        } else {
+          playMsgTone();
         }
       }
     })
