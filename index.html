@@ -516,7 +516,7 @@ select.inp{cursor:pointer}
 
 <script>
 // ── STATE ──
-let U=null, contacts=[], chats={}, actCid=null, editField=null, realtimeSub=null;
+let U=null, contacts=[], chats={}, actCid=null, editField=null, realtimeSub=null, unreadCounts={};
 const COLS=['#f97316','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ec4899','#ef4444','#14b8a6'];
 const AVATAR_COLORS=['#f97316','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ec4899','#ef4444','#14b8a6','#3b82f6','#a855f7','#f43f5e','#84cc16'];
 
@@ -849,7 +849,7 @@ function renderList(f=''){
       </div>
       <div class="av ${c.online?'on':''}" ${avBg}>${c.dpImg?'':ini(c.name)}</div>
       <div class="cinfo"><div class="cname">${c.name}</div><div class="cprev">${last?(last.type==='image'?'📷 Photo':last.content):'No messages yet'}</div></div>
-      <div class="caside"><div class="ctime">${last?relT(last.created_at):''}</div></div>`;
+      <div class="caside"><div class="ctime">${last?relT(last.created_at):''}</div>${unreadCounts[c.id]>0?`<div class="cbadge">${unreadCounts[c.id]}</div>`:''}</div>`;
     // long press to enter select mode
     div.addEventListener('pointerdown',()=>{
       pressTimer=setTimeout(()=>{ if(!selectMode) enterSelectMode(c.id); },500);
@@ -868,6 +868,8 @@ function filterC(v){renderList(v);}
 // ── OPEN CHAT ──
 async function openChat(cid){
   actCid=cid;
+  // Reset unread count
+  unreadCounts[cid]=0;
   const c=contacts.find(x=>x.id===cid);if(!c)return;
   document.getElementById('est').style.display='none';
   const a=document.getElementById('ac');a.style.display='flex';
@@ -942,6 +944,8 @@ function startGlobalSubscription(){
         if(actCid!==senderId){
           const sender=contacts.find(c=>c.id===senderId);
           const name=sender?sender.name:'Someone';
+          // increment unread count
+          unreadCounts[senderId]=(unreadCounts[senderId]||0)+1;
           showToast('💬 '+name+': '+m.content.slice(0,40),'#1a1a1a');
           playMsgTone();
           sendPushNotification('Yap! — '+name, m.content, senderId);
