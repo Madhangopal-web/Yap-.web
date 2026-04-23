@@ -566,33 +566,37 @@ async function doSI(){
   const {data,error}=await supa.auth.signInWithPassword({email:fakeEmail,password:cd});
 
   if(error){
-    // Check if user doesn't exist → auto switch to sign up
-    if(error.message.toLowerCase().includes('invalid') || error.message.toLowerCase().includes('not found') || error.message.toLowerCase().includes('credentials')){
-      // Check if account exists at all
-      const {data:check}=await supa.from('profiles').select('id').eq('phone',phone).maybeSingle();
-      if(!check){
-        // No account found → show message and switch to sign up
-        showToast('No account found! Redirecting to Sign up...','#f97316');
-        setTimeout(()=>{
-          swtab('su');
-          // Pre-fill phone number in sign up form
-          const ccVal=document.getElementById('si-cc').value;
-          document.getElementById('su-cc').value=ccVal;
-          document.getElementById('su-ph').value=ph;
-          // Highlight the name field to guide user
-          setTimeout(()=>document.getElementById('su-nm').focus(),300);
-          showToast('Fill in your details to create account 👆','#f97316');
-        },1500);
-        return;
-      }
+    // Wrong credentials — check if any account exists for this number
+    const {data:profCheck}=await supa.from('profiles').select('id').eq('phone',phone).maybeSingle();
+    if(!profCheck){
+      // Truly no account
+      showToast('No account found! Switching to Sign up...','#f97316');
+      setTimeout(()=>{
+        swtab('su');
+        document.getElementById('su-cc').value=document.getElementById('si-cc').value;
+        document.getElementById('su-ph').value=ph;
+        setTimeout(()=>document.getElementById('su-nm').focus(),300);
+        showToast('Fill in your details to create account 👆','#f97316');
+      },1500);
+    } else {
+      // Account exists but wrong code
+      showToast('Wrong personal code ❌','#ef4444');
+      shake('si-cd');
     }
-    showToast('Wrong personal code ❌','#ef4444');
-    shake('si-cd');
     return;
   }
 
-  const {data:profile}=await supa.from('profiles').select('*').eq('id',data.user.id).single();
+  // Signed in successfully — load profile
+  const {data:profile}=await supa.from('profiles').select('*').eq('id',data.user.id).maybeSingle();
+  if(!profile){
+    // Auth exists but no profile — unusual, handle gracefully
+    showToast('Account incomplete. Please sign up again.','#f97316');
+    swtab('su');
+    document.getElementById('su-ph').value=ph;
+    return;
+  }
   U={id:data.user.id,name:profile.full_name,phone:profile.phone,dob:profile.dob,yapId:profile.yap_id,dpColor:profile.dp_color||'#f97316',dpImg:profile.dp_url||null};
+  showToast('Welcome back, '+profile.full_name+'! ✅');
   await enterApp();
 }
 
@@ -612,15 +616,55 @@ async function doSU(){
   const yapId=genYapId();
 
   showToast('Creating account...','#333');
-  const {data,error}=await supa.auth.signUp({email:fakeEmail,password:cd});
-  if(error){showToast('Account already exists. Try sign in ❌','#ef4444');return;}
 
-  await supa.from('profiles').insert({
-    id:data.user.id, yap_id:yapId, full_name:nm,
+  // Step 1: Try to sign up
+  const {data:signUpData, error:signUpErr}=await supa.auth.signUp({email:fakeEmail,password:cd});
+
+  let userId=null;
+
+  if(signUpErr || !signUpData?.user){
+    // Auth account may already exist — try signing in with the given code
+    const {data:siData,error:siErr}=await supa.auth.signInWithPassword({email:fakeEmail,password:cd});
+    if(siErr){
+      // Account exists but wrong personal code
+      showToast('Number already registered! Go to Sign in 👆','#ef4444');
+      setTimeout(()=>{
+        swtab('si');
+        document.getElementById('si-cc').value=document.getElementById('su-cc').value;
+        document.getElementById('si-ph').value=ph;
+        setTimeout(()=>document.getElementById('si-cd').focus(),300);
+        showToast('Enter your personal code to sign in','#f97316');
+      },1800);
+      return;
+    }
+    userId=siData.user.id;
+  } else {
+    userId=signUpData.user.id;
+  }
+
+  // Step 2: Check if profile already exists
+  const {data:existing}=await supa.from('profiles').select('id,full_name').eq('id',userId).maybeSingle();
+  if(existing){
+    // Profile exists — just log them in
+    const {data:prof}=await supa.from('profiles').select('*').eq('id',userId).single();
+    U={id:userId,name:prof.full_name,phone:prof.phone,dob:prof.dob,yapId:prof.yap_id,dpColor:prof.dp_color||'#f97316',dpImg:prof.dp_url||null};
+    showToast('Welcome back, '+prof.full_name+'! ✅');
+    await enterApp();
+    return;
+  }
+
+  // Step 3: Create profile
+  const {error:profErr}=await supa.from('profiles').insert({
+    id:userId, yap_id:yapId, full_name:nm,
     phone:phone, dob:db, dp_color:'#f97316', dp_url:null
   });
-
-  U={id:data.user.id,name:nm,phone:phone,dob:db,yapId:yapId,dpColor:'#f97316',dpImg:null};
+  if(profErr){
+    showToast('Error saving profile. Try again ❌','#ef4444');
+    console.error(profErr);
+    return;
+  }
+  U={id:userId,name:nm,phone:phone,dob:db,yapId:yapId,dpColor:'#f97316',dpImg:null};
+  showToast('Welcome to Yap!, '+nm+'! 🎉');
   await enterApp();
 }
 
