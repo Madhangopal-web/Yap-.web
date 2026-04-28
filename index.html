@@ -8,6 +8,8 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23f97316'/><path d='M20 25 C20 20 24 16 29 16 L71 16 C76 16 80 20 80 25 L80 58 C80 63 76 67 71 67 L38 67 L25 80 L25 67 L29 67 C24 67 20 63 20 58 Z' fill='black'/></svg>"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const SUPA_URL = 'https://jcmwinzrvqdqdgnmkzoo.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjbXdpbnpydnFkcWRnbm1rem9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4Mzc5NDIsImV4cCI6MjA5MjQxMzk0Mn0.oz54LWLw6sB4hOw4916IdlPk6ISFgcO1rawFtpjulvc';
@@ -456,9 +458,20 @@ select.inp{cursor:pointer}
       <input class="inp" type="text" placeholder="ABC-12345" id="ayid" style="width:100%;"/>
     </div>
     <div id="mpqr" class="mpanel">
-      <div class="scan-a" onclick="simScan()">
-        <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h.01M14 17h3M17 14v3M20 20h.01"/></svg>
-        <p>Tap to simulate QR scan</p><span>Camera access required on real device</span>
+      <div id="qr-scanner-box" style="border-radius:14px;overflow:hidden;background:#000;"></div>
+      <div id="qr-start-wrap" style="text-align:center;padding:20px 0;">
+        <div style="width:60px;height:60px;border-radius:16px;background:var(--orange-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+          <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="var(--orange)" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h.01M14 17h3M17 14v3M20 20h.01"/></svg>
+        </div>
+        <p style="font-size:14px;color:var(--text2);margin-bottom:6px;">Scan friend's QR code</p>
+        <span style="font-size:12px;color:var(--text3);">Point camera at their profile QR</span>
+        <br/><br/>
+        <button class="btnp" style="width:100%;border-radius:50px;" onclick="startQRScan()">
+          📷 Start Camera
+        </button>
+      </div>
+      <div id="qr-stop-wrap" style="display:none;text-align:center;padding:10px 0 0;">
+        <button class="btng" style="width:100%;" onclick="stopQRScan()">Stop Camera</button>
       </div>
     </div>
     <div class="macts">
@@ -910,24 +923,11 @@ function startGlobalSubscription(){
       const senderId=m.sender_id;
 
       // ── AUTO ADD CONTACT ──
-      // If sender is not in contacts yet, fetch their profile and add them
       const alreadyContact=contacts.find(c=>c.id===senderId);
       if(!alreadyContact){
-        // Fetch sender profile
         const {data:senderProfile}=await supa.from('profiles').select('*').eq('id',senderId).maybeSingle();
         if(senderProfile){
-          // Add to contacts table in DB
-          await supa.from('contacts').insert({user_id:U.id,contact_id:senderId}).throwOnError().catch(()=>{});
-          // Add to local contacts array
-          const newContact={
-            id:senderProfile.id,
-            name:senderProfile.full_name,
-            yapId:senderProfile.yap_id,
-            color:senderProfile.dp_color||'#f97316',
-            dpImg:senderProfile.dp_url||null,
-            online:false
-          };
-          contacts.push(newContact);
+          await autoAddContact(senderId);
           showToast('💬 '+senderProfile.full_name+' messaged you! Added to contacts','#f97316');
         }
       }
@@ -990,10 +990,35 @@ function renderMsgs(cid){
 }
 
 // ── SEND MESSAGE ──
+// ── AUTO ADD CONTACT HELPER ──
+async function autoAddContact(userId){
+  // Check if already in local contacts
+  if(contacts.find(c=>c.id===userId)) return;
+  // Fetch profile
+  const {data:prof}=await supa.from('profiles').select('*').eq('id',userId).maybeSingle();
+  if(!prof) return;
+  // Check if already saved in DB
+  const {data:exists}=await supa.from('contacts').select('id').eq('user_id',U.id).eq('contact_id',userId).maybeSingle();
+  if(!exists){
+    await supa.from('contacts').insert({user_id:U.id,contact_id:userId}).throwOnError().catch(()=>{});
+  }
+  // Add to local contacts array
+  const newContact={
+    id:prof.id, name:prof.full_name, yapId:prof.yap_id,
+    color:prof.dp_color||'#f97316', dpImg:prof.dp_url||null, online:false
+  };
+  contacts.push(newContact);
+  chats[prof.id]=chats[prof.id]||[];
+  renderList();
+}
+
 async function sendMsg(){
   const inp=document.getElementById('minp');const text=inp.value.trim();
   if(!text||!actCid)return;
   inp.value='';inp.style.height='46px';
+
+  // Auto-add receiver to your contacts if not already there
+  await autoAddContact(actCid);
 
   const msg={sender_id:U.id,receiver_id:actCid,content:text,type:'text',file_url:null};
   // Optimistic UI
@@ -1004,7 +1029,6 @@ async function sendMsg(){
 
   const {data,error}=await supa.from('messages').insert(msg).select().single();
   if(!error&&data){
-    // replace temp with real
     const idx=chats[actCid].findIndex(m=>m.id===tempMsg.id);
     if(idx>-1)chats[actCid][idx]=data;
     renderMsgs(actCid);
@@ -1120,21 +1144,106 @@ async function removeDP(){
 }
 
 // ── QR ──
-function renderQR(id){
-  const b=document.getElementById(id);if(!b)return;b.innerHTML='';
-  const cors=new Set();
-  [[0,0],[0,1],[0,2],[1,0],[2,0],[1,2],[2,1],[2,2],[0,6],[0,7],[0,8],[1,6],[2,6],[1,8],[2,7],[2,8],[6,0],[7,0],[8,0],[6,1],[6,2],[8,1],[7,2],[8,2]].forEach(([r,c])=>cors.add(r*9+c));
-  for(let r=0;r<9;r++)for(let c=0;c<9;c++){const e=document.createElement('div');e.className='qr-cell';e.style.background=cors.has(r*9+c)?'#111':Math.random()>.48?'#111':'#f0f0f0';b.appendChild(e);}
+function renderQR(containerId){
+  const box=document.getElementById(containerId);
+  if(!box)return;
+  box.innerHTML='';
+
+  // Get the YAP ID to encode
+  const yapId = containerId==='pqr' ? (U?U.yapId:'') :
+                containerId==='cp-qr' ? (document.getElementById('cp-yid')?.textContent||'') : '';
+
+  if(!yapId || yapId==='Copied!'){
+    // Fallback decorative QR
+    box.style.cssText='background:#fff;border-radius:16px;padding:14px;width:180px;height:180px;margin:16px auto 8px;display:grid;grid-template-columns:repeat(9,1fr);gap:3px;';
+    const cors=new Set();
+    [[0,0],[0,1],[0,2],[1,0],[2,0],[1,2],[2,1],[2,2],[0,6],[0,7],[0,8],[1,6],[2,6],[1,8],[2,7],[2,8],[6,0],[7,0],[8,0],[6,1],[6,2],[8,1],[7,2],[8,2]].forEach(([r,c])=>cors.add(r*9+c));
+    for(let r=0;r<9;r++)for(let c=0;c<9;c++){const e=document.createElement('div');e.className='qr-cell';e.style.background=cors.has(r*9+c)?'#111':Math.random()>.48?'#111':'#f0f0f0';box.appendChild(e);}
+    return;
+  }
+
+  // Use QRCode library if available
+  if(typeof QRCode !== 'undefined'){
+    box.style.cssText='width:180px;height:180px;margin:16px auto 8px;display:flex;align-items:center;justify-content:center;';
+    new QRCode(box,{
+      text: yapId,
+      width: 180,
+      height: 180,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } else {
+    // Fallback decorative
+    box.style.cssText='background:#fff;border-radius:16px;padding:14px;width:180px;height:180px;margin:16px auto 8px;display:grid;grid-template-columns:repeat(9,1fr);gap:3px;';
+    const cors=new Set();
+    [[0,0],[0,1],[0,2],[1,0],[2,0],[1,2],[2,1],[2,2],[0,6],[0,7],[0,8],[1,6],[2,6],[1,8],[2,7],[2,8],[6,0],[7,0],[8,0],[6,1],[6,2],[8,1],[7,2],[8,2]].forEach(([r,c])=>cors.add(r*9+c));
+    for(let r=0;r<9;r++)for(let c=0;c<9;c++){const e=document.createElement('div');e.className='qr-cell';e.style.background=cors.has(r*9+c)?'#111':Math.random()>.48?'#111':'#f0f0f0';box.appendChild(e);}
+  }
 }
 
 // ── ADD CONTACT ──
 function openAdd(){document.getElementById('madd').classList.remove('hidden');}
-function closeM(id){document.getElementById(id).classList.add('hidden');}
+function closeM(id){
+  document.getElementById(id).classList.add('hidden');
+  // Stop QR scanner if modal closed
+  if(id==='madd') stopQRScan();
+}
 function smtab(t){
   document.querySelectorAll('.mtab').forEach((e,i)=>e.classList.toggle('active',(i===0&&t==='id')||(i===1&&t==='qr')));
   document.getElementById('mpid').classList.toggle('active',t==='id');
   document.getElementById('mpqr').classList.toggle('active',t==='qr');
 }
+// ── QR SCANNER ──
+let html5QrScanner=null;
+
+function startQRScan(){
+  document.getElementById('qr-start-wrap').style.display='none';
+  document.getElementById('qr-stop-wrap').style.display='block';
+  document.getElementById('qr-scanner-box').innerHTML='';
+
+  html5QrScanner=new Html5Qrcode('qr-scanner-box');
+  html5QrScanner.start(
+    {facingMode:'environment'},
+    {fps:10, qrbox:{width:220,height:220}},
+    (decodedText)=>{
+      // QR scanned successfully
+      stopQRScan();
+      // Extract YAP ID from scanned text
+      const yapIdMatch=decodedText.match(/[A-Z]{3}-\d{5}/);
+      if(yapIdMatch){
+        document.getElementById('ayid').value=yapIdMatch[0];
+        smtab('id');
+        showToast('QR scanned! Tap Add contact ✅','#22c55e');
+      } else if(decodedText.length>3){
+        document.getElementById('ayid').value=decodedText.trim();
+        smtab('id');
+        showToast('QR scanned! ✅','#22c55e');
+      } else {
+        showToast('Invalid QR code ❌','#ef4444');
+      }
+    },
+    ()=>{}// ignore scan errors
+  ).catch(err=>{
+    document.getElementById('qr-start-wrap').style.display='block';
+    document.getElementById('qr-stop-wrap').style.display='none';
+    showToast('Camera access denied ❌','#ef4444');
+    console.error(err);
+  });
+}
+
+function stopQRScan(){
+  if(html5QrScanner){
+    html5QrScanner.stop().then(()=>{
+      html5QrScanner.clear();
+      html5QrScanner=null;
+      document.getElementById('qr-scanner-box').innerHTML='';
+      document.getElementById('qr-start-wrap').style.display='block';
+      document.getElementById('qr-stop-wrap').style.display='none';
+    }).catch(()=>{});
+  }
+}
+
 function simScan(){document.getElementById('ayid').value='YAP-12345';smtab('id');}
 async function addC(){
   const val=document.getElementById('ayid').value.trim();
