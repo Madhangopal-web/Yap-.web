@@ -696,7 +696,7 @@ body.rt-lite::after{backdrop-filter:none !important;-webkit-backdrop-filter:none
       <div class="c-topbar">
         <div class="c-back" onclick="backList()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></div>
         <div class="av" id="tav" style="width:40px;height:40px;font-size:15px;cursor:pointer;" onclick="viewContactProfile(actCid)"></div>
-        <div class="c-info" style="cursor:pointer;" onclick="viewContactProfile(actCid)"><div class="c-name" id="tnm"></div><div class="c-id" id="tid"></div></div>
+        <div class="c-info" style="cursor:pointer;" onclick="viewContactProfile(actCid)"><div class="c-name" id="tnm"></div><div id="c-status" style="font-size:11px;color:#22c55e;font-weight:600;"></div></div>
         <div class="c-acts">
           <div class="ibtn"><svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 5.18a2 2 0 011.99-2H8"/></svg></div>
           <div class="ibtn"><svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
@@ -1043,8 +1043,51 @@ async function enterApp(){
   showScr('screen-app');
   await loadContacts();
   startGlobalSubscription();
+  startPresence();
   requestNotificationPermission();
   if(window.innerWidth<=700)document.getElementById('ca').classList.add('h');
+}
+
+// ── PRESENCE (Online Status) ──
+let presenceChannel=null;
+function startPresence(){
+  if(presenceChannel) supa.removeChannel(presenceChannel);
+  presenceChannel=supa.channel('online-users',{
+    config:{presence:{key:U.id}}
+  });
+  presenceChannel
+    .on('presence',{event:'sync'},()=>{
+      const state=presenceChannel.presenceState();
+      // Update online status for all contacts
+      contacts.forEach(c=>{
+        c.online=!!state[c.id];
+      });
+      renderList();
+      // Update topbar if chat is open
+      if(actCid){
+        const c=contacts.find(x=>x.id===actCid);
+        if(c){
+          const statusEl=document.getElementById('c-status');
+          if(statusEl){
+            statusEl.textContent=c.online?'Online':'';
+            statusEl.style.color='#22c55e';
+          }
+        }
+      }
+    })
+    .on('presence',{event:'join'},({key})=>{
+      const c=contacts.find(x=>x.id===key);
+      if(c){c.online=true;renderList();}
+    })
+    .on('presence',{event:'leave'},({key})=>{
+      const c=contacts.find(x=>x.id===key);
+      if(c){c.online=false;renderList();}
+    })
+    .subscribe(async(status)=>{
+      if(status==='SUBSCRIBED'){
+        await presenceChannel.track({user_id:U.id,online_at:new Date().toISOString()});
+      }
+    });
 }
 
 // ── PUSH NOTIFICATIONS ──
@@ -1173,6 +1216,7 @@ function rtPanel(hideEl,showEl,dir){
 
 function goBack(){showScr('screen-app');}
 async function logout(){
+  if(presenceChannel){await presenceChannel.untrack();supa.removeChannel(presenceChannel);presenceChannel=null;}
   await supa.auth.signOut();
   if(realtimeSub){supa.removeChannel(realtimeSub);realtimeSub=null;}
   U=null;contacts=[];chats={};actCid=null;selectMode=false;selectedIds=new Set();
@@ -1295,6 +1339,8 @@ async function openChat(cid){
   else{tav.style.backgroundImage='none';tav.style.backgroundColor=c.color;tav.textContent=ini(c.name);}
   document.getElementById('tnm').textContent=c.name;
   document.getElementById('tid').textContent=c.yapId||c.id.slice(0,8);
+  const statusEl=document.getElementById('c-status');
+  if(statusEl){statusEl.textContent=c.online?'Online':'';}
   if(window.innerWidth<=700){rtPanel(document.getElementById('sb'),document.getElementById('ca'),'fwd');}
   await loadMessages(cid);
   subscribeMessages(cid);
