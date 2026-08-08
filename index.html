@@ -244,6 +244,320 @@ select.inp{cursor:pointer}
   .sidebar.h{display:none}
   .chat-area.h{display:none}
 }
+
+/* ══════════════════════════════════════════════
+   GLASSMORPHISM LAYER — frosted glass, blur, rounded
+   ══════════════════════════════════════════════ */
+[data-theme="dark"]{
+  --bg:#0a0a12; --bg2:rgba(255,255,255,0.06); --bg3:rgba(255,255,255,0.09); --bg4:rgba(255,255,255,0.14);
+  --text:#ffffff; --text2:rgba(255,255,255,0.66); --text3:rgba(255,255,255,0.38);
+  --border:rgba(255,255,255,0.14); --border-o:rgba(249,115,22,0.45);
+  --shadow:0 16px 48px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.10);
+  --bubble-in:rgba(255,255,255,0.10); --bubble-in-text:#fff;
+  --glass-tint:rgba(255,255,255,0.06);
+}
+[data-theme="light"]{
+  --bg:#eef1f7; --bg2:rgba(255,255,255,0.55); --bg3:rgba(255,255,255,0.42); --bg4:rgba(255,255,255,0.72);
+  --text:#111827; --text2:rgba(17,24,39,0.62); --text3:rgba(17,24,39,0.38);
+  --border:rgba(255,255,255,0.65); --border-o:rgba(249,115,22,0.45);
+  --shadow:0 16px 48px rgba(31,38,135,0.18), inset 0 1px 0 rgba(255,255,255,0.7);
+  --bubble-in:rgba(255,255,255,0.65); --bubble-in-text:#111827;
+  --glass-tint:rgba(255,255,255,0.5);
+}
+:root{ --radius:26px; --rsm:20px; --rmsg:22px; --blur:22px; }
+
+/* Ambient aurora background behind the glass */
+body{
+  background:var(--bg);
+  position:relative;
+}
+body::before{
+  content:'';position:fixed;inset:-20%;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(38% 34% at 18% 18%, rgba(249,115,22,.45), transparent 65%),
+    radial-gradient(34% 32% at 82% 12%, rgba(168,85,247,.32), transparent 65%),
+    radial-gradient(42% 38% at 72% 88%, rgba(56,189,248,.30), transparent 65%),
+    radial-gradient(36% 34% at 12% 84%, rgba(236,72,153,.26), transparent 65%);
+  filter:blur(40px);
+  animation:auroraDrift 24s ease-in-out infinite alternate;
+}
+body::after{
+  content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  backdrop-filter:blur(60px);
+}
+@keyframes auroraDrift{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(2%,-2%,0) scale(1.06)}
+  100%{transform:translate3d(-2%,2%,0) scale(1.03)}
+}
+
+/* Generic frosted surface */
+.auth-card,.psect,.yid-card,.modal,.modal-center,.srch,.ibtn,.bbtn,.c-back,.att-btn,
+.empty-ic,.dp-opt,.scan-a,.inp,.minp,.mtabs,.tabs,.sidebar,.c-topbar,.inp-row,.s-icon{
+  backdrop-filter:blur(var(--blur)) saturate(160%);
+}
+
+.auth-card{
+  background:var(--glass-tint);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:28px;
+}
+#screen-auth{background:transparent}
+.logo-icon-big{
+  border-radius:26px;
+  background:linear-gradient(145deg,#fb923c,#f97316 55%,#ea580c);
+  box-shadow:0 12px 40px rgba(249,115,22,.45), inset 0 1px 0 rgba(255,255,255,.45);
+}
+.app-name{text-shadow:0 6px 30px rgba(249,115,22,.35)}
+
+.tabs,.mtabs{background:var(--bg3);border:1px solid var(--border)}
+.tab.active,.mtab.active{
+  background:linear-gradient(145deg,#fb923c,#f97316);color:#000;
+  box-shadow:0 6px 18px rgba(249,115,22,.35), inset 0 1px 0 rgba(255,255,255,.4);
+}
+.inp,.minp{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rsm)}
+.inp:focus,.minp:focus{border-color:var(--orange);box-shadow:0 0 0 4px rgba(249,115,22,.16)}
+.btnp,.add-btn,.sbtn{
+  background:linear-gradient(145deg,#fb923c,#f97316 60%,#ea580c);
+  box-shadow:0 10px 30px rgba(249,115,22,.35), inset 0 1px 0 rgba(255,255,255,.4);
+}
+.btnp:hover,.add-btn:hover,.sbtn:hover{filter:brightness(1.06)}
+.add-btn{border-radius:var(--rsm)}
+.btng{background:var(--bg3);border:1px solid var(--border);backdrop-filter:blur(var(--blur))}
+
+/* Sidebar + translucent navbars */
+.sidebar{
+  background:var(--glass-tint);border-right:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+.s-top{position:sticky;top:0;z-index:5;background:transparent}
+.s-icon{border-radius:14px;background:linear-gradient(145deg,#fb923c,#f97316);box-shadow:0 6px 18px rgba(249,115,22,.4)}
+.ibtn,.bbtn,.c-back,.att-btn{background:var(--bg2);border:1px solid var(--border);border-radius:16px}
+.ibtn:hover,.bbtn:hover,.c-back:hover,.att-btn:hover{background:var(--bg4)}
+.srch{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rsm)}
+
+.ci{border-radius:18px;margin:2px 10px;padding:12px 12px;transition:background .18s,transform .18s}
+.ci:hover{background:var(--bg2);transform:translateX(2px)}
+.ci.active{background:linear-gradient(90deg,rgba(249,115,22,.28),rgba(249,115,22,.10));border:1px solid var(--border-o)}
+.ci.selected{background:rgba(249,115,22,.22);border:1px solid var(--border-o)}
+.av{box-shadow:0 6px 18px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.25)}
+.cbadge{background:linear-gradient(145deg,#fb923c,#f97316);box-shadow:0 4px 12px rgba(249,115,22,.4)}
+
+/* Chat area */
+.chat-area{background:transparent}
+.c-topbar{
+  background:var(--glass-tint);border-bottom:1px solid var(--border);
+  border-radius:0 0 var(--rsm) var(--rsm);position:relative;z-index:6;
+}
+.inp-row{
+  background:var(--glass-tint);border-top:1px solid var(--border);
+  border-radius:var(--rsm) var(--rsm) 0 0;
+}
+.mrow.out .bbl{
+  background:linear-gradient(145deg,rgba(251,146,60,.95),rgba(234,88,12,.95));
+  color:#000;border:1px solid rgba(255,255,255,.25);
+  box-shadow:0 8px 24px rgba(249,115,22,.28);
+  border-radius:var(--rmsg);border-bottom-right-radius:8px;
+  backdrop-filter:blur(10px);
+}
+.mrow.in .bbl{
+  background:var(--bubble-in);border:1px solid var(--border);
+  border-radius:var(--rmsg);border-bottom-left-radius:8px;
+  backdrop-filter:blur(14px) saturate(160%);
+  box-shadow:0 6px 20px rgba(0,0,0,.12);
+}
+.img-bbl{border-radius:20px;border:1px solid var(--border-o);box-shadow:var(--shadow)}
+.empty-ic{background:var(--bg2);border:1px solid var(--border);border-radius:24px}
+
+/* Profile */
+#screen-profile{background:transparent}
+.psect,.yid-card{background:var(--glass-tint);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.pav{box-shadow:0 0 50px rgba(249,115,22,.45), inset 0 1px 0 rgba(255,255,255,.35)}
+.yid-val{background:linear-gradient(145deg,#fb923c,#f97316);border-radius:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.qr-box{border-radius:22px;box-shadow:var(--shadow)}
+.toggle-switch{background:var(--bg3);border:1px solid var(--border);backdrop-filter:blur(10px)}
+.toggle-switch.on{background:linear-gradient(145deg,#fb923c,#f97316)}
+.sobt{border-radius:50px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.35);backdrop-filter:blur(10px)}
+
+/* Modals */
+.ov,.ov-center{background:rgba(8,8,16,.45);backdrop-filter:blur(14px) saturate(140%)}
+.modal{background:var(--glass-tint);border:1px solid var(--border);border-radius:32px 32px 0 0;box-shadow:var(--shadow)}
+.modal-center{background:var(--glass-tint);border:1px solid var(--border);border-radius:28px;box-shadow:var(--shadow)}
+.dp-opt{background:var(--bg2);border:1px solid var(--border);border-radius:20px}
+.dp-opt:hover{background:var(--bg4)}
+.dp-opt-icon{border-radius:14px;background:rgba(249,115,22,.18);backdrop-filter:blur(8px)}
+.scan-a{background:var(--bg2);border:1.5px dashed var(--border-o);border-radius:22px}
+.sel-bar{background:linear-gradient(90deg,rgba(251,146,60,.9),rgba(249,115,22,.9));backdrop-filter:blur(14px)}
+
+
+/* ══════════════════════════════════════════════
+   SLIDING ANIMATION LAYER
+   ══════════════════════════════════════════════ */
+@keyframes slideUpIn{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideDownIn{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideLeftIn{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideRightIn{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideSheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes bblInLeft{from{opacity:0;transform:translateX(-22px) translateY(6px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes bblInRight{from{opacity:0;transform:translateX(22px) translateY(6px) scale(.96)}to{opacity:1;transform:none}}
+
+/* Screen transitions */
+.screen.active{animation:slideUpIn .42s cubic-bezier(.22,1,.36,1) both}
+#screen-app.active{animation:fadeIn .3s ease both}
+#screen-profile.active{animation:slideLeftIn .38s cubic-bezier(.22,1,.36,1) both}
+
+/* Auth: logo + card slide in, tab panels slide */
+.auth-logo{animation:slideDownIn .5s cubic-bezier(.22,1,.36,1) both}
+.auth-card{animation:slideUpIn .55s .08s cubic-bezier(.22,1,.36,1) both}
+.panel.active{animation:slideLeftIn .3s cubic-bezier(.22,1,.36,1) both}
+.mpanel.active{animation:slideLeftIn .28s cubic-bezier(.22,1,.36,1) both}
+
+/* Sidebar + chat area slide in */
+.sidebar{animation:slideRightIn .45s cubic-bezier(.22,1,.36,1) both}
+.chat-area{animation:slideLeftIn .45s .06s cubic-bezier(.22,1,.36,1) both}
+.c-topbar{animation:slideDownIn .35s cubic-bezier(.22,1,.36,1) both}
+.inp-row{animation:slideUpIn .35s cubic-bezier(.22,1,.36,1) both}
+.empty{animation:slideUpIn .4s .1s cubic-bezier(.22,1,.36,1) both}
+
+/* Mobile: sliding between list and conversation */
+@media(max-width:700px){
+  .sidebar:not(.h){animation:slideRightIn .32s cubic-bezier(.22,1,.36,1) both}
+  .chat-area:not(.h){animation:slideLeftIn .32s cubic-bezier(.22,1,.36,1) both}
+}
+
+/* Chat list items slide in with a stagger */
+.ci{animation:slideRightIn .38s cubic-bezier(.22,1,.36,1) both}
+.ci:nth-child(1){animation-delay:.02s}
+.ci:nth-child(2){animation-delay:.05s}
+.ci:nth-child(3){animation-delay:.08s}
+.ci:nth-child(4){animation-delay:.11s}
+.ci:nth-child(5){animation-delay:.14s}
+.ci:nth-child(6){animation-delay:.17s}
+.ci:nth-child(7){animation-delay:.2s}
+.ci:nth-child(8){animation-delay:.23s}
+.ci:nth-child(n+9){animation-delay:.26s}
+
+/* Message bubbles slide in from their own side */
+.mrow.in{animation:bblInLeft .34s cubic-bezier(.22,1,.36,1) both}
+.mrow.out{animation:bblInRight .34s cubic-bezier(.22,1,.36,1) both}
+.dsep{animation:slideUpIn .3s cubic-bezier(.22,1,.36,1) both}
+
+/* Profile rows slide in */
+.psect,.yid-card{animation:slideUpIn .42s cubic-bezier(.22,1,.36,1) both}
+.psect:nth-of-type(2){animation-delay:.06s}
+.psect:nth-of-type(3){animation-delay:.12s}
+
+/* Modals: bottom sheet slides up, centre modal slides in */
+.ov:not(.hidden) .modal{animation:slideSheetUp .38s cubic-bezier(.22,1,.36,1) both}
+.ov-center:not(.hidden) .modal-center{animation:slideUpIn .3s cubic-bezier(.22,1,.36,1) both}
+.dp-opt{animation:slideRightIn .32s cubic-bezier(.22,1,.36,1) both}
+.dp-opt:nth-child(2){animation-delay:.06s}
+.dp-opt:nth-child(3){animation-delay:.12s}
+
+/* Selection bar slides down into view */
+.sel-bar.active{animation:slideDownIn .28s cubic-bezier(.22,1,.36,1) both}
+
+/* Sliding tab pill + button press feedback */
+.tab,.mtab{transition:background .25s ease,color .25s ease,transform .25s cubic-bezier(.22,1,.36,1)}
+.tab.active,.mtab.active{transform:translateY(-1px)}
+.btnp,.add-btn,.sbtn,.ibtn,.dp-opt{transition:transform .22s cubic-bezier(.22,1,.36,1),background .2s,filter .2s}
+.ibtn:hover{transform:translateY(-2px)}
+.sbtn:active,.btnp:active{transform:scale(.96)}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+
+
+/* ══════════════════════════════════════════════
+   ROUTE TRANSITIONS — glass-aware fade + slide
+   ══════════════════════════════════════════════ */
+/* Compositor-only keyframes: opacity + transform (no per-frame filter blur) */
+@keyframes rtInFwd{from{opacity:0;transform:translate3d(4%,0,0) scale(.985)}to{opacity:1;transform:none}}
+@keyframes rtOutFwd{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(-3%,0,0) scale(.99)}}
+@keyframes rtInBack{from{opacity:0;transform:translate3d(-4%,0,0) scale(.985)}to{opacity:1;transform:none}}
+@keyframes rtOutBack{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(3%,0,0) scale(.99)}}
+@keyframes rtInUp{from{opacity:0;transform:translate3d(0,3%,0) scale(.985)}to{opacity:1;transform:none}}
+@keyframes rtVeil{from{opacity:0}60%{opacity:1}to{opacity:0}}
+
+/* keep the outgoing page painted while it animates away */
+.screen.rt-exit{display:flex !important;pointer-events:none}
+.screen.rt-exit-fwd{animation:rtOutFwd .34s cubic-bezier(.4,0,.2,1) both}
+.screen.rt-exit-back{animation:rtOutBack .34s cubic-bezier(.4,0,.2,1) both}
+/* incoming page — overrides the generic .screen.active animation */
+.screen.active.rt-enter-fwd{animation:rtInFwd .46s cubic-bezier(.22,1,.36,1) both}
+.screen.active.rt-enter-back{animation:rtInBack .46s cubic-bezier(.22,1,.36,1) both}
+.screen.active.rt-enter-up{animation:rtInUp .46s cubic-bezier(.22,1,.36,1) both}
+/* stack the two pages during the crossfade */
+body.rt-busy .screen.active,body.rt-busy .screen.rt-exit{position:fixed;inset:0;z-index:1}
+body.rt-busy .screen.rt-exit{z-index:0}
+body.rt-busy{overflow:hidden}
+
+/* frosted veil — pre-baked gradient, no backdrop-filter (one less full-screen blur pass) */
+.rt-veil{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:0;
+  will-change:opacity;contain:strict;
+  background:linear-gradient(120deg,rgba(249,115,22,.14),rgba(168,85,247,.12) 50%,rgba(56,189,248,.14)),
+             rgba(10,10,20,.16);}
+.rt-veil.on{animation:rtVeil .5s ease both}
+
+/* Mobile panel routing: list <-> conversation */
+@keyframes panOutLeft{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(-14%,0,0)}}
+@keyframes panOutRight{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(14%,0,0)}}
+.pan-out-left{animation:panOutLeft .28s cubic-bezier(.4,0,.2,1) both}
+.pan-out-right{animation:panOutRight .28s cubic-bezier(.4,0,.2,1) both}
+
+@media(prefers-reduced-motion:reduce){
+  .rt-veil.on,.screen.rt-exit-fwd,.screen.rt-exit-back,
+  .screen.active.rt-enter-fwd,.screen.active.rt-enter-back,.screen.active.rt-enter-up{animation-duration:.01ms !important}
+}
+
+/* ══════════════════════════════════════════════
+   TRANSITION PERFORMANCE — collapse blur layers
+   while a route cross-fade is in flight
+   ══════════════════════════════════════════════ */
+
+/* 1. Suspend every nested backdrop-filter surface during the swap.
+      Two stacked screens x ~20 frosted panels = ~40 blur passes per frame;
+      this drops them to zero and substitutes a cheap flat tint. */
+body.rt-busy .auth-card,body.rt-busy .psect,body.rt-busy .yid-card,
+body.rt-busy .modal,body.rt-busy .modal-center,body.rt-busy .srch,
+body.rt-busy .ibtn,body.rt-busy .bbtn,body.rt-busy .c-back,body.rt-busy .att-btn,
+body.rt-busy .empty-ic,body.rt-busy .dp-opt,body.rt-busy .scan-a,body.rt-busy .inp,
+body.rt-busy .minp,body.rt-busy .mtabs,body.rt-busy .tabs,body.rt-busy .sidebar,
+body.rt-busy .c-topbar,body.rt-busy .inp-row,body.rt-busy .s-icon,
+body.rt-busy .btng,body.rt-busy .toggle-switch,body.rt-busy .sobt,
+body.rt-busy .dp-opt-icon,body.rt-busy .sel-bar,
+body.rt-busy .ov,body.rt-busy .ov-center{
+  backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+}
+
+/* 2. Drop the full-viewport backdrop pass behind the aurora and freeze its
+      animation — it is invisible under the veil anyway. */
+body.rt-busy::after{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
+body.rt-busy::before{animation-play-state:paused;filter:blur(28px)}
+
+/* 3. Promote only the two animating screens; isolate their paint so the
+      compositor can reuse cached textures instead of re-rasterizing. */
+body.rt-busy .screen.active,body.rt-busy .screen.rt-exit{
+  will-change:opacity,transform;
+  contain:layout paint;
+  backface-visibility:hidden;
+  transform:translateZ(0);
+}
+/* 4. Kill hover/press transitions mid-flight so they can't queue extra work. */
+body.rt-busy *{transition:none !important}
+
+/* 5. Mobile panel swaps get the same blur suspension (lighter: no re-stacking). */
+body.rt-lite .sidebar,body.rt-lite .c-topbar,body.rt-lite .inp-row,body.rt-lite .srch,
+body.rt-lite .tabs,body.rt-lite .mtabs,body.rt-lite .ibtn,body.rt-lite .c-back,
+body.rt-lite .att-btn,body.rt-lite .minp,body.rt-lite .empty-ic{
+  backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+}
+body.rt-lite::after{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
+.pan-out-left,.pan-out-right{will-change:opacity,transform;backface-visibility:hidden}
+
+/* 6. Release the promotion hints once the transition settles. */
+.screen:not(.rt-exit):not(.rt-enter-fwd):not(.rt-enter-back):not(.rt-enter-up){will-change:auto}
+
 </style>
 </head>
 <body>
@@ -766,7 +1080,56 @@ async function checkSession(){
 checkSession();
 
 // ── SCREENS ──
-function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+/* ── ROUTE TRANSITIONS ── */
+const RT_ORDER=['screen-auth','screen-app','screen-profile'];
+const RT_MS=340;
+let rtBusy=false;
+function rtVeil(){
+  let v=document.querySelector('.rt-veil');
+  if(!v){v=document.createElement('div');v.className='rt-veil';document.body.appendChild(v);}
+  v.classList.remove('on');void v.offsetWidth;v.classList.add('on');
+  setTimeout(()=>v.classList.remove('on'),520);
+}
+function showScr(id){
+  const next=document.getElementById(id);
+  if(!next)return;
+  const cur=document.querySelector('.screen.active');
+  if(!cur||cur===next||rtBusy){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    next.classList.add('active','rt-enter-up');
+    setTimeout(()=>next.classList.remove('rt-enter-up'),500);
+    return;
+  }
+  rtBusy=true;
+  const fwd=RT_ORDER.indexOf(id)>=RT_ORDER.indexOf(cur.id);
+  document.body.classList.add('rt-busy');
+  rtVeil();
+  cur.classList.remove('active');
+  cur.classList.add('rt-exit',fwd?'rt-exit-fwd':'rt-exit-back');
+  next.classList.add('active',fwd?'rt-enter-fwd':'rt-enter-back');
+  // force one style/layout flush now so the blur-suspension repaint happens
+  // before the animations start, not on their first frame
+  void document.body.offsetHeight;
+  setTimeout(()=>{
+    cur.classList.remove('rt-exit','rt-exit-fwd','rt-exit-back');
+    next.classList.remove('rt-enter-fwd','rt-enter-back');
+    document.body.classList.remove('rt-busy');
+    rtBusy=false;
+  },RT_MS+130);
+}
+function rtPanel(hideEl,showEl,dir){
+  if(!hideEl||!showEl){return;}
+  const outCls=dir==='fwd'?'pan-out-left':'pan-out-right';
+  document.body.classList.add('rt-lite');
+  hideEl.classList.add(outCls);
+  setTimeout(()=>{
+    hideEl.classList.remove(outCls);
+    document.body.classList.remove('rt-lite');
+    hideEl.classList.add('h');
+    showEl.classList.remove('h');
+  },260);
+}
+
 function goBack(){showScr('screen-app');}
 async function logout(){
   await supa.auth.signOut();
@@ -775,7 +1138,7 @@ async function logout(){
   showScr('screen-auth');
   showToast('Signed out ✅');
 }
-function backList(){if(window.innerWidth<=700){document.getElementById('sb').classList.remove('h');document.getElementById('ca').classList.add('h');}}
+function backList(){if(window.innerWidth<=700){rtPanel(document.getElementById('ca'),document.getElementById('sb'),'back');}}
 
 // ── LOAD CONTACTS ──
 async function loadContacts(){
@@ -891,7 +1254,7 @@ async function openChat(cid){
   else{tav.style.backgroundImage='none';tav.style.backgroundColor=c.color;tav.textContent=ini(c.name);}
   document.getElementById('tnm').textContent=c.name;
   document.getElementById('tid').textContent=c.yapId||c.id.slice(0,8);
-  if(window.innerWidth<=700){document.getElementById('sb').classList.add('h');document.getElementById('ca').classList.remove('h');}
+  if(window.innerWidth<=700){rtPanel(document.getElementById('sb'),document.getElementById('ca'),'fwd');}
   await loadMessages(cid);
   subscribeMessages(cid);
   renderList();
