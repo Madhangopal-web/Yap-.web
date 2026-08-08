@@ -917,8 +917,11 @@ function shake(id){const e=document.getElementById(id);if(!e)return;e.style.bord
 
 function showToast(msg, color='#ff8f00'){
   let t=document.getElementById('toast');
-  if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);padding:12px 20px;border-radius:50px;font-size:14px;font-weight:600;z-index:9999;transition:opacity .3s;color:#000;';document.body.appendChild(t);}
-  t.style.background=color;t.textContent=msg;t.style.opacity='1';
+  if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:50px;font-size:14px;font-weight:600;z-index:9999;transition:opacity .3s;color:#fff;font-family:"Space Grotesk",sans-serif;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.15);';document.body.appendChild(t);}
+  t.style.background=color;
+  // white text for dark colors, dark text for light colors
+  t.style.color=(color==='#ff8f00'||color==='#22c55e')?'#3D2000':'#fff';
+  t.textContent=msg;t.style.opacity='1';
   setTimeout(()=>t.style.opacity='0',2500);
 }
 
@@ -932,7 +935,7 @@ async function doSI(){
   const phone=cc+ph;
   const fakeEmail=phone.replace(/[^\d]/g,'')+'@yap.app';
 
-  showToast('Signing in...','#333');
+  showToast('Signing in...','#ff8f00');
   const {data,error}=await supa.auth.signInWithPassword({email:fakeEmail,password:cd});
 
   if(error){
@@ -985,7 +988,7 @@ async function doSU(){
   const fakeEmail=phone.replace(/[^\d]/g,'')+'@yap.app';
   const yapId=genYapId();
 
-  showToast('Creating account...','#333');
+  showToast('Creating account...','#ff8f00');
 
   // Step 1: Try to sign up
   const {data:signUpData, error:signUpErr}=await supa.auth.signUp({email:fakeEmail,password:cd});
@@ -1274,7 +1277,7 @@ async function deleteSelected(){
   if(selectedIds.size===0) return;
   const names=contacts.filter(c=>selectedIds.has(c.id)).map(c=>c.name).join(', ');
   if(!confirm(`Remove ${names} from contacts?`)) return;
-  showToast('Deleting...','#333');
+  showToast('Deleting...','#ff8f00');
   for(const cid of selectedIds){
     await supa.from('contacts').delete().eq('user_id',U.id).eq('contact_id',cid);
     contacts=contacts.filter(c=>c.id!==cid);
@@ -1498,7 +1501,7 @@ function agrow(el){el.style.height='46px';el.style.height=Math.min(el.scrollHeig
 // ── FILE UPLOAD ──
 async function handleFile(e){
   const f=e.target.files[0];if(!f||!actCid)return;
-  showToast('Uploading...','#333');
+  showToast('Uploading...','#ff8f00');
   const path=`${U.id}/${Date.now()}-${f.name}`;
   const {error:upErr}=await supa.storage.from('yap-files').upload(path,f);
   if(upErr){showToast('Upload failed ❌','#ef4444');return;}
@@ -1582,7 +1585,7 @@ function showColorPicker(){
 }
 async function handleDP(e){
   const f=e.target.files[0];if(!f)return;
-  showToast('Uploading photo...','#333');
+  showToast('Uploading photo...','#ff8f00');
   const path=`avatars/${U.id}/${Date.now()}-${f.name}`;
   const {error}=await supa.storage.from('yap-files').upload(path,f,{upsert:true});
   if(error){showToast('Upload failed ❌','#ef4444');return;}
@@ -1706,7 +1709,7 @@ function simScan(){document.getElementById('ayid').value='YAP-12345';smtab('id')
 async function addC(){
   const val=document.getElementById('ayid').value.trim();
   if(!val){shake('ayid');return;}
-  showToast('Searching...','#333');
+  showToast('Searching...','#ff8f00');
   // Find user by YAP ID
   const {data:found}=await supa.from('profiles').select('*').eq('yap_id',val).single();
   if(!found){showToast('YAP ID not found ❌','#ef4444');return;}
