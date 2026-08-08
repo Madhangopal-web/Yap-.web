@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"/>
 <title>Yap!</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23A73E18'/><path d='M20 25 C20 20 24 16 29 16 L71 16 C76 16 80 20 80 25 L80 58 C80 63 76 67 71 67 L38 67 L25 80 L25 67 L29 67 C24 67 20 63 20 58 Z' fill='black'/></svg>"/>
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23A73E18'/><path d='M20 25 C20 20 24 16 29 16 L71 16 C76 16 80 20 80 25 L80 58 C80 63 76 67 71 67 L38 67 L25 80 L25 67 L29 67 C24 67 20 63 20 58 Z' fill='black'/></svg>"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23ff8f00'/><path d='M20 25 C20 20 24 16 29 16 L71 16 C76 16 80 20 80 25 L80 58 C80 63 76 67 71 67 L38 67 L25 80 L25 67 L29 67 C24 67 20 63 20 58 Z' fill='black'/></svg>"/>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23ff8f00'/><path d='M20 25 C20 20 24 16 29 16 L71 16 C76 16 80 20 80 25 L80 58 C80 63 76 67 71 67 L38 67 L25 80 L25 67 L29 67 C24 67 20 63 20 58 Z' fill='black'/></svg>"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -18,22 +18,22 @@ const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
 <style>
 /* ── THEME VARIABLES ── */
 [data-theme="dark"] {
-  --bg:#AB1509; --bg2:#AB1509; --bg3:#AB1509; --bg4:#AB1509;
-  --text:#f0ede8; --text2:#a89880; --text3:#6b5f54;
-  --border:rgba(255,255,255,0.08); --border-o:rgba(167,62,24,0.4);
-  --shadow:0 8px 32px rgba(0,0,0,0.6);
-  --bubble-in:#3d4449; --bubble-in-text:#f0ede8;
+  --bg:#fdf9e0; --bg2:#f7f2d0; --bg3:#f0e9bc; --bg4:#e8dfa8;
+  --text:#3D2000; --text2:#9C6A00; --text3:#C49540;
+  --border:rgba(180,130,0,0.15); --border-o:rgba(255,143,0,0.35);
+  --shadow:0 8px 32px rgba(180,130,0,0.15);
+  --bubble-in:#f0e9bc; --bubble-in-text:#3D2000;
 }
 [data-theme="light"] {
-  --bg:#353A3E; --bg2:#3d4449; --bg3:#454c52; --bg4:#4d5560;
-  --text:#f0ede8; --text2:#c4b8a8; --text3:#8a7d70;
-  --border:rgba(255,255,255,0.08); --border-o:rgba(167,62,24,0.5);
+  --bg:#2a2e32; --bg2:#31373c; --bg3:#383e44; --bg4:#404850;
+  --text:#f0ede8; --text2:#a89880; --text3:#6b5f54;
+  --border:rgba(255,255,255,0.08); --border-o:rgba(255,143,0,0.5);
   --shadow:0 4px 20px rgba(0,0,0,0.1);
-  --bubble-in:#454c52; --bubble-in-text:#f0ede8;
+  --bubble-in:#383e44; --bubble-in-text:#f0ede8;
 }
 :root {
-  --orange:#fff7d3; --orange2:#fff7d3;
-  --orange-soft:rgba(167,62,24,0.15);
+  --orange:#ff8f00; --orange2:#e07d00;
+  --orange-soft:rgba(255,143,0,0.15);
   --radius:20px; --rsm:14px; --rmsg:18px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -73,7 +73,7 @@ body::before{
 
 /* ── AUTH ── */
 #screen-auth{flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow-y:auto;
-  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(167,62,24,0.2) 0%,transparent 60%),var(--bg)}
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(255,143,0,0.2) 0%,transparent 60%),var(--bg)}
 .auth-logo{display:flex;flex-direction:column;align-items:center;margin-bottom:32px;animation:fadeUp .5s ease}
 .logo-icon-big{width:78px;height:78px;border-radius:22px;background:var(--orange);display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 8px 32px rgba(249,115,22,.4)}
 .logo-icon-big svg{width:40px;height:40px}
@@ -345,20 +345,20 @@ body::after{
 #screen-auth{background:transparent}
 .logo-icon-big{
   border-radius:26px;
-  background:linear-gradient(145deg,#c45520,#A73E18 55%,#8B3214);
+  background:linear-gradient(145deg,#ff9f00,#ff8f00 55%,#e07d00);
   box-shadow:0 12px 40px rgba(249,115,22,.45), inset 0 1px 0 rgba(255,255,255,.45);
 }
 .app-name{text-shadow:0 6px 30px rgba(249,115,22,.35)}
 
 .tabs,.mtabs{background:var(--bg3);border:1px solid var(--border)}
 .tab.active,.mtab.active{
-  background:linear-gradient(145deg,#c45520,#A73E18);color:#000;
+  background:linear-gradient(145deg,#ff9f00,#ff8f00);color:#000;
   box-shadow:0 6px 18px rgba(249,115,22,.35), inset 0 1px 0 rgba(255,255,255,.4);
 }
 .inp,.minp{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rsm)}
 .inp:focus,.minp:focus{border-color:var(--orange);box-shadow:0 0 0 4px rgba(249,115,22,.16)}
 .btnp,.add-btn,.sbtn{
-  background:linear-gradient(145deg,#c45520,#A73E18 60%,#8B3214);
+  background:linear-gradient(145deg,#ff9f00,#ff8f00 60%,#e07d00);
   box-shadow:0 10px 30px rgba(249,115,22,.35), inset 0 1px 0 rgba(255,255,255,.4);
 }
 .btnp:hover,.add-btn:hover,.sbtn:hover{filter:brightness(1.06)}
@@ -371,7 +371,7 @@ body::after{
   box-shadow:var(--shadow);
 }
 .s-top{position:sticky;top:0;z-index:5;background:transparent}
-.s-icon{border-radius:14px;background:linear-gradient(145deg,#c45520,#A73E18);box-shadow:0 6px 18px rgba(249,115,22,.4)}
+.s-icon{border-radius:14px;background:linear-gradient(145deg,#ff9f00,#ff8f00);box-shadow:0 6px 18px rgba(249,115,22,.4)}
 .ibtn,.bbtn,.c-back,.att-btn{background:var(--bg2);border:1px solid var(--border);border-radius:16px}
 .ibtn:hover,.bbtn:hover,.c-back:hover,.att-btn:hover{background:var(--bg4)}
 .srch{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rsm)}
@@ -381,7 +381,7 @@ body::after{
 .ci.active{background:linear-gradient(90deg,rgba(249,115,22,.28),rgba(249,115,22,.10));border:1px solid var(--border-o)}
 .ci.selected{background:rgba(249,115,22,.22);border:1px solid var(--border-o)}
 .av{box-shadow:0 6px 18px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.25)}
-.cbadge{background:linear-gradient(145deg,#c45520,#A73E18);box-shadow:0 4px 12px rgba(249,115,22,.4)}
+.cbadge{background:linear-gradient(145deg,#ff9f00,#ff8f00);box-shadow:0 4px 12px rgba(249,115,22,.4)}
 
 /* Chat area */
 .chat-area{background:transparent}
@@ -413,10 +413,10 @@ body::after{
 #screen-profile{background:transparent}
 .psect,.yid-card{background:var(--glass-tint);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
 .pav{box-shadow:0 0 50px rgba(249,115,22,.45), inset 0 1px 0 rgba(255,255,255,.35)}
-.yid-val{background:linear-gradient(145deg,#c45520,#A73E18);border-radius:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.yid-val{background:linear-gradient(145deg,#ff9f00,#ff8f00);border-radius:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
 .qr-box{border-radius:22px;box-shadow:var(--shadow)}
 .toggle-switch{background:var(--bg3);border:1px solid var(--border);backdrop-filter:blur(10px)}
-.toggle-switch.on{background:linear-gradient(145deg,#c45520,#A73E18)}
+.toggle-switch.on{background:linear-gradient(145deg,#ff9f00,#ff8f00)}
 .sobt{border-radius:50px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.35);backdrop-filter:blur(10px)}
 
 /* Modals */
@@ -885,8 +885,8 @@ body.rt-lite::after{backdrop-filter:none !important;-webkit-backdrop-filter:none
 <script>
 // ── STATE ──
 let U=null, contacts=[], chats={}, actCid=null, editField=null, realtimeSub=null, unreadCounts={};
-const COLS=['#A73E18','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ec4899','#ef4444','#14b8a6'];
-const AVATAR_COLORS=['#A73E18','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ec4899','#ef4444','#14b8a6','#3b82f6','#a855f7','#f43f5e','#84cc16'];
+const COLS=['#ff8f00','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ec4899','#ef4444','#14b8a6'];
+const AVATAR_COLORS=['#ff8f00','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ec4899','#ef4444','#14b8a6','#3b82f6','#a855f7','#f43f5e','#84cc16'];
 
 function genYapId(){ return ['YAP','YWK','FDQ','ZXA','MNB'][Math.floor(Math.random()*5)]+'-'+Math.floor(10000+Math.random()*89999); }
 const ini=n=>n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
@@ -895,17 +895,17 @@ const fmtD=v=>{if(!v)return'—';const d=new Date(v);return d.toLocaleDateString
 const relT=d=>(new Date()-new Date(d))<86400000?fmt(d):'Yesterday';
 
 // ── THEME ──
-let isDark=true;
+let isDark=false;
 function toggleTheme(){
   isDark=!isDark;
   document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
-  ['theme-icon-moon','profile-moon'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=isDark?'block':'none'});
-  ['theme-icon-sun','profile-sun'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=isDark?'none':'block'});
+  ['theme-icon-moon','profile-moon'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=isDark?'none':'block'});
+  ['theme-icon-sun','profile-sun'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=isDark?'block':'none'});
   const t=document.getElementById('dark-toggle');
   if(t)t.classList.toggle('on',isDark);
 }
 const _dt=document.getElementById('dark-toggle');
-if(_dt)_dt.classList.add('on');
+if(_dt)_dt.classList.remove('on');
 
 // ── AUTH TABS ──
 function swtab(t){
@@ -915,7 +915,7 @@ function swtab(t){
 }
 function shake(id){const e=document.getElementById(id);if(!e)return;e.style.borderColor='#ef4444';e.style.animation='shake .3s ease';e.focus();setTimeout(()=>{e.style.borderColor='';e.style.animation=''},900)}
 
-function showToast(msg, color='#A73E18'){
+function showToast(msg, color='#ff8f00'){
   let t=document.getElementById('toast');
   if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);padding:12px 20px;border-radius:50px;font-size:14px;font-weight:600;z-index:9999;transition:opacity .3s;color:#000;';document.body.appendChild(t);}
   t.style.background=color;t.textContent=msg;t.style.opacity='1';
@@ -940,13 +940,13 @@ async function doSI(){
     const {data:profCheck}=await supa.from('profiles').select('id').eq('phone',phone).maybeSingle();
     if(!profCheck){
       // Truly no account
-      showToast('No account found! Switching to Sign up...','#A73E18');
+      showToast('No account found! Switching to Sign up...','#ff8f00');
       setTimeout(()=>{
         swtab('su');
         document.getElementById('su-cc').value=document.getElementById('si-cc').value;
         document.getElementById('su-ph').value=ph;
         setTimeout(()=>document.getElementById('su-nm').focus(),300);
-        showToast('Fill in your details to create account 👆','#A73E18');
+        showToast('Fill in your details to create account 👆','#ff8f00');
       },1500);
     } else {
       // Account exists but wrong code
@@ -960,12 +960,12 @@ async function doSI(){
   const {data:profile}=await supa.from('profiles').select('*').eq('id',data.user.id).maybeSingle();
   if(!profile){
     // Auth exists but no profile — unusual, handle gracefully
-    showToast('Account incomplete. Please sign up again.','#A73E18');
+    showToast('Account incomplete. Please sign up again.','#ff8f00');
     swtab('su');
     document.getElementById('su-ph').value=ph;
     return;
   }
-  U={id:data.user.id,name:profile.full_name,phone:profile.phone,dob:profile.dob,yapId:profile.yap_id,dpColor:profile.dp_color||'#A73E18',dpImg:profile.dp_url||null};
+  U={id:data.user.id,name:profile.full_name,phone:profile.phone,dob:profile.dob,yapId:profile.yap_id,dpColor:profile.dp_color||'#ff8f00',dpImg:profile.dp_url||null};
   showToast('Welcome back, '+profile.full_name+'! ✅');
   await enterApp();
 }
@@ -1003,7 +1003,7 @@ async function doSU(){
         document.getElementById('si-cc').value=document.getElementById('su-cc').value;
         document.getElementById('si-ph').value=ph;
         setTimeout(()=>document.getElementById('si-cd').focus(),300);
-        showToast('Enter your personal code to sign in','#A73E18');
+        showToast('Enter your personal code to sign in','#ff8f00');
       },1800);
       return;
     }
@@ -1017,7 +1017,7 @@ async function doSU(){
   if(existing){
     // Profile exists — just log them in
     const {data:prof}=await supa.from('profiles').select('*').eq('id',userId).single();
-    U={id:userId,name:prof.full_name,phone:prof.phone,dob:prof.dob,yapId:prof.yap_id,dpColor:prof.dp_color||'#A73E18',dpImg:prof.dp_url||null};
+    U={id:userId,name:prof.full_name,phone:prof.phone,dob:prof.dob,yapId:prof.yap_id,dpColor:prof.dp_color||'#ff8f00',dpImg:prof.dp_url||null};
     showToast('Welcome back, '+prof.full_name+'! ✅');
     await enterApp();
     return;
@@ -1026,14 +1026,14 @@ async function doSU(){
   // Step 3: Create profile
   const {error:profErr}=await supa.from('profiles').insert({
     id:userId, yap_id:yapId, full_name:nm,
-    phone:phone, dob:db, dp_color:'#A73E18', dp_url:null
+    phone:phone, dob:db, dp_color:'#ff8f00', dp_url:null
   });
   if(profErr){
     showToast('Error saving profile. Try again ❌','#ef4444');
     console.error(profErr);
     return;
   }
-  U={id:userId,name:nm,phone:phone,dob:db,yapId:yapId,dpColor:'#A73E18',dpImg:null};
+  U={id:userId,name:nm,phone:phone,dob:db,yapId:yapId,dpColor:'#ff8f00',dpImg:null};
   showToast('Welcome to Yap!, '+nm+'! 🎉');
   await enterApp();
 }
@@ -1091,8 +1091,8 @@ function sendPushNotification(title, body, senderId){
   if(document.visibilityState==='visible' && actCid===senderId) return;
   const notif = new Notification(title, {
     body: body,
-    icon: 'data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><rect width=\'100\' height=\'100\' rx=\'22\' fill=\'%23A73E18\'/><path d=\'M20 25 C20 20 24 16 29 16 L71 16 C76 16 80 20 80 25 L80 58 C80 63 76 67 71 67 L38 67 L25 80 L25 67 L29 67 C24 67 20 63 20 58 Z\' fill=\'black\'/></svg>',
-    badge: 'data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><rect width=\'100\' height=\'100\' rx=\'22\' fill=\'%23A73E18\'/></svg>',
+    icon: 'data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><rect width=\'100\' height=\'100\' rx=\'22\' fill=\'%23ff8f00\'/><path d=\'M20 25 C20 20 24 16 29 16 L71 16 C76 16 80 20 80 25 L80 58 C80 63 76 67 71 67 L38 67 L25 80 L25 67 L29 67 C24 67 20 63 20 58 Z\' fill=\'black\'/></svg>',
+    badge: 'data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><rect width=\'100\' height=\'100\' rx=\'22\' fill=\'%23ff8f00\'/></svg>',
     tag: 'yap-msg-'+senderId,
     renotify: true,
     vibrate: [200, 100, 200],
@@ -1113,7 +1113,7 @@ async function checkSession(){
   if(session){
     const {data:profile}=await supa.from('profiles').select('*').eq('id',session.user.id).single();
     if(profile){
-      U={id:session.user.id,name:profile.full_name,phone:profile.phone,dob:profile.dob,yapId:profile.yap_id,dpColor:profile.dp_color||'#A73E18',dpImg:profile.dp_url||null};
+      U={id:session.user.id,name:profile.full_name,phone:profile.phone,dob:profile.dob,yapId:profile.yap_id,dpColor:profile.dp_color||'#ff8f00',dpImg:profile.dp_url||null};
       await enterApp();
     }
   }
@@ -1188,7 +1188,7 @@ async function loadContacts(){
     id:r.profiles.id,
     name:r.profiles.full_name,
     yapId:r.profiles.yap_id,
-    color:r.profiles.dp_color||'#A73E18',
+    color:r.profiles.dp_color||'#ff8f00',
     dpImg:r.profiles.dp_url||null,
     online:false
   }));
@@ -1332,7 +1332,7 @@ function startGlobalSubscription(){
         const {data:senderProfile}=await supa.from('profiles').select('*').eq('id',senderId).maybeSingle();
         if(senderProfile){
           await autoAddContact(senderId);
-          showToast('💬 '+senderProfile.full_name+' messaged you! Added to contacts','#A73E18');
+          showToast('💬 '+senderProfile.full_name+' messaged you! Added to contacts','#ff8f00');
         }
       }
 
@@ -1416,7 +1416,7 @@ async function autoAddContact(userId){
   // Add to local contacts array
   const newContact={
     id:prof.id, name:prof.full_name, yapId:prof.yap_id,
-    color:prof.dp_color||'#A73E18', dpImg:prof.dp_url||null, online:false
+    color:prof.dp_color||'#ff8f00', dpImg:prof.dp_url||null, online:false
   };
   contacts.push(newContact);
   chats[prof.id]=chats[prof.id]||[];
@@ -1666,10 +1666,10 @@ async function addC(){
   if(found.id===U.id){showToast('Thats your own ID! ❌','#ef4444');return;}
   // Check if already a contact
   const {data:existing}=await supa.from('contacts').select('id').eq('user_id',U.id).eq('contact_id',found.id).single();
-  if(existing){showToast('Already in contacts!','#A73E18');closeM('madd');return;}
+  if(existing){showToast('Already in contacts!','#ff8f00');closeM('madd');return;}
   // Add contact
   await supa.from('contacts').insert({user_id:U.id,contact_id:found.id});
-  const c={id:found.id,name:found.full_name,yapId:found.yap_id,color:found.dp_color||'#A73E18',dpImg:found.dp_url||null,online:false};
+  const c={id:found.id,name:found.full_name,yapId:found.yap_id,color:found.dp_color||'#ff8f00',dpImg:found.dp_url||null,online:false};
   contacts.push(c);chats[c.id]=[];
   closeM('madd');renderList();openChat(c.id);
   document.getElementById('ayid').value='';
