@@ -1338,7 +1338,8 @@ async function openChat(cid){
   if(c.dpImg){tav.style.backgroundImage=`url(${c.dpImg})`;tav.style.backgroundColor='transparent';tav.textContent='';}
   else{tav.style.backgroundImage='none';tav.style.backgroundColor=c.color;tav.textContent=ini(c.name);}
   document.getElementById('tnm').textContent=c.name;
-  document.getElementById('tid').textContent=c.yapId||c.id.slice(0,8);
+  const tidEl=document.getElementById('tid');
+  if(tidEl) tidEl.textContent=c.yapId||c.id.slice(0,8);
   const statusEl=document.getElementById('c-status');
   if(statusEl){statusEl.textContent=c.online?'Online':'';}
   if(window.innerWidth<=700){rtPanel(document.getElementById('sb'),document.getElementById('ca'),'fwd');}
