@@ -4,9 +4,8 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"/>
 <title>Yap!</title>
-<!-- Updated favicon to reflect the white Y on orange background -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23ff8f00'/><path d='M32 30 l13 20 v20 h10 v-20 l13 -20 h-11 l-7 12 l-7 -12 z' fill='white'/></svg>"/>
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23ff8f00'/><path d='M32 30 l13 20 v20 h10 v-20 l13 -20 h-11 l-7 12 l-7 -12 z' fill='white'/></svg>"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23ff8f00'/><path d='M20 25 C20 20 24 16 29 16 L71 16 C76 16 80 20 80 25 L80 58 C80 63 76 67 71 67 L38 67 L25 80 L25 67 L29 67 C24 67 20 63 20 58 Z' fill='black'/></svg>"/>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23ff8f00'/><path d='M20 25 C20 20 24 16 29 16 L71 16 C76 16 80 20 80 25 L80 58 C80 63 76 67 71 67 L38 67 L25 80 L25 67 L29 67 C24 67 20 63 20 58 Z' fill='black'/></svg>"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -59,6 +58,7 @@ body::before{
   background-size:200px 200px;
 }
 
+/* Auth screen specific grain - slightly more visible */
 #screen-auth::after{
   content:'';
   position:absolute;
@@ -98,8 +98,8 @@ select.inp{cursor:pointer}
 .btnp:active{transform:translateY(0)}
 
 /* ── MAIN APP ── */
-#screen-app{flex-direction:row; position: relative;}
-.sidebar{width:360px;min-width:360px;height:100dvh;background:var(--bg);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:background .3s; position: relative; z-index: 2;}
+#screen-app{flex-direction:row}
+.sidebar{width:360px;min-width:360px;height:100dvh;background:var(--bg);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:background .3s}
 .s-top{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px}
 .s-logo{display:flex;align-items:center;gap:10px}
 .s-icon{width:36px;height:36px;border-radius:10px;background:var(--orange);display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -113,8 +113,7 @@ select.inp{cursor:pointer}
 .srch input::placeholder{color:var(--text3)}
 .add-btn{margin:0 16px 16px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--orange);border:none;border-radius:14px;padding:14px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;color:#000;transition:background .2s}
 .add-btn:hover{background:var(--orange2)}
-.view-section{display:none;flex:1;overflow-y:auto;}
-.view-section.active{display:flex;flex-direction:column;}
+.clist{flex:1;overflow-y:auto}
 .clist::-webkit-scrollbar{width:0}
 .ci{display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;transition:background .15s}
 .ci.selected{background:rgba(249,115,22,0.2);}
@@ -142,7 +141,7 @@ select.inp{cursor:pointer}
 .cbadge{min-width:20px;height:20px;border-radius:10px;background:var(--orange);color:#000;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px}
 
 /* ── CHAT AREA ── */
-.chat-area{flex:1;height:100dvh;display:flex;flex-direction:column;background:var(--bg);transition:background .3s;overflow:hidden;position:relative;z-index: 1;}
+.chat-area{flex:1;height:100dvh;display:flex;flex-direction:column;background:var(--bg);transition:background .3s;overflow:hidden;position:relative;}
 .chat-area::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;opacity:0.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");background-size:180px 180px;background-repeat:repeat;}
 .c-topbar{padding:14px 20px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;transition:background .3s}
 .c-back{width:36px;height:36px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2)}
@@ -165,51 +164,126 @@ select.inp{cursor:pointer}
 .img-bbl{max-width:220px;border-radius:14px;overflow:hidden;border:2px solid var(--orange);cursor:pointer}
 .img-bbl img{width:100%;display:block}
 
-/* ── BOTTOM NAV (MOBILE) ── */
-.bottom-nav { display: none; }
+/* ── PHOTO VIEWER ── */
+.photo-viewer{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:fadeIn .2s ease;}
+.photo-viewer.hidden{display:none;}
+.photo-viewer-img{max-width:95vw;max-height:80vh;border-radius:12px;object-fit:contain;animation:scaleIn .25s ease;}
+.photo-viewer-bar{position:absolute;top:0;left:0;right:0;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,0.7),transparent);}
+.photo-viewer-name{font-size:15px;font-weight:600;color:#fff;font-family:'Space Grotesk',sans-serif;}
+.photo-viewer-time{font-size:12px;color:rgba(255,255,255,0.6);}
+.photo-viewer-actions{position:absolute;bottom:0;left:0;right:0;padding:20px;display:flex;gap:12px;justify-content:center;background:linear-gradient(to top,rgba(0,0,0,0.7),transparent);}
+.pv-btn{padding:12px 28px;border-radius:50px;border:none;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;}
+.pv-close{background:rgba(255,255,255,0.15);color:#fff;backdrop-filter:blur(10px);}
+.pv-download{background:var(--orange);color:#000;}
+.pv-close:hover{background:rgba(255,255,255,0.25);}
+.pv-download:hover{background:var(--orange2);}
+.inp-row{padding:12px 16px;background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;transition:background .3s;flex-shrink:0;position:relative;z-index:10}
+.att-btn{width:44px;height:44px;border-radius:12px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--orange);flex-shrink:0}
+.minp{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:50px;padding:12px 18px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:15px;outline:none;resize:none;height:46px;transition:border-color .2s,background .3s}
+.minp:focus{border-color:var(--orange)}
+.minp::placeholder{color:var(--text3)}
+.sbtn{width:46px;height:46px;border-radius:50%;background:var(--orange);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;color:#000}
+.sbtn:hover{background:var(--orange2);transform:scale(1.05)}
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text3);gap:12px;text-align:center;padding:24px}
+.empty-ic{width:72px;height:72px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.empty h3{font-size:18px;color:var(--text2);font-weight:600;font-family:'Space Grotesk',sans-serif;}
+.empty p{font-size:14px;max-width:240px;line-height:1.6}
+
+/* ── PROFILE SCREEN ── */
+#screen-profile{flex-direction:column;align-items:center;background:var(--bg);overflow-y:auto;padding:24px;transition:background .3s}
+.pwrap{width:100%;max-width:440px;animation:fadeUp .4s ease}
+.pbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.pbar-left{display:flex;align-items:center;gap:14px}
+.bbtn{width:38px;height:38px;border-radius:10px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2)}
+.pbar h2{font-size:18px;font-weight:700;font-family:'Space Grotesk',sans-serif;}
+
+/* DP section */
+.dp-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:8px;position:relative}
+.pav{width:90px;height:90px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;color:#fff;margin:0 auto;box-shadow:0 0 40px rgba(249,115,22,.4);overflow:hidden;background-size:cover;background-position:center;cursor:pointer;position:relative}
+.pav-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.pav:hover .pav-overlay{opacity:1}
+.dp-edit-ring{position:absolute;bottom:0;right:0;width:28px;height:28px;border-radius:50%;background:var(--orange);border:3px solid var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.pname{font-size:22px;font-weight:700;text-align:center;margin:10px 0 4px;font-family:'Space Grotesk',sans-serif;}
+.psub{font-size:14px;color:var(--text2);text-align:center;margin-bottom:20px;font-family:'Space Grotesk',sans-serif;}
+
+/* Profile sections */
+.psect{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rsm);overflow:hidden;margin-bottom:14px;transition:background .3s}
+.psect-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:14px 16px 8px;font-family:'Space Grotesk',sans-serif;}
+.prow{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-top:1px solid var(--border)}
+.prow-left{display:flex;align-items:center;gap:10px;color:var(--text2);font-size:14px}
+.prow-left svg{color:var(--orange)}
+.prow-val{font-size:14px;font-weight:500}
+.prow-edit{font-size:12px;color:var(--orange);cursor:pointer;font-weight:600;padding:4px 8px;border-radius:6px;transition:background .2s}
+.prow-edit:hover{background:var(--orange-soft)}
+
+/* YAP ID card */
+.yid-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rsm);padding:16px;margin-bottom:14px;transition:background .3s}
+.yid-lbl{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.yid-val{display:flex;align-items:center;justify-content:space-between;background:var(--orange);border-radius:12px;padding:14px 16px;font-size:20px;font-weight:800;color:#000;letter-spacing:1px;font-family:'Space Grotesk',sans-serif;}
+.cpybtn{cursor:pointer;opacity:.7}
+.cpybtn:hover{opacity:1}
+.qr-box{background:#fff;border-radius:16px;padding:14px;width:180px;height:180px;margin:16px auto 8px;display:grid;grid-template-columns:repeat(9,1fr);gap:3px}
+.qr-cell{border-radius:2px}
+.qr-hint{font-size:13px;color:var(--text2);text-align:center;margin-bottom:4px}
+
+/* Theme toggle */
+.theme-toggle{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-top:1px solid var(--border)}
+.theme-toggle-left{display:flex;align-items:center;gap:10px;color:var(--text2);font-size:14px}
+.toggle-switch{width:48px;height:26px;border-radius:13px;background:var(--bg3);border:1px solid var(--border);cursor:pointer;position:relative;transition:background .3s}
+.toggle-switch.on{background:var(--orange)}
+.toggle-knob{width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .3s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.toggle-switch.on .toggle-knob{transform:translateX(22px)}
+
+.sobt{width:100%;padding:14px;border-radius:50px;background:transparent;border:1px solid rgba(239,68,68,.3);color:#ef4444;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:6px}
+.sobt:hover{background:rgba(239,68,68,.1)}
+
+/* ── MODALS ── */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;z-index:100;animation:fadeIn .2s ease}
+.ov.hidden{display:none}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:28px 24px 36px;width:100%;max-width:480px;animation:fadeUp .3s ease;transition:background .3s}
+.mtitle{font-size:18px;font-weight:700;margin-bottom:6px;font-family:'Space Grotesk',sans-serif;}
+.msub{font-size:14px;color:var(--text2);margin-bottom:20px;font-family:'Space Grotesk',sans-serif;}
+.mtabs{display:flex;background:var(--bg3);border-radius:50px;padding:4px;margin-bottom:20px;gap:4px}
+.mtab{flex:1;padding:10px;border-radius:50px;border:none;background:transparent;color:var(--text2);font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.mtab.active{background:var(--orange);color:#000}
+.mpanel{display:none}
+.mpanel.active{display:block}
+.macts{display:flex;gap:10px;margin-top:20px}
+.btng{flex:1;padding:14px;border-radius:50px;background:transparent;border:1px solid var(--border);color:var(--text2);font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s}
+.btng:hover{background:var(--bg3)}
+.scan-a{background:var(--bg3);border:2px dashed var(--border-o);border-radius:16px;padding:40px;text-align:center;cursor:pointer;transition:background .2s}
+.scan-a:hover{background:var(--bg4)}
+.scan-a svg{color:var(--orange);margin-bottom:10px}
+.scan-a p{font-size:14px;color:var(--text2)}
+.scan-a span{font-size:12px;color:var(--text3)}
+
+/* Edit modal (center popup) */
+.ov-center{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:200;animation:fadeIn .2s ease;padding:20px}
+.ov-center.hidden{display:none}
+.modal-center{background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:28px 24px;width:100%;max-width:400px;animation:scaleIn .25s ease;transition:background .3s}
+.modal-center .mtitle{margin-bottom:20px}
+.edit-field{margin-bottom:16px}
+.edit-field .lbl{margin-bottom:8px}
+
+/* DP modal options */
+.dp-options{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.dp-opt{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg3);border-radius:14px;cursor:pointer;border:1px solid var(--border);transition:background .2s}
+.dp-opt:hover{background:var(--bg4);border-color:var(--border-o)}
+.dp-opt-icon{width:40px;height:40px;border-radius:10px;background:var(--orange-soft);display:flex;align-items:center;justify-content:center;color:var(--orange);flex-shrink:0}
+.dp-opt-text .dp-opt-title{font-size:15px;font-weight:600}
+.dp-opt-text .dp-opt-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.dp-preview{width:80px;height:80px;border-radius:50%;margin:0 auto 16px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;overflow:hidden;background-size:cover;background-position:center}
+.color-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:12px}
+.color-dot{width:36px;height:36px;border-radius:50%;cursor:pointer;transition:transform .2s;border:3px solid transparent}
+.color-dot:hover{transform:scale(1.15)}
+.color-dot.selected{border-color:#fff;transform:scale(1.1)}
+
+#finp{display:none}
 
 @media(max-width:700px){
-  .sidebar{width:100%;min-width:unset; padding-bottom: 90px;}
+  .sidebar{width:100%;min-width:unset}
   .sidebar.h{display:none}
   .chat-area.h{display:none}
-
-  .bottom-nav {
-    display: flex;
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    backdrop-filter: blur(22px) saturate(160%);
-    -webkit-backdrop-filter: blur(22px) saturate(160%);
-    border-radius: 40px;
-    padding: 8px 12px;
-    gap: 8px;
-    z-index: 100;
-    box-shadow: var(--shadow);
-    width: 92%;
-    justify-content: space-around;
-  }
-  .nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    color: var(--text2);
-    cursor: pointer;
-    padding: 10px 14px;
-    border-radius: 20px;
-    transition: all 0.25s cubic-bezier(.22,1,.36,1);
-    flex: 1;
-  }
-  .nav-item.active {
-    background: var(--orange-soft);
-    color: var(--orange);
-  }
-  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
-  .nav-item span { font-size: 11px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; letter-spacing: 0.2px; }
-  .nav-item.active svg { fill: var(--orange); stroke: none; }
 }
 
 /* ══════════════════════════════════════════════
@@ -233,29 +307,315 @@ select.inp{cursor:pointer}
 }
 :root{ --radius:26px; --rsm:20px; --rmsg:22px; --blur:22px; }
 
-/* ... (Remaining unchanged CSS styles) ... */
+/* Ambient aurora background behind the glass */
+body{
+  background:var(--bg);
+  position:relative;
+}
+body::before{
+  content:'';position:fixed;inset:-20%;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(38% 34% at 18% 18%, rgba(249,115,22,.45), transparent 65%),
+    radial-gradient(34% 32% at 82% 12%, rgba(168,85,247,.32), transparent 65%),
+    radial-gradient(42% 38% at 72% 88%, rgba(56,189,248,.30), transparent 65%),
+    radial-gradient(36% 34% at 12% 84%, rgba(236,72,153,.26), transparent 65%);
+  filter:blur(40px);
+  animation:auroraDrift 24s ease-in-out infinite alternate;
+}
+body::after{
+  content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  backdrop-filter:blur(60px);
+}
+@keyframes auroraDrift{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(2%,-2%,0) scale(1.06)}
+  100%{transform:translate3d(-2%,2%,0) scale(1.03)}
+}
+
+/* Generic frosted surface */
+.auth-card,.psect,.yid-card,.modal,.modal-center,.srch,.ibtn,.bbtn,.c-back,.att-btn,
+.empty-ic,.dp-opt,.scan-a,.inp,.minp,.mtabs,.tabs,.sidebar,.c-topbar,.inp-row,.s-icon{
+  backdrop-filter:blur(var(--blur)) saturate(160%);
+}
+
+.auth-card{
+  background:var(--glass-tint);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:28px;
+}
+#screen-auth{background:transparent}
+.logo-icon-big{
+  border-radius:26px;
+  background:linear-gradient(145deg,#ff9f00,#ff8f00 55%,#e07d00);
+  box-shadow:0 12px 40px rgba(249,115,22,.45), inset 0 1px 0 rgba(255,255,255,.45);
+}
+.app-name{text-shadow:0 6px 30px rgba(249,115,22,.35)}
+
+.tabs,.mtabs{background:var(--bg3);border:1px solid var(--border)}
+.tab.active,.mtab.active{
+  background:linear-gradient(145deg,#ff9f00,#ff8f00);color:#000;
+  box-shadow:0 6px 18px rgba(249,115,22,.35), inset 0 1px 0 rgba(255,255,255,.4);
+}
+.inp,.minp{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rsm)}
+.inp:focus,.minp:focus{border-color:var(--orange);box-shadow:0 0 0 4px rgba(249,115,22,.16)}
+.btnp,.add-btn,.sbtn{
+  background:linear-gradient(145deg,#ff9f00,#ff8f00 60%,#e07d00);
+  box-shadow:0 10px 30px rgba(249,115,22,.35), inset 0 1px 0 rgba(255,255,255,.4);
+}
+.btnp:hover,.add-btn:hover,.sbtn:hover{filter:brightness(1.06)}
+.add-btn{border-radius:var(--rsm)}
+.btng{background:var(--bg3);border:1px solid var(--border);backdrop-filter:blur(var(--blur))}
+
+/* Sidebar + translucent navbars */
+.sidebar{
+  background:var(--glass-tint);border-right:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+.s-top{position:sticky;top:0;z-index:5;background:transparent}
+.s-icon{border-radius:14px;background:linear-gradient(145deg,#ff9f00,#ff8f00);box-shadow:0 6px 18px rgba(249,115,22,.4)}
+.ibtn,.bbtn,.c-back,.att-btn{background:var(--bg2);border:1px solid var(--border);border-radius:16px}
+.ibtn:hover,.bbtn:hover,.c-back:hover,.att-btn:hover{background:var(--bg4)}
+.srch{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rsm)}
+
+.ci{border-radius:18px;margin:2px 10px;padding:12px 12px;transition:background .18s,transform .18s}
+.ci:hover{background:var(--bg2);transform:translateX(2px)}
+.ci.active{background:linear-gradient(90deg,rgba(249,115,22,.28),rgba(249,115,22,.10));border:1px solid var(--border-o)}
+.ci.selected{background:rgba(249,115,22,.22);border:1px solid var(--border-o)}
+.av{box-shadow:0 6px 18px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.25)}
+.cbadge{background:linear-gradient(145deg,#ff9f00,#ff8f00);box-shadow:0 4px 12px rgba(249,115,22,.4)}
+
+/* Chat area */
+.chat-area{background:transparent}
+.c-topbar{
+  background:var(--glass-tint);border-bottom:1px solid var(--border);
+  border-radius:0 0 var(--rsm) var(--rsm);position:relative;z-index:6;
+}
+.inp-row{
+  background:var(--glass-tint);border-top:1px solid var(--border);
+  border-radius:var(--rsm) var(--rsm) 0 0;
+}
+.mrow.out .bbl{
+  background:linear-gradient(145deg,rgba(251,146,60,.95),rgba(234,88,12,.95));
+  color:#000;border:1px solid rgba(255,255,255,.25);
+  box-shadow:0 8px 24px rgba(249,115,22,.28);
+  border-radius:var(--rmsg);border-bottom-right-radius:8px;
+  backdrop-filter:blur(10px);
+}
+.mrow.in .bbl{
+  background:var(--bubble-in);border:1px solid var(--border);
+  border-radius:var(--rmsg);border-bottom-left-radius:8px;
+  backdrop-filter:blur(14px) saturate(160%);
+  box-shadow:0 6px 20px rgba(0,0,0,.12);
+}
+.img-bbl{border-radius:20px;border:1px solid var(--border-o);box-shadow:var(--shadow)}
+.empty-ic{background:var(--bg2);border:1px solid var(--border);border-radius:24px}
+
+/* Profile */
+#screen-profile{background:transparent}
+.psect,.yid-card{background:var(--glass-tint);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.pav{box-shadow:0 0 50px rgba(249,115,22,.45), inset 0 1px 0 rgba(255,255,255,.35)}
+.yid-val{background:linear-gradient(145deg,#ff9f00,#ff8f00);border-radius:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.qr-box{border-radius:22px;box-shadow:var(--shadow)}
+.toggle-switch{background:var(--bg3);border:1px solid var(--border);backdrop-filter:blur(10px)}
+.toggle-switch.on{background:linear-gradient(145deg,#ff9f00,#ff8f00)}
+.sobt{border-radius:50px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.35);backdrop-filter:blur(10px)}
+
+/* Modals */
+.ov,.ov-center{background:rgba(8,8,16,.45);backdrop-filter:blur(14px) saturate(140%)}
+.modal{background:var(--glass-tint);border:1px solid var(--border);border-radius:32px 32px 0 0;box-shadow:var(--shadow)}
+.modal-center{background:var(--glass-tint);border:1px solid var(--border);border-radius:28px;box-shadow:var(--shadow)}
+.dp-opt{background:var(--bg2);border:1px solid var(--border);border-radius:20px}
+.dp-opt:hover{background:var(--bg4)}
+.dp-opt-icon{border-radius:14px;background:rgba(249,115,22,.18);backdrop-filter:blur(8px)}
+.scan-a{background:var(--bg2);border:1.5px dashed var(--border-o);border-radius:22px}
+.sel-bar{background:linear-gradient(90deg,rgba(251,146,60,.9),rgba(249,115,22,.9));backdrop-filter:blur(14px)}
+
+
+/* ══════════════════════════════════════════════
+   SLIDING ANIMATION LAYER
+   ══════════════════════════════════════════════ */
+@keyframes slideUpIn{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideDownIn{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideLeftIn{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideRightIn{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideSheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes bblInLeft{from{opacity:0;transform:translateX(-22px) translateY(6px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes bblInRight{from{opacity:0;transform:translateX(22px) translateY(6px) scale(.96)}to{opacity:1;transform:none}}
+
+/* Screen transitions */
+.screen.active{animation:slideUpIn .42s cubic-bezier(.22,1,.36,1) both}
+#screen-app.active{animation:fadeIn .3s ease both}
+#screen-profile.active{animation:slideLeftIn .38s cubic-bezier(.22,1,.36,1) both}
+
+/* Auth: logo + card slide in, tab panels slide */
+.auth-logo{animation:slideDownIn .5s cubic-bezier(.22,1,.36,1) both}
+.auth-card{animation:slideUpIn .55s .08s cubic-bezier(.22,1,.36,1) both}
+.panel.active{animation:slideLeftIn .3s cubic-bezier(.22,1,.36,1) both}
+.mpanel.active{animation:slideLeftIn .28s cubic-bezier(.22,1,.36,1) both}
+
+/* Sidebar + chat area slide in */
+.sidebar{animation:slideRightIn .45s cubic-bezier(.22,1,.36,1) both}
+.chat-area{animation:slideLeftIn .45s .06s cubic-bezier(.22,1,.36,1) both}
+.c-topbar{animation:slideDownIn .35s cubic-bezier(.22,1,.36,1) both}
+.inp-row{animation:slideUpIn .35s cubic-bezier(.22,1,.36,1) both}
+.empty{animation:slideUpIn .4s .1s cubic-bezier(.22,1,.36,1) both}
+
+/* Mobile: sliding between list and conversation */
+@media(max-width:700px){
+  .sidebar:not(.h){animation:slideRightIn .32s cubic-bezier(.22,1,.36,1) both}
+  .chat-area:not(.h){animation:slideLeftIn .32s cubic-bezier(.22,1,.36,1) both}
+}
+
+/* Chat list items slide in with a stagger */
+.ci{animation:slideRightIn .38s cubic-bezier(.22,1,.36,1) both}
+.ci:nth-child(1){animation-delay:.02s}
+.ci:nth-child(2){animation-delay:.05s}
+.ci:nth-child(3){animation-delay:.08s}
+.ci:nth-child(4){animation-delay:.11s}
+.ci:nth-child(5){animation-delay:.14s}
+.ci:nth-child(6){animation-delay:.17s}
+.ci:nth-child(7){animation-delay:.2s}
+.ci:nth-child(8){animation-delay:.23s}
+.ci:nth-child(n+9){animation-delay:.26s}
+
+/* Message bubbles slide in from their own side */
+.mrow.in{animation:bblInLeft .34s cubic-bezier(.22,1,.36,1) both}
+.mrow.out{animation:bblInRight .34s cubic-bezier(.22,1,.36,1) both}
+.dsep{animation:slideUpIn .3s cubic-bezier(.22,1,.36,1) both}
+
+/* Profile rows slide in */
+.psect,.yid-card{animation:slideUpIn .42s cubic-bezier(.22,1,.36,1) both}
+.psect:nth-of-type(2){animation-delay:.06s}
+.psect:nth-of-type(3){animation-delay:.12s}
+
+/* Modals: bottom sheet slides up, centre modal slides in */
+.ov:not(.hidden) .modal{animation:slideSheetUp .38s cubic-bezier(.22,1,.36,1) both}
+.ov-center:not(.hidden) .modal-center{animation:slideUpIn .3s cubic-bezier(.22,1,.36,1) both}
+.dp-opt{animation:slideRightIn .32s cubic-bezier(.22,1,.36,1) both}
+.dp-opt:nth-child(2){animation-delay:.06s}
+.dp-opt:nth-child(3){animation-delay:.12s}
+
+/* Selection bar slides down into view */
+.sel-bar.active{animation:slideDownIn .28s cubic-bezier(.22,1,.36,1) both}
+
+/* Sliding tab pill + button press feedback */
+.tab,.mtab{transition:background .25s ease,color .25s ease,transform .25s cubic-bezier(.22,1,.36,1)}
+.tab.active,.mtab.active{transform:translateY(-1px)}
+.btnp,.add-btn,.sbtn,.ibtn,.dp-opt{transition:transform .22s cubic-bezier(.22,1,.36,1),background .2s,filter .2s}
+.ibtn:hover{transform:translateY(-2px)}
+.sbtn:active,.btnp:active{transform:scale(.96)}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+
+
+/* ══════════════════════════════════════════════
+   ROUTE TRANSITIONS — glass-aware fade + slide
+   ══════════════════════════════════════════════ */
+/* Compositor-only keyframes: opacity + transform (no per-frame filter blur) */
+@keyframes rtInFwd{from{opacity:0;transform:translate3d(4%,0,0) scale(.985)}to{opacity:1;transform:none}}
+@keyframes rtOutFwd{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(-3%,0,0) scale(.99)}}
+@keyframes rtInBack{from{opacity:0;transform:translate3d(-4%,0,0) scale(.985)}to{opacity:1;transform:none}}
+@keyframes rtOutBack{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(3%,0,0) scale(.99)}}
+@keyframes rtInUp{from{opacity:0;transform:translate3d(0,3%,0) scale(.985)}to{opacity:1;transform:none}}
+@keyframes rtVeil{from{opacity:0}60%{opacity:1}to{opacity:0}}
+
+/* keep the outgoing page painted while it animates away */
+.screen.rt-exit{display:flex !important;pointer-events:none}
+.screen.rt-exit-fwd{animation:rtOutFwd .34s cubic-bezier(.4,0,.2,1) both}
+.screen.rt-exit-back{animation:rtOutBack .34s cubic-bezier(.4,0,.2,1) both}
+/* incoming page — overrides the generic .screen.active animation */
+.screen.active.rt-enter-fwd{animation:rtInFwd .46s cubic-bezier(.22,1,.36,1) both}
+.screen.active.rt-enter-back{animation:rtInBack .46s cubic-bezier(.22,1,.36,1) both}
+.screen.active.rt-enter-up{animation:rtInUp .46s cubic-bezier(.22,1,.36,1) both}
+/* stack the two pages during the crossfade */
+body.rt-busy .screen.active,body.rt-busy .screen.rt-exit{position:fixed;inset:0;z-index:1}
+body.rt-busy .screen.rt-exit{z-index:0}
+body.rt-busy{overflow:hidden}
+
+/* frosted veil — pre-baked gradient, no backdrop-filter (one less full-screen blur pass) */
+.rt-veil{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:0;
+  will-change:opacity;contain:strict;
+  background:linear-gradient(120deg,rgba(249,115,22,.14),rgba(168,85,247,.12) 50%,rgba(56,189,248,.14)),
+             rgba(10,10,20,.16);}
+.rt-veil.on{animation:rtVeil .5s ease both}
+
+/* Mobile panel routing: list <-> conversation */
+@keyframes panOutLeft{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(-14%,0,0)}}
+@keyframes panOutRight{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(14%,0,0)}}
+.pan-out-left{animation:panOutLeft .28s cubic-bezier(.4,0,.2,1) both}
+.pan-out-right{animation:panOutRight .28s cubic-bezier(.4,0,.2,1) both}
+
+@media(prefers-reduced-motion:reduce){
+  .rt-veil.on,.screen.rt-exit-fwd,.screen.rt-exit-back,
+  .screen.active.rt-enter-fwd,.screen.active.rt-enter-back,.screen.active.rt-enter-up{animation-duration:.01ms !important}
+}
+
+/* ══════════════════════════════════════════════
+   TRANSITION PERFORMANCE — collapse blur layers
+   while a route cross-fade is in flight
+   ══════════════════════════════════════════════ */
+
+/* 1. Suspend every nested backdrop-filter surface during the swap.
+      Two stacked screens x ~20 frosted panels = ~40 blur passes per frame;
+      this drops them to zero and substitutes a cheap flat tint. */
+body.rt-busy .auth-card,body.rt-busy .psect,body.rt-busy .yid-card,
+body.rt-busy .modal,body.rt-busy .modal-center,body.rt-busy .srch,
+body.rt-busy .ibtn,body.rt-busy .bbtn,body.rt-busy .c-back,body.rt-busy .att-btn,
+body.rt-busy .empty-ic,body.rt-busy .dp-opt,body.rt-busy .scan-a,body.rt-busy .inp,
+body.rt-busy .minp,body.rt-busy .mtabs,body.rt-busy .tabs,body.rt-busy .sidebar,
+body.rt-busy .c-topbar,body.rt-busy .inp-row,body.rt-busy .s-icon,
+body.rt-busy .btng,body.rt-busy .toggle-switch,body.rt-busy .sobt,
+body.rt-busy .dp-opt-icon,body.rt-busy .sel-bar,
+body.rt-busy .ov,body.rt-busy .ov-center{
+  backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+}
+
+/* 2. Drop the full-viewport backdrop pass behind the aurora and freeze its
+      animation — it is invisible under the veil anyway. */
+body.rt-busy::after{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
+body.rt-busy::before{animation-play-state:paused;filter:blur(28px)}
+
+/* 3. Promote only the two animating screens; isolate their paint so the
+      compositor can reuse cached textures instead of re-rasterizing. */
+body.rt-busy .screen.active,body.rt-busy .screen.rt-exit{
+  will-change:opacity,transform;
+  contain:layout paint;
+  backface-visibility:hidden;
+  transform:translateZ(0);
+}
+/* 4. Kill hover/press transitions mid-flight so they can't queue extra work. */
+body.rt-busy *{transition:none !important}
+
+/* 5. Mobile panel swaps get the same blur suspension (lighter: no re-stacking). */
+body.rt-lite .sidebar,body.rt-lite .c-topbar,body.rt-lite .inp-row,body.rt-lite .srch,
+body.rt-lite .tabs,body.rt-lite .mtabs,body.rt-lite .ibtn,body.rt-lite .c-back,
+body.rt-lite .att-btn,body.rt-lite .minp,body.rt-lite .empty-ic{
+  backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+}
+body.rt-lite::after{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
+.pan-out-left,.pan-out-right{will-change:opacity,transform;backface-visibility:hidden}
+
+/* 6. Release the promotion hints once the transition settles. */
+.screen:not(.rt-exit):not(.rt-enter-fwd):not(.rt-enter-back):not(.rt-enter-up){will-change:auto}
+
 </style>
-<!-- Kept the remaining CSS identical for brevity, ensuring it merges perfectly with the original layout styles. Ensure to include the rest of the style tag here in your live code -->
 </head>
 <body>
 
 <!-- ══ AUTH ══ -->
 <div id="screen-auth" class="screen active">
   <div class="auth-logo">
-    <div class="logo-icon-big">
-      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <path d="M32 30 l13 20 v20 h10 v-20 l13 -20 h-11 l-7 12 l-7 -12 z" fill="white" />
-      </svg>
-    </div>
+    <div class="logo-icon-big"><svg viewBox="0 0 24 24" fill="black"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>
     <div class="app-name">Yap!</div>
     <div class="app-tagline">Private messaging. No phone numbers shared.</div>
   </div>
-  <!-- Auth card code remains identical -->
   <div class="auth-card">
     <div class="tabs">
       <button class="tab active" onclick="swtab('si')">Sign in</button>
       <button class="tab" onclick="swtab('su')">Sign up</button>
     </div>
+    <!-- Sign in -->
     <div id="psi" class="panel active">
       <div class="fgrp"><div class="lbl">Mobile number</div>
         <div class="row">
@@ -266,6 +626,7 @@ select.inp{cursor:pointer}
       <div class="fgrp"><div class="lbl">Personal code</div><input class="inp" type="password" placeholder="At least 6 characters" id="si-cd"/></div>
       <button class="btnp" onclick="doSI()">Sign in</button>
     </div>
+    <!-- Sign up -->
     <div id="psu" class="panel">
       <div class="fgrp"><div class="lbl">Full name</div><input class="inp" type="text" placeholder="Jane Doe" id="su-nm"/></div>
       <div class="fgrp"><div class="lbl">Mobile number</div>
@@ -279,6 +640,7 @@ select.inp{cursor:pointer}
       <button class="btnp" onclick="doSU()">Create account</button>
     </div>
   </div>
+  <!-- Credit -->
   <div style="margin-top:24px;font-size:12px;color:var(--text3);font-family:'Space Grotesk',sans-serif;letter-spacing:1px;text-align:center;">
     Developed by <span style="color:var(--orange);font-weight:700;">DIV</span>
   </div>
@@ -290,11 +652,7 @@ select.inp{cursor:pointer}
   <div class="sidebar" id="sb">
     <div class="s-top">
       <div class="s-logo">
-        <div class="s-icon">
-          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-            <path d="M32 30 l13 20 v20 h10 v-20 l13 -20 h-11 l-7 12 l-7 -12 z" fill="white" />
-          </svg>
-        </div>
+        <div class="s-icon"><svg viewBox="0 0 24 24" fill="black" width="20" height="20"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>
         <div class="s-name">Yap!</div>
       </div>
       <div class="s-acts">
@@ -306,12 +664,10 @@ select.inp{cursor:pointer}
         <div class="ibtn" onclick="logout()" title="Sign out"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg></div>
       </div>
     </div>
-    
     <div class="srch">
       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input placeholder="Search contacts or groups" oninput="filterC(this.value)"/>
+      <input placeholder="Search contacts" oninput="filterC(this.value)"/>
     </div>
-    
     <!-- Normal bar -->
     <div id="normal-bar">
       <button class="add-btn" onclick="openAdd()">
@@ -319,7 +675,6 @@ select.inp{cursor:pointer}
         Add contact
       </button>
     </div>
-    
     <!-- Select mode bar -->
     <div class="sel-bar" id="sel-bar">
       <div class="sel-bar-left"><span id="sel-count">0</span> selected</div>
@@ -331,32 +686,11 @@ select.inp{cursor:pointer}
         </button>
       </div>
     </div>
-    
-    <!-- View Sections -->
-    <div class="view-section clist active" id="view-messages"></div>
-    
-    <div class="view-section" id="view-groups">
-      <div class="empty" style="padding-top:40px;">
-        <div class="empty-ic"><svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-        <h3>No Groups Yet</h3>
-        <p>Start a community and chat together.</p>
-        <button class="btnp" style="max-width: 200px; padding: 12px; margin-top: 10px;">Create Group</button>
-      </div>
-    </div>
-    
-    <div class="view-section" id="view-posts">
-      <div class="empty" style="padding-top:40px;">
-        <div class="empty-ic"><svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></div>
-        <h3>Feed</h3>
-        <p>Share updates and posts with your contacts.</p>
-        <button class="btnp" style="max-width: 200px; padding: 12px; margin-top: 10px;">Write a Post</button>
-      </div>
-    </div>
+    <div class="clist" id="clist"></div>
   </div>
 
   <!-- Chat Area -->
   <div class="chat-area" id="ca">
-    <!-- Existing chat area elements remain untouched here... -->
     <div class="empty" id="est">
       <div class="empty-ic"><svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="rgba(249,115,22,.5)" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
       <h3>No chats yet</h3>
@@ -381,58 +715,1188 @@ select.inp{cursor:pointer}
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Bottom Nav for Mobile -->
-  <div class="bottom-nav">
-    <div class="nav-item active" onclick="switchMobileNav('messages', this)">
-      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-      <span>Message</span>
+<!-- ══ PROFILE SCREEN ══ -->
+<div id="screen-profile" class="screen" style="flex-direction:column;align-items:center;">
+  <div class="pwrap">
+    <div class="pbar">
+      <div class="pbar-left">
+        <div class="bbtn" onclick="goBack()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <h2>Your profile</h2>
+      </div>
+      <div class="ibtn" onclick="toggleTheme()" title="Toggle theme">
+        <svg id="profile-moon" width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg id="profile-sun" width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </div>
     </div>
-    <div class="nav-item" onclick="switchMobileNav('groups', this)">
-      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-      <span>Group Chat</span>
+
+    <!-- DP -->
+    <div class="dp-wrap">
+      <label for="dpfinp" style="cursor:pointer;display:block;width:fit-content;margin:0 auto;position:relative;">
+        <div class="pav" id="pav">
+          <span id="pav-txt"></span>
+          <div class="pav-overlay"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+        </div>
+        <div class="dp-edit-ring"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="black" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+      </label>
     </div>
-    <div class="nav-item" onclick="switchMobileNav('posts', this)">
-      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-      <span>Post</span>
+    <div class="pname" id="pnm"></div>
+    <div class="psub">Tap photo to change your profile picture</div>
+
+    <!-- YAP ID -->
+    <div class="yid-card">
+      <div class="yid-lbl">Your YAP ID</div>
+      <div class="yid-val"><span id="pyid"></span><span class="cpybtn" onclick="cpyId()"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></span></div>
+      <div class="qr-box" id="pqr"></div>
+      <div class="qr-hint">Scan to add as a contact</div>
     </div>
-    <div class="nav-item" onclick="switchMobileNav('profile', this)">
-      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-      <span>Profile</span>
+
+    <!-- Personal Details -->
+    <div class="psect">
+      <div class="psect-title">Personal Details</div>
+      <div class="prow">
+        <div class="prow-left"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Full Name</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="prow-val" id="p-name-val"></div>
+          <div class="prow-edit" onclick="openEdit('name')">Edit</div>
+        </div>
+      </div>
+      <div class="prow">
+        <div class="prow-left"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 5.18a2 2 0 011.99-2H8"/></svg>Mobile</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="prow-val" id="p-phone-val"></div>
+          <div class="prow-edit" onclick="openEdit('phone')">Edit</div>
+        </div>
+      </div>
+      <div class="prow">
+        <div class="prow-left"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Date of Birth</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="prow-val" id="p-dob-val"></div>
+          <div class="prow-edit" onclick="openEdit('dob')">Edit</div>
+        </div>
+      </div>
+      <div class="prow">
+        <div class="prow-left"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Personal Code</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="prow-val">••••••</div>
+          <div class="prow-edit" onclick="openEdit('code')">Change</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appearance -->
+    <div class="psect">
+      <div class="psect-title">Appearance</div>
+      <div class="theme-toggle">
+        <div class="theme-toggle-left">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--orange)" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          Dark Mode
+        </div>
+        <div class="toggle-switch" id="dark-toggle" onclick="toggleTheme()">
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="sobt" onclick="logout()">Sign out</button>
+    <!-- Credit -->
+    <div style="margin-top:20px;font-size:12px;color:var(--text3);font-family:'Space Grotesk',sans-serif;letter-spacing:1px;text-align:center;padding-bottom:10px;">
+      Developed by <span style="color:var(--orange);font-weight:700;">DIV</span>
     </div>
   </div>
 </div>
 
-<!-- Remaining identical modals & JS below (Profile, Modals, Core JS)... -->
-<!-- (Omitted for brevity, paste your profile markup and standard script sections as untouched here) -->
+<!-- ══ MODAL: Add Contact ══ -->
+<div class="ov hidden" id="madd">
+  <div class="modal">
+    <div class="mtitle">Add a contact</div>
+    <div class="msub">No phone numbers needed — just their YAP ID or QR.</div>
+    <div class="mtabs">
+      <button class="mtab active" onclick="smtab('id')"># YAP ID</button>
+      <button class="mtab" onclick="smtab('qr')">⬛ Scan QR</button>
+    </div>
+    <div id="mpid" class="mpanel active">
+      <div class="lbl" style="margin-bottom:8px;">Their YAP ID</div>
+      <input class="inp" type="text" placeholder="ABC-12345" id="ayid" style="width:100%;"/>
+    </div>
+    <div id="mpqr" class="mpanel">
+      <div id="qr-scanner-box" style="border-radius:14px;overflow:hidden;background:#000;"></div>
+      <div id="qr-start-wrap" style="text-align:center;padding:20px 0;">
+        <div style="width:60px;height:60px;border-radius:16px;background:var(--orange-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+          <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="var(--orange)" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h.01M14 17h3M17 14v3M20 20h.01"/></svg>
+        </div>
+        <p style="font-size:14px;color:var(--text2);margin-bottom:6px;">Scan friend's QR code</p>
+        <span style="font-size:12px;color:var(--text3);">Point camera at their profile QR</span>
+        <br/><br/>
+        <button class="btnp" style="width:100%;border-radius:50px;" onclick="startQRScan()">
+          📷 Start Camera
+        </button>
+      </div>
+      <div id="qr-stop-wrap" style="display:none;text-align:center;padding:10px 0 0;">
+        <button class="btng" style="width:100%;" onclick="stopQRScan()">Stop Camera</button>
+      </div>
+    </div>
+    <div class="macts">
+      <button class="btng" onclick="closeM('madd')">Cancel</button>
+      <button class="btnp" style="flex:1;margin-top:0;border-radius:50px;" onclick="addC()">Add contact</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Edit Field ══ -->
+<div class="ov-center hidden" id="medit">
+  <div class="modal-center">
+    <div class="mtitle" id="edit-title">Edit</div>
+    <div class="edit-field">
+      <div class="lbl" id="edit-lbl">Value</div>
+      <input class="inp" id="edit-inp" style="width:100%;" type="text"/>
+      <input class="inp" id="edit-inp2" style="width:100%;margin-top:10px;display:none;" type="password" placeholder="Confirm new code"/>
+    </div>
+    <div class="macts">
+      <button class="btng" onclick="closeM('medit')">Cancel</button>
+      <button class="btnp" style="flex:1;margin-top:0;border-radius:50px;" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Change DP ══ -->
+<div class="ov-center hidden" id="mdp">
+  <div class="modal-center">
+    <div class="mtitle">Change Profile Photo</div>
+    <div class="dp-preview" id="dp-preview"></div>
+    <div class="dp-options">
+      <label for="dpfinp" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg3);border-radius:14px;cursor:pointer;border:1px solid var(--border);transition:background .2s;" onmouseover="this.style.borderColor='var(--border-o)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div class="dp-opt-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+        <div class="dp-opt-text"><div class="dp-opt-title">Upload Photo</div><div class="dp-opt-sub">Choose from your gallery</div></div>
+      </label>
+      <div class="dp-opt" onclick="showColorPicker()">
+        <div class="dp-opt-icon"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 011.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></div>
+        <div class="dp-opt-text"><div class="dp-opt-title">Choose Color</div><div class="dp-opt-sub">Pick an avatar color</div></div>
+      </div>
+      <div class="dp-opt" onclick="removeDP()" id="remove-dp-opt" style="display:none;">
+        <div class="dp-opt-icon" style="background:rgba(239,68,68,.15);color:#ef4444;"><svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></div>
+        <div class="dp-opt-text"><div class="dp-opt-title" style="color:#ef4444;">Remove Photo</div><div class="dp-opt-sub">Go back to initials avatar</div></div>
+      </div>
+    </div>
+    <div id="color-picker-wrap" style="display:none;">
+      <div class="lbl" style="margin-bottom:8px;">Pick avatar color</div>
+      <div class="color-grid" id="color-grid"></div>
+    </div>
+    <input type="file" id="dpfinp" accept="image/*" onchange="handleDP(event)" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;"/>
+    <div class="macts" style="margin-top:16px;">
+      <button class="btng" onclick="closeM('mdp')">Done</button>
+    </div>
+  </div>
+</div>
 
 <script>
-// Append this to your main script area to handle bottom nav functionality
-function switchMobileNav(viewId, element) {
-  // Handle active state for bottom nav buttons
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  element.classList.add('active');
+// ── STATE ──
+let U=null, contacts=[], chats={}, actCid=null, editField=null, realtimeSub=null, unreadCounts={};
+const COLS=['#ff8f00','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ec4899','#ef4444','#14b8a6'];
+const AVATAR_COLORS=['#ff8f00','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ec4899','#ef4444','#14b8a6','#3b82f6','#a855f7','#f43f5e','#84cc16'];
 
-  // Handle Profile independently since it's a separate full screen
-  if (viewId === 'profile') {
-    showProf();
+function genYapId(){ return ['YAP','YWK','FDQ','ZXA','MNB'][Math.floor(Math.random()*5)]+'-'+Math.floor(10000+Math.random()*89999); }
+const ini=n=>n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+const fmt=d=>new Date(d).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true});
+const fmtD=v=>{if(!v)return'—';const d=new Date(v);return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})};
+const relT=d=>(new Date()-new Date(d))<86400000?fmt(d):'Yesterday';
+
+// ── THEME ──
+let isDark=false;
+function toggleTheme(){
+  isDark=!isDark;
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  ['theme-icon-moon','profile-moon'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=isDark?'none':'block'});
+  ['theme-icon-sun','profile-sun'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=isDark?'block':'none'});
+  const t=document.getElementById('dark-toggle');
+  if(t)t.classList.toggle('on',isDark);
+}
+const _dt=document.getElementById('dark-toggle');
+if(_dt)_dt.classList.remove('on');
+
+// ── AUTH TABS ──
+function swtab(t){
+  document.querySelectorAll('.tab').forEach((e,i)=>e.classList.toggle('active',(i===0&&t==='si')||(i===1&&t==='su')));
+  document.getElementById('psi').classList.toggle('active',t==='si');
+  document.getElementById('psu').classList.toggle('active',t==='su');
+}
+function shake(id){const e=document.getElementById(id);if(!e)return;e.style.borderColor='#ef4444';e.style.animation='shake .3s ease';e.focus();setTimeout(()=>{e.style.borderColor='';e.style.animation=''},900)}
+
+function showToast(msg, color='#ff8f00'){
+  let t=document.getElementById('toast');
+  if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:50px;font-size:14px;font-weight:600;z-index:9999;transition:opacity .3s;color:#fff;font-family:"Space Grotesk",sans-serif;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.15);';document.body.appendChild(t);}
+  t.style.background=color;
+  // white text for dark colors, dark text for light colors
+  t.style.color=(color==='#ff8f00'||color==='#22c55e')?'#3D2000':'#fff';
+  t.textContent=msg;t.style.opacity='1';
+  setTimeout(()=>t.style.opacity='0',2500);
+}
+
+// ── SIGN IN ──
+async function doSI(){
+  const ph=document.getElementById('si-ph').value.trim();
+  const cd=document.getElementById('si-cd').value;
+  if(!ph||ph.length<7){shake('si-ph');return;}
+  if(cd.length<6){shake('si-cd');return;}
+  const cc=document.getElementById('si-cc').value.replace(/[^+\d]/g,'');
+  const phone=cc+ph;
+  const fakeEmail=phone.replace(/[^\d]/g,'')+'@yap.app';
+
+  showToast('Signing in...','#ff8f00');
+  const {data,error}=await supa.auth.signInWithPassword({email:fakeEmail,password:cd});
+
+  if(error){
+    // Wrong credentials — check if any account exists for this number
+    const {data:profCheck}=await supa.from('profiles').select('id').eq('phone',phone).maybeSingle();
+    if(!profCheck){
+      // Truly no account
+      showToast('No account found! Switching to Sign up...','#ff8f00');
+      setTimeout(()=>{
+        swtab('su');
+        document.getElementById('su-cc').value=document.getElementById('si-cc').value;
+        document.getElementById('su-ph').value=ph;
+        setTimeout(()=>document.getElementById('su-nm').focus(),300);
+        showToast('Fill in your details to create account 👆','#ff8f00');
+      },1500);
+    } else {
+      // Account exists but wrong code
+      showToast('Wrong personal code ❌','#ef4444');
+      shake('si-cd');
+    }
     return;
   }
-  
-  // Back to app view if coming from Profile
-  if(document.getElementById('screen-profile').classList.contains('active')){
-     showScr('screen-app');
+
+  // Signed in successfully — load profile
+  const {data:profile}=await supa.from('profiles').select('*').eq('id',data.user.id).maybeSingle();
+  if(!profile){
+    // Auth exists but no profile — unusual, handle gracefully
+    showToast('Account incomplete. Please sign up again.','#ff8f00');
+    swtab('su');
+    document.getElementById('su-ph').value=ph;
+    return;
+  }
+  U={id:data.user.id,name:profile.full_name,phone:profile.phone,dob:profile.dob,yapId:profile.yap_id,dpColor:profile.dp_color||'#ff8f00',dpImg:profile.dp_url||null};
+  showToast('Welcome back, '+profile.full_name+'! ✅');
+  await enterApp();
+}
+
+// ── SIGN UP ──
+async function doSU(){
+  const nm=document.getElementById('su-nm').value.trim();
+  const ph=document.getElementById('su-ph').value.trim();
+  const db=document.getElementById('su-db').value;
+  const cd=document.getElementById('su-cd').value;
+  if(!nm){shake('su-nm');return;}
+  if(!ph||ph.length<7){shake('su-ph');return;}
+  if(!db){shake('su-db');return;}
+  if(cd.length<6){shake('su-cd');return;}
+  const cc=document.getElementById('su-cc').value.replace(/[^+\d]/g,'');
+  const phone=cc+ph;
+  const fakeEmail=phone.replace(/[^\d]/g,'')+'@yap.app';
+  const yapId=genYapId();
+
+  showToast('Creating account...','#ff8f00');
+
+  // Step 1: Try to sign up
+  const {data:signUpData, error:signUpErr}=await supa.auth.signUp({email:fakeEmail,password:cd});
+
+  let userId=null;
+
+  if(signUpErr || !signUpData?.user){
+    // Auth account may already exist — try signing in with the given code
+    const {data:siData,error:siErr}=await supa.auth.signInWithPassword({email:fakeEmail,password:cd});
+    if(siErr){
+      // Account exists but wrong personal code
+      showToast('Number already registered! Go to Sign in 👆','#ef4444');
+      setTimeout(()=>{
+        swtab('si');
+        document.getElementById('si-cc').value=document.getElementById('su-cc').value;
+        document.getElementById('si-ph').value=ph;
+        setTimeout(()=>document.getElementById('si-cd').focus(),300);
+        showToast('Enter your personal code to sign in','#ff8f00');
+      },1800);
+      return;
+    }
+    userId=siData.user.id;
+  } else {
+    userId=signUpData.user.id;
   }
 
-  // Switch between internal sidebar views
-  document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-  document.getElementById('view-' + viewId).classList.add('active');
-  
-  // Make sure Sidebar is visible and chat area is hidden on mobile switch
-  if(window.innerWidth <= 700){
-    document.getElementById('sb').classList.remove('h');
-    document.getElementById('ca').classList.add('h');
+  // Step 2: Check if profile already exists
+  const {data:existing}=await supa.from('profiles').select('id,full_name').eq('id',userId).maybeSingle();
+  if(existing){
+    // Profile exists — just log them in
+    const {data:prof}=await supa.from('profiles').select('*').eq('id',userId).single();
+    U={id:userId,name:prof.full_name,phone:prof.phone,dob:prof.dob,yapId:prof.yap_id,dpColor:prof.dp_color||'#ff8f00',dpImg:prof.dp_url||null};
+    showToast('Welcome back, '+prof.full_name+'! ✅');
+    await enterApp();
+    return;
   }
+
+  // Step 3: Create profile
+  const {error:profErr}=await supa.from('profiles').insert({
+    id:userId, yap_id:yapId, full_name:nm,
+    phone:phone, dob:db, dp_color:'#ff8f00', dp_url:null
+  });
+  if(profErr){
+    showToast('Error saving profile. Try again ❌','#ef4444');
+    console.error(profErr);
+    return;
+  }
+  U={id:userId,name:nm,phone:phone,dob:db,yapId:yapId,dpColor:'#ff8f00',dpImg:null};
+  showToast('Welcome to Yap!, '+nm+'! 🎉');
+  await enterApp();
+}
+
+// ── ENTER APP ──
+async function enterApp(){
+  showScr('screen-app');
+  await loadContacts();
+  startGlobalSubscription();
+  startPresence();
+  requestNotificationPermission();
+  if(window.innerWidth<=700)document.getElementById('ca').classList.add('h');
+}
+
+// ── PRESENCE (Online Status) ──
+let presenceChannel=null;
+function startPresence(){
+  if(presenceChannel) supa.removeChannel(presenceChannel);
+  presenceChannel=supa.channel('online-users',{
+    config:{presence:{key:U.id}}
+  });
+  presenceChannel
+    .on('presence',{event:'sync'},()=>{
+      const state=presenceChannel.presenceState();
+      // Update online status for all contacts
+      contacts.forEach(c=>{
+        c.online=!!state[c.id];
+      });
+      renderList();
+      // Update topbar if chat is open
+      if(actCid){
+        const c=contacts.find(x=>x.id===actCid);
+        if(c){
+          const statusEl=document.getElementById('c-status');
+          if(statusEl){
+            statusEl.textContent=c.online?'Online':'';
+            statusEl.style.color='#22c55e';
+          }
+        }
+      }
+    })
+    .on('presence',{event:'join'},({key})=>{
+      const c=contacts.find(x=>x.id===key);
+      if(c){c.online=true;renderList();}
+    })
+    .on('presence',{event:'leave'},({key})=>{
+      const c=contacts.find(x=>x.id===key);
+      if(c){c.online=false;renderList();}
+    })
+    .subscribe(async(status)=>{
+      if(status==='SUBSCRIBED'){
+        await presenceChannel.track({user_id:U.id,online_at:new Date().toISOString()});
+      }
+    });
+}
+
+// ── PUSH NOTIFICATIONS ──
+// ── MESSAGE TONE ──
+function playMsgTone(){
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    // First beep
+    const o1=ctx.createOscillator();
+    const g1=ctx.createGain();
+    o1.connect(g1);g1.connect(ctx.destination);
+    o1.frequency.value=820;
+    o1.type='sine';
+    g1.gain.setValueAtTime(0,ctx.currentTime);
+    g1.gain.linearRampToValueAtTime(0.3,ctx.currentTime+0.01);
+    g1.gain.linearRampToValueAtTime(0,ctx.currentTime+0.15);
+    o1.start(ctx.currentTime);o1.stop(ctx.currentTime+0.15);
+    // Second beep
+    const o2=ctx.createOscillator();
+    const g2=ctx.createGain();
+    o2.connect(g2);g2.connect(ctx.destination);
+    o2.frequency.value=1020;
+    o2.type='sine';
+    g2.gain.setValueAtTime(0,ctx.currentTime+0.18);
+    g2.gain.linearRampToValueAtTime(0.3,ctx.currentTime+0.19);
+    g2.gain.linearRampToValueAtTime(0,ctx.currentTime+0.35);
+    o2.start(ctx.currentTime+0.18);o2.stop(ctx.currentTime+0.35);
+  } catch(e){ console.log('Audio not supported'); }
+}
+
+function requestNotificationPermission(){
+  if(!('Notification' in window)) return;
+  if(Notification.permission==='default'){
+    Notification.requestPermission().then(perm=>{
+      if(perm==='granted') showToast('🔔 Notifications enabled!','#22c55e');
+    });
+  }
+}
+
+function sendPushNotification(title, body, senderId){
+  if(!('Notification' in window)) return;
+  if(Notification.permission!=='granted') return;
+  // Only notify if app is in background or different chat is open
+  if(document.visibilityState==='visible' && actCid===senderId) return;
+  const notif = new Notification(title, {
+    body: body,
+    icon: 'data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><rect width=\'100\' height=\'100\' rx=\'22\' fill=\'%23ff8f00\'/><path d=\'M20 25 C20 20 24 16 29 16 L71 16 C76 16 80 20 80 25 L80 58 C80 63 76 67 71 67 L38 67 L25 80 L25 67 L29 67 C24 67 20 63 20 58 Z\' fill=\'black\'/></svg>',
+    badge: 'data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><rect width=\'100\' height=\'100\' rx=\'22\' fill=\'%23ff8f00\'/></svg>',
+    tag: 'yap-msg-'+senderId,
+    renotify: true,
+    vibrate: [200, 100, 200],
+    silent: false
+  });
+  notif.onclick=()=>{
+    window.focus();
+    notif.close();
+    // Open that chat
+    const c=contacts.find(x=>x.id===senderId);
+    if(c) openChat(c.id);
+  };
+}
+
+// ── CHECK SESSION ON LOAD ──
+async function checkSession(){
+  const {data:{session}}=await supa.auth.getSession();
+  if(session){
+    const {data:profile}=await supa.from('profiles').select('*').eq('id',session.user.id).single();
+    if(profile){
+      U={id:session.user.id,name:profile.full_name,phone:profile.phone,dob:profile.dob,yapId:profile.yap_id,dpColor:profile.dp_color||'#ff8f00',dpImg:profile.dp_url||null};
+      await enterApp();
+    }
+  }
+}
+checkSession();
+
+// ── SCREENS ──
+/* ── ROUTE TRANSITIONS ── */
+const RT_ORDER=['screen-auth','screen-app','screen-profile'];
+const RT_MS=340;
+let rtBusy=false;
+function rtVeil(){
+  let v=document.querySelector('.rt-veil');
+  if(!v){v=document.createElement('div');v.className='rt-veil';document.body.appendChild(v);}
+  v.classList.remove('on');void v.offsetWidth;v.classList.add('on');
+  setTimeout(()=>v.classList.remove('on'),520);
+}
+function showScr(id){
+  const next=document.getElementById(id);
+  if(!next)return;
+  const cur=document.querySelector('.screen.active');
+  if(!cur||cur===next||rtBusy){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    next.classList.add('active','rt-enter-up');
+    setTimeout(()=>next.classList.remove('rt-enter-up'),500);
+    return;
+  }
+  rtBusy=true;
+  const fwd=RT_ORDER.indexOf(id)>=RT_ORDER.indexOf(cur.id);
+  document.body.classList.add('rt-busy');
+  rtVeil();
+  cur.classList.remove('active');
+  cur.classList.add('rt-exit',fwd?'rt-exit-fwd':'rt-exit-back');
+  next.classList.add('active',fwd?'rt-enter-fwd':'rt-enter-back');
+  // force one style/layout flush now so the blur-suspension repaint happens
+  // before the animations start, not on their first frame
+  void document.body.offsetHeight;
+  setTimeout(()=>{
+    cur.classList.remove('rt-exit','rt-exit-fwd','rt-exit-back');
+    next.classList.remove('rt-enter-fwd','rt-enter-back');
+    document.body.classList.remove('rt-busy');
+    rtBusy=false;
+  },RT_MS+130);
+}
+function rtPanel(hideEl,showEl,dir){
+  if(!hideEl||!showEl){return;}
+  const outCls=dir==='fwd'?'pan-out-left':'pan-out-right';
+  document.body.classList.add('rt-lite');
+  hideEl.classList.add(outCls);
+  setTimeout(()=>{
+    hideEl.classList.remove(outCls);
+    document.body.classList.remove('rt-lite');
+    hideEl.classList.add('h');
+    showEl.classList.remove('h');
+  },260);
+}
+
+function goBack(){showScr('screen-app');}
+async function logout(){
+  if(presenceChannel){await presenceChannel.untrack();supa.removeChannel(presenceChannel);presenceChannel=null;}
+  await supa.auth.signOut();
+  if(realtimeSub){supa.removeChannel(realtimeSub);realtimeSub=null;}
+  U=null;contacts=[];chats={};actCid=null;selectMode=false;selectedIds=new Set();
+  showScr('screen-auth');
+  showToast('Signed out ✅');
+}
+function backList(){if(window.innerWidth<=700){rtPanel(document.getElementById('ca'),document.getElementById('sb'),'back');}}
+
+// ── LOAD CONTACTS ──
+async function loadContacts(){
+  const {data}=await supa.from('contacts').select('contact_id, profiles!contacts_contact_id_fkey(id,full_name,yap_id,dp_color,dp_url)').eq('user_id',U.id);
+  contacts=(data||[]).map(r=>({
+    id:r.profiles.id,
+    name:r.profiles.full_name,
+    yapId:r.profiles.yap_id,
+    color:r.profiles.dp_color||'#ff8f00',
+    dpImg:r.profiles.dp_url||null,
+    online:false
+  }));
+  renderList();
+}
+
+// ── CHAT LIST ──
+// ── SELECT MODE ──
+let selectMode=false;
+let selectedIds=new Set();
+
+function enterSelectMode(cid){
+  selectMode=true;
+  selectedIds=new Set([cid]);
+  document.getElementById('clist').classList.add('select-mode');
+  document.getElementById('normal-bar').style.display='none';
+  document.getElementById('sel-bar').classList.add('active');
+  updateSelCount();
+  renderList();
+}
+function exitSelectMode(){
+  selectMode=false;
+  selectedIds=new Set();
+  document.getElementById('clist').classList.remove('select-mode');
+  document.getElementById('normal-bar').style.display='block';
+  document.getElementById('sel-bar').classList.remove('active');
+  renderList();
+}
+function toggleSelect(cid){
+  if(selectedIds.has(cid)) selectedIds.delete(cid);
+  else selectedIds.add(cid);
+  updateSelCount();
+  renderList();
+}
+function updateSelCount(){
+  document.getElementById('sel-count').textContent=selectedIds.size;
+}
+async function deleteSelected(){
+  if(selectedIds.size===0) return;
+  const names=contacts.filter(c=>selectedIds.has(c.id)).map(c=>c.name).join(', ');
+  if(!confirm(`Remove ${names} from contacts?`)) return;
+  showToast('Deleting...','#ff8f00');
+  for(const cid of selectedIds){
+    await supa.from('contacts').delete().eq('user_id',U.id).eq('contact_id',cid);
+    contacts=contacts.filter(c=>c.id!==cid);
+    delete chats[cid];
+    if(actCid===cid){
+      actCid=null;
+      document.getElementById('est').style.display='flex';
+      document.getElementById('ac').style.display='none';
+    }
+  }
+  exitSelectMode();
+  showToast(`Deleted ${selectedIds.size||names.split(',').length} contact(s) ✅`);
+  renderList();
+}
+
+let pressTimer=null;
+function renderList(f=''){
+  const el=document.getElementById('clist');el.innerHTML='';
+  const filtered=contacts.filter(c=>c.name.toLowerCase().includes(f.toLowerCase()));
+  if(filtered.length===0){
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--text3);font-size:14px;">No contacts yet.<br/>Tap Add contact to start!</div>';
+    return;
+  }
+  filtered.forEach(c=>{
+    const msgs=chats[c.id]||[];const last=msgs[msgs.length-1];
+    const div=document.createElement('div');
+    const isSelected=selectedIds.has(c.id);
+    div.className='ci'+(c.id===actCid&&!selectMode?' active':'')+(isSelected?' selected':'');
+    const avBg=c.dpImg?`style="background-image:url(${c.dpImg});background-size:cover;background-color:transparent;"` :`style="background:${c.color};"`;
+    div.innerHTML=`
+      <div class="sel-check ${isSelected?'checked':''}">
+        ${isSelected?'<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="black" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>':''}
+      </div>
+      <div class="av ${c.online?'on':''}" ${avBg}>${c.dpImg?'':ini(c.name)}</div>
+      <div class="cinfo"><div class="cname">${c.name}</div><div class="cprev">${last?(last.type==='image'?'📷 Photo':last.content):'No messages yet'}</div></div>
+      <div class="caside"><div class="ctime">${last?relT(last.created_at):''}</div>${unreadCounts[c.id]>0?`<div class="cbadge">${unreadCounts[c.id]}</div>`:''}</div>`;
+    // long press to enter select mode
+    div.addEventListener('pointerdown',()=>{
+      pressTimer=setTimeout(()=>{ if(!selectMode) enterSelectMode(c.id); },500);
+    });
+    div.addEventListener('pointerup',()=>clearTimeout(pressTimer));
+    div.addEventListener('pointercancel',()=>clearTimeout(pressTimer));
+    div.onclick=()=>{
+      if(selectMode){ toggleSelect(c.id); }
+      else { openChat(c.id); }
+    };
+    el.appendChild(div);
+  });
+}
+function filterC(v){renderList(v);}
+
+// ── OPEN CHAT ──
+async function openChat(cid){
+  actCid=cid;
+  // Reset unread count
+  unreadCounts[cid]=0;
+  const c=contacts.find(x=>x.id===cid);if(!c)return;
+  document.getElementById('est').style.display='none';
+  const a=document.getElementById('ac');a.style.display='flex';
+  const tav=document.getElementById('tav');
+  if(c.dpImg){tav.style.backgroundImage=`url(${c.dpImg})`;tav.style.backgroundColor='transparent';tav.textContent='';}
+  else{tav.style.backgroundImage='none';tav.style.backgroundColor=c.color;tav.textContent=ini(c.name);}
+  document.getElementById('tnm').textContent=c.name;
+  const tidEl=document.getElementById('tid');
+  if(tidEl) tidEl.textContent=c.yapId||c.id.slice(0,8);
+  const statusEl=document.getElementById('c-status');
+  if(statusEl){statusEl.textContent=c.online?'Online':'';}
+  if(window.innerWidth<=700){rtPanel(document.getElementById('sb'),document.getElementById('ca'),'fwd');}
+  await loadMessages(cid);
+  subscribeMessages(cid);
+  renderList();
+}
+
+// ── LOAD MESSAGES ──
+async function loadMessages(cid){
+  const {data}=await supa.from('messages')
+    .select('*')
+    .or(`and(sender_id.eq.${U.id},receiver_id.eq.${cid}),and(sender_id.eq.${cid},receiver_id.eq.${U.id})`)
+    .order('created_at',{ascending:true});
+  chats[cid]=data||[];
+  renderMsgs(cid);
+}
+
+// ── REALTIME SUBSCRIBE ──
+// ── GLOBAL REALTIME SUBSCRIPTION ──
+// Listens for ALL incoming messages for this user — not just the open chat
+function startGlobalSubscription(){
+  if(realtimeSub){supa.removeChannel(realtimeSub);}
+  realtimeSub=supa.channel('global-messages-'+U.id)
+    .on('postgres_changes',{
+      event:'INSERT',
+      schema:'public',
+      table:'messages',
+      filter:`receiver_id=eq.${U.id}`
+    },async payload=>{
+      const m=payload.new;
+      const senderId=m.sender_id;
+
+      // ── AUTO ADD CONTACT ──
+      const alreadyContact=contacts.find(c=>c.id===senderId);
+      if(!alreadyContact){
+        const {data:senderProfile}=await supa.from('profiles').select('*').eq('id',senderId).maybeSingle();
+        if(senderProfile){
+          await autoAddContact(senderId);
+          showToast('💬 '+senderProfile.full_name+' messaged you! Added to contacts','#ff8f00');
+        }
+      }
+
+      // Store message in the right chat
+      if(!chats[senderId])chats[senderId]=[];
+      if(!chats[senderId].find(x=>x.id===m.id)){
+        chats[senderId].push(m);
+        // If this chat is currently open, render it
+        if(actCid===senderId) renderMsgs(senderId);
+        // Update chat list preview
+        renderList();
+        // Show notification toast if chat is not open
+        if(actCid!==senderId){
+          const sender=contacts.find(c=>c.id===senderId);
+          const name=sender?sender.name:'Someone';
+          // increment unread count
+          unreadCounts[senderId]=(unreadCounts[senderId]||0)+1;
+          showToast('💬 '+name+': '+m.content.slice(0,40),'#1a1a1a');
+          playMsgTone();
+          sendPushNotification('Yap! — '+name, m.content, senderId);
+        } else {
+          playMsgTone();
+        }
+      }
+    })
+    .subscribe(status=>{
+      if(status==='SUBSCRIBED') console.log('✅ Realtime connected');
+    });
+}
+
+function subscribeMessages(cid){
+  // No-op — global subscription handles everything now
+  // Just make sure messages are loaded when opening chat
+}
+
+
+// ── RENDER MESSAGES ──
+function renderMsgs(cid){
+  const area=document.getElementById('msgs');
+  const msgs=chats[cid]||[];area.innerHTML='';
+  if(msgs.length===0){
+    const empty=document.createElement('div');
+    empty.style.cssText='text-align:center;color:var(--text3);font-size:13px;margin-top:40px;';
+    empty.textContent='No messages yet. Say hi! 👋';
+    area.appendChild(empty);return;
+  }
+  const sep=document.createElement('div');sep.className='dsep';sep.textContent='Today';area.appendChild(sep);
+  msgs.forEach(m=>{
+    const out=m.sender_id===U.id;
+    const row=document.createElement('div');row.className='mrow '+(out?'out':'in');
+    if(m.type==='image'){
+      const senderName=out?'You':(contacts.find(c=>c.id===m.sender_id)?.name||'Contact');
+      const timeStr=fmt(m.created_at);
+      row.innerHTML=`<div class="bbl" style="padding:0;overflow:hidden;background:transparent;border:none;">
+        <div class="img-bbl" onclick="openPhotoViewer('${m.file_url}','${senderName}','${timeStr}')">
+          <img src="${m.file_url}" alt="photo" loading="lazy"/>
+        </div>
+        <div class="btime" style="padding:4px 4px 0;">${timeStr}</div>
+      </div>`;
+    } else {
+      row.innerHTML=`<div class="bbl">${m.content}<div class="btime">${fmt(m.created_at)}</div></div>`;
+    }
+    area.appendChild(row);
+  });
+  area.scrollTop=area.scrollHeight;
+}
+
+// ── SEND MESSAGE ──
+// ── AUTO ADD CONTACT HELPER ──
+async function autoAddContact(userId){
+  // Check if already in local contacts
+  if(contacts.find(c=>c.id===userId)) return;
+  // Fetch profile
+  const {data:prof}=await supa.from('profiles').select('*').eq('id',userId).maybeSingle();
+  if(!prof) return;
+  // Check if already saved in DB
+  const {data:exists}=await supa.from('contacts').select('id').eq('user_id',U.id).eq('contact_id',userId).maybeSingle();
+  if(!exists){
+    await supa.from('contacts').insert({user_id:U.id,contact_id:userId}).throwOnError().catch(()=>{});
+  }
+  // Add to local contacts array
+  const newContact={
+    id:prof.id, name:prof.full_name, yapId:prof.yap_id,
+    color:prof.dp_color||'#ff8f00', dpImg:prof.dp_url||null, online:false
+  };
+  contacts.push(newContact);
+  chats[prof.id]=chats[prof.id]||[];
+  renderList();
+}
+
+async function sendMsg(){
+  const inp=document.getElementById('minp');const text=inp.value.trim();
+  if(!text||!actCid)return;
+  inp.value='';inp.style.height='46px';
+
+  // Auto-add receiver to your contacts if not already there
+  await autoAddContact(actCid);
+
+  const msg={sender_id:U.id,receiver_id:actCid,content:text,type:'text',file_url:null};
+  // Optimistic UI
+  const tempMsg={...msg,id:'temp-'+Date.now(),created_at:new Date().toISOString()};
+  if(!chats[actCid])chats[actCid]=[];
+  chats[actCid].push(tempMsg);
+  renderMsgs(actCid);renderList();
+
+  const {data,error}=await supa.from('messages').insert(msg).select().single();
+  if(!error&&data){
+    const idx=chats[actCid].findIndex(m=>m.id===tempMsg.id);
+    if(idx>-1)chats[actCid][idx]=data;
+    renderMsgs(actCid);
+  }
+}
+function hkey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function agrow(el){el.style.height='46px';el.style.height=Math.min(el.scrollHeight,120)+'px';}
+
+// ── FILE UPLOAD ──
+async function handleFile(e){
+  const f=e.target.files[0];if(!f||!actCid)return;
+  showToast('Uploading...','#ff8f00');
+  const path=`${U.id}/${Date.now()}-${f.name}`;
+  const {error:upErr}=await supa.storage.from('yap-files').upload(path,f);
+  if(upErr){showToast('Upload failed ❌','#ef4444');return;}
+  const {data:{publicUrl}}=supa.storage.from('yap-files').getPublicUrl(path);
+  const msg={sender_id:U.id,receiver_id:actCid,content:'📷 Photo',type:'image',file_url:publicUrl};
+  await supa.from('messages').insert(msg);
+  showToast('Sent! ✅');
+  e.target.value='';
+}
+
+// ── PROFILE ──
+function showProf(){
+  updateProfileUI();renderQR('pqr');showScr('screen-profile');
+}
+function updateProfileUI(){
+  const pav=document.getElementById('pav');const pavTxt=document.getElementById('pav-txt');
+  if(U.dpImg){pav.style.backgroundImage=`url(${U.dpImg})`;pav.style.backgroundColor='transparent';pavTxt.textContent='';}
+  else{pav.style.backgroundImage='none';pav.style.backgroundColor=U.dpColor;pavTxt.textContent=ini(U.name);}
+  document.getElementById('pnm').textContent=U.name;
+  document.getElementById('pyid').textContent=U.yapId;
+  document.getElementById('p-name-val').textContent=U.name;
+  document.getElementById('p-phone-val').textContent=U.phone;
+  document.getElementById('p-dob-val').textContent=fmtD(U.dob);
+}
+function cpyId(){navigator.clipboard?.writeText(U.yapId);const e=document.getElementById('pyid');e.textContent='Copied!';setTimeout(()=>e.textContent=U.yapId,1500);}
+
+// ── EDIT FIELD ──
+const editConfig={
+  name:{title:'Edit Name',label:'Full Name',type:'text',get:()=>U.name,set:async(v)=>{await supa.from('profiles').update({full_name:v}).eq('id',U.id);U.name=v;updateProfileUI();}},
+  phone:{title:'Edit Mobile',label:'Mobile Number',type:'tel',get:()=>U.phone,set:async(v)=>{await supa.from('profiles').update({phone:v}).eq('id',U.id);U.phone=v;updateProfileUI();}},
+  dob:{title:'Edit Date of Birth',label:'Date of Birth',type:'date',get:()=>U.dob,set:async(v)=>{await supa.from('profiles').update({dob:v}).eq('id',U.id);U.dob=v;updateProfileUI();}},
+  code:{title:'Change Personal Code',label:'New Code (min 6 chars)',type:'password',get:()=>'',set:async(v)=>{await supa.auth.updateUser({password:v});showToast('Code updated! ✅');}}
+};
+function openEdit(field){
+  editField=field;const cfg=editConfig[field];
+  document.getElementById('edit-title').textContent=cfg.title;
+  document.getElementById('edit-lbl').textContent=cfg.label;
+  const inp=document.getElementById('edit-inp');
+  inp.type=cfg.type;inp.value=cfg.type==='password'?'':cfg.get();
+  document.getElementById('edit-inp2').style.display=field==='code'?'block':'none';
+  document.getElementById('medit').classList.remove('hidden');
+  setTimeout(()=>inp.focus(),100);
+}
+async function saveEdit(){
+  if(!editField)return;
+  const cfg=editConfig[editField];
+  const val=document.getElementById('edit-inp').value.trim();
+  if(!val){shake('edit-inp');return;}
+  if(editField==='code'&&val.length<6){shake('edit-inp');return;}
+  await cfg.set(val);
+  closeM('medit');showToast('Saved! ✅');
+}
+
+// ── DP ──
+function openDPModal(){
+  const prev=document.getElementById('dp-preview');
+  if(U.dpImg){prev.style.backgroundImage=`url(${U.dpImg})`;prev.style.backgroundColor='transparent';prev.textContent='';}
+  else{prev.style.backgroundImage='none';prev.style.backgroundColor=U.dpColor;prev.textContent=ini(U.name);}
+  document.getElementById('remove-dp-opt').style.display=U.dpImg?'flex':'none';
+  document.getElementById('color-picker-wrap').style.display='none';
+  document.getElementById('mdp').classList.remove('hidden');
+}
+function showColorPicker(){
+  const wrap=document.getElementById('color-picker-wrap');const grid=document.getElementById('color-grid');
+  wrap.style.display='block';grid.innerHTML='';
+  AVATAR_COLORS.forEach(c=>{
+    const dot=document.createElement('div');
+    dot.className='color-dot'+(U.dpColor===c&&!U.dpImg?' selected':'');
+    dot.style.background=c;
+    dot.onclick=async()=>{
+      U.dpColor=c;U.dpImg=null;
+      await supa.from('profiles').update({dp_color:c,dp_url:null}).eq('id',U.id);
+      document.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('selected'));
+      dot.classList.add('selected');
+      const prev=document.getElementById('dp-preview');
+      prev.style.backgroundImage='none';prev.style.backgroundColor=c;prev.textContent=ini(U.name);
+      updateProfileUI();renderList();
+    };
+    grid.appendChild(dot);
+  });
+}
+async function handleDP(e){
+  const f=e.target.files[0];if(!f)return;
+  showToast('Uploading photo...','#ff8f00');
+  const path=`avatars/${U.id}/${Date.now()}-${f.name}`;
+  const {error}=await supa.storage.from('yap-files').upload(path,f,{upsert:true});
+  if(error){showToast('Upload failed ❌','#ef4444');return;}
+  const {data:{publicUrl}}=supa.storage.from('yap-files').getPublicUrl(path);
+  U.dpImg=publicUrl;
+  await supa.from('profiles').update({dp_url:publicUrl}).eq('id',U.id);
+  const prev=document.getElementById('dp-preview');
+  prev.style.backgroundImage=`url(${publicUrl})`;prev.style.backgroundColor='transparent';prev.textContent='';
+  document.getElementById('remove-dp-opt').style.display='flex';
+  updateProfileUI();renderList();showToast('Photo updated! ✅');
+  e.target.value='';
+}
+async function removeDP(){
+  U.dpImg=null;
+  await supa.from('profiles').update({dp_url:null}).eq('id',U.id);
+  updateProfileUI();renderList();openDPModal();
+}
+
+// ── QR ──
+function renderQR(containerId){
+  const box=document.getElementById(containerId);
+  if(!box)return;
+  box.innerHTML='';
+
+  // Get the YAP ID to encode
+  const yapId = containerId==='pqr' ? (U?U.yapId:'') :
+                containerId==='cp-qr' ? (document.getElementById('cp-yid')?.textContent||'') : '';
+
+  if(!yapId || yapId==='Copied!'){
+    // Fallback decorative QR
+    box.style.cssText='background:#fff;border-radius:16px;padding:14px;width:180px;height:180px;margin:16px auto 8px;display:grid;grid-template-columns:repeat(9,1fr);gap:3px;';
+    const cors=new Set();
+    [[0,0],[0,1],[0,2],[1,0],[2,0],[1,2],[2,1],[2,2],[0,6],[0,7],[0,8],[1,6],[2,6],[1,8],[2,7],[2,8],[6,0],[7,0],[8,0],[6,1],[6,2],[8,1],[7,2],[8,2]].forEach(([r,c])=>cors.add(r*9+c));
+    for(let r=0;r<9;r++)for(let c=0;c<9;c++){const e=document.createElement('div');e.className='qr-cell';e.style.background=cors.has(r*9+c)?'#111':Math.random()>.48?'#111':'#f0f0f0';box.appendChild(e);}
+    return;
+  }
+
+  // Use QRCode library if available
+  if(typeof QRCode !== 'undefined'){
+    box.style.cssText='width:180px;height:180px;margin:16px auto 8px;display:flex;align-items:center;justify-content:center;';
+    new QRCode(box,{
+      text: yapId,
+      width: 180,
+      height: 180,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } else {
+    // Fallback decorative
+    box.style.cssText='background:#fff;border-radius:16px;padding:14px;width:180px;height:180px;margin:16px auto 8px;display:grid;grid-template-columns:repeat(9,1fr);gap:3px;';
+    const cors=new Set();
+    [[0,0],[0,1],[0,2],[1,0],[2,0],[1,2],[2,1],[2,2],[0,6],[0,7],[0,8],[1,6],[2,6],[1,8],[2,7],[2,8],[6,0],[7,0],[8,0],[6,1],[6,2],[8,1],[7,2],[8,2]].forEach(([r,c])=>cors.add(r*9+c));
+    for(let r=0;r<9;r++)for(let c=0;c<9;c++){const e=document.createElement('div');e.className='qr-cell';e.style.background=cors.has(r*9+c)?'#111':Math.random()>.48?'#111':'#f0f0f0';box.appendChild(e);}
+  }
+}
+
+// ── ADD CONTACT ──
+function openAdd(){document.getElementById('madd').classList.remove('hidden');}
+function closeM(id){
+  document.getElementById(id).classList.add('hidden');
+  // Stop QR scanner if modal closed
+  if(id==='madd') stopQRScan();
+}
+function smtab(t){
+  document.querySelectorAll('.mtab').forEach((e,i)=>e.classList.toggle('active',(i===0&&t==='id')||(i===1&&t==='qr')));
+  document.getElementById('mpid').classList.toggle('active',t==='id');
+  document.getElementById('mpqr').classList.toggle('active',t==='qr');
+}
+// ── QR SCANNER ──
+let html5QrScanner=null;
+
+function startQRScan(){
+  document.getElementById('qr-start-wrap').style.display='none';
+  document.getElementById('qr-stop-wrap').style.display='block';
+  document.getElementById('qr-scanner-box').innerHTML='';
+
+  html5QrScanner=new Html5Qrcode('qr-scanner-box');
+  html5QrScanner.start(
+    {facingMode:'environment'},
+    {fps:10, qrbox:{width:220,height:220}},
+    (decodedText)=>{
+      // QR scanned successfully
+      stopQRScan();
+      // Extract YAP ID from scanned text
+      const yapIdMatch=decodedText.match(/[A-Z]{3}-\d{5}/);
+      if(yapIdMatch){
+        document.getElementById('ayid').value=yapIdMatch[0];
+        smtab('id');
+        showToast('QR scanned! Tap Add contact ✅','#22c55e');
+      } else if(decodedText.length>3){
+        document.getElementById('ayid').value=decodedText.trim();
+        smtab('id');
+        showToast('QR scanned! ✅','#22c55e');
+      } else {
+        showToast('Invalid QR code ❌','#ef4444');
+      }
+    },
+    ()=>{}// ignore scan errors
+  ).catch(err=>{
+    document.getElementById('qr-start-wrap').style.display='block';
+    document.getElementById('qr-stop-wrap').style.display='none';
+    showToast('Camera access denied ❌','#ef4444');
+    console.error(err);
+  });
+}
+
+function stopQRScan(){
+  if(html5QrScanner){
+    html5QrScanner.stop().then(()=>{
+      html5QrScanner.clear();
+      html5QrScanner=null;
+      document.getElementById('qr-scanner-box').innerHTML='';
+      document.getElementById('qr-start-wrap').style.display='block';
+      document.getElementById('qr-stop-wrap').style.display='none';
+    }).catch(()=>{});
+  }
+}
+
+function simScan(){document.getElementById('ayid').value='YAP-12345';smtab('id');}
+async function addC(){
+  const val=document.getElementById('ayid').value.trim();
+  if(!val){shake('ayid');return;}
+  showToast('Searching...','#ff8f00');
+  // Find user by YAP ID
+  const {data:found}=await supa.from('profiles').select('*').eq('yap_id',val).single();
+  if(!found){showToast('YAP ID not found ❌','#ef4444');return;}
+  if(found.id===U.id){showToast('Thats your own ID! ❌','#ef4444');return;}
+  // Check if already a contact
+  const {data:existing}=await supa.from('contacts').select('id').eq('user_id',U.id).eq('contact_id',found.id).single();
+  if(existing){showToast('Already in contacts!','#ff8f00');closeM('madd');return;}
+  // Add contact
+  await supa.from('contacts').insert({user_id:U.id,contact_id:found.id});
+  const c={id:found.id,name:found.full_name,yapId:found.yap_id,color:found.dp_color||'#ff8f00',dpImg:found.dp_url||null,online:false};
+  contacts.push(c);chats[c.id]=[];
+  closeM('madd');renderList();openChat(c.id);
+  document.getElementById('ayid').value='';
+  showToast('Contact added! ✅');
+}
+
+// ── VIEW CONTACT PROFILE ──
+function viewContactProfile(cid){
+  const c=contacts.find(x=>x.id===cid);if(!c)return;
+  const av=document.getElementById('cp-av');
+  if(c.dpImg){av.style.backgroundImage=`url(${c.dpImg})`;av.style.backgroundColor='transparent';av.textContent='';}
+  else{av.style.backgroundImage='none';av.style.backgroundColor=c.color;av.textContent=ini(c.name);}
+  document.getElementById('cp-name').textContent=c.name;
+  const dot=document.getElementById('cp-status-dot');const txt=document.getElementById('cp-status-txt');
+  dot.style.background=c.online?'#22c55e':'#6b7280';
+  txt.textContent=c.online?'Online':'Offline';txt.style.color=c.online?'#22c55e':'var(--text3)';
+  document.getElementById('cp-yid').textContent=c.yapId||c.id.slice(0,8);
+  renderQR('cp-qr');
+  document.getElementById('mcontact').classList.remove('hidden');
+}
+function cpContactId(){
+  const id=document.getElementById('cp-yid').textContent;
+  navigator.clipboard?.writeText(id);
+  const el=document.getElementById('cp-yid');el.textContent='Copied!';setTimeout(()=>el.textContent=id,1500);
+}
+function msgContact(){closeM('mcontact');}
+
+// Close modals on overlay click
+['madd','medit','mdp'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el)el.addEventListener('click',e=>{if(e.target===el)closeM(id);});
+});
+const _mc=document.getElementById('mcontact');
+if(_mc)_mc.addEventListener('click',e=>{if(e.target===_mc)closeM('mcontact');});
+</script>
+
+<!-- ══ MODAL: View Contact Profile ══ -->
+<div class="ov-center hidden" id="mcontact">
+  <div class="modal-center" style="max-width:360px;text-align:center;padding:32px 24px;">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+      <div class="ibtn" onclick="closeM('mcontact')" style="margin-left:auto;">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+
+    <!-- Avatar -->
+    <div id="cp-av" style="width:90px;height:90px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#fff;overflow:hidden;background-size:cover;background-position:center;box-shadow:0 0 32px rgba(249,115,22,.35);"></div>
+
+    <!-- Name & Status -->
+    <div id="cp-name" style="font-size:22px;font-weight:700;margin-bottom:4px;"></div>
+    <div id="cp-status" style="font-size:13px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:6px;">
+      <span id="cp-status-dot" style="width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
+      <span id="cp-status-txt">Online</span>
+    </div>
+
+    <!-- YAP ID -->
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:14px;text-align:left;">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">YAP ID</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div id="cp-yid" style="font-family:monospace;font-size:16px;font-weight:700;color:var(--orange);"></div>
+        <div onclick="cpContactId()" style="cursor:pointer;color:var(--text2);padding:4px;" title="Copy">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- QR Code -->
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;text-align:left;">QR Code</div>
+      <div class="qr-box" id="cp-qr" style="margin:0 auto 8px;"></div>
+      <div style="font-size:12px;color:var(--text2);">Scan to add as contact</div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="display:flex;gap:10px;">
+      <button onclick="closeM('mcontact')" class="btng" style="flex:1;">Close</button>
+      <button onclick="msgContact()" class="btnp" style="flex:1;margin-top:0;border-radius:50px;padding:13px;">
+        Message
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── VIEW CONTACT PROFILE ──
+function viewContactProfile(cid){
+  const c=contacts.find(x=>x.id===cid);if(!c)return;
+
+  // Avatar
+  const av=document.getElementById('cp-av');
+  if(c.dpImg){av.style.backgroundImage=`url(${c.dpImg})`;av.style.backgroundColor='transparent';av.textContent=''}
+  else{av.style.backgroundImage='none';av.style.backgroundColor=c.color;av.textContent=ini(c.name)}
+
+  // Name & status
+  document.getElementById('cp-name').textContent=c.name;
+  const dot=document.getElementById('cp-status-dot');
+  const txt=document.getElementById('cp-status-txt');
+  dot.style.background=c.online?'#22c55e':'#6b7280';
+  txt.textContent=c.online?'Online':'Offline';
+  txt.style.color=c.online?'#22c55e':'var(--text3)';
+
+  // YAP ID
+  document.getElementById('cp-yid').textContent=c.id;
+
+  // QR
+  renderQR('cp-qr');
+
+  document.getElementById('mcontact').classList.remove('hidden');
+}
+
+function cpContactId(){
+  const id=document.getElementById('cp-yid').textContent;
+  navigator.clipboard?.writeText(id);
+  const el=document.getElementById('cp-yid');
+  el.textContent='Copied!';
+  setTimeout(()=>el.textContent=id,1500);
+}
+
+function msgContact(){
+  closeM('mcontact');
+  // already in the chat, just close
+}
+
+// register mcontact for overlay-click close
+document.getElementById('mcontact').addEventListener('click',e=>{
+  if(e.target===document.getElementById('mcontact'))closeM('mcontact');
+});
+</script>
+
+<!-- ══ PHOTO VIEWER ══ -->
+<div class="photo-viewer hidden" id="photo-viewer" onclick="closePhotoViewer(event)">
+  <div class="photo-viewer-bar">
+    <div>
+      <div class="photo-viewer-name" id="pv-sender"></div>
+      <div class="photo-viewer-time" id="pv-time"></div>
+    </div>
+    <div onclick="closePhotoViewer()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(10px);">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </div>
+  </div>
+  <img class="photo-viewer-img" id="pv-img" src="" alt="photo"/>
+  <div class="photo-viewer-actions">
+    <button class="pv-btn pv-close" onclick="closePhotoViewer()">Close</button>
+    <button class="pv-btn pv-download" onclick="downloadPhoto()">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:6px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download
+    </button>
+  </div>
+</div>
+
+<script>
+// ── PHOTO VIEWER ──
+function openPhotoViewer(src, senderName, time){
+  document.getElementById('pv-img').src=src;
+  document.getElementById('pv-sender').textContent=senderName;
+  document.getElementById('pv-time').textContent=time;
+  document.getElementById('photo-viewer').classList.remove('hidden');
+  document.body.style.overflow='hidden';
+}
+function closePhotoViewer(e){
+  if(e&&e.target!==document.getElementById('photo-viewer')&&e.target!==document.querySelector('.pv-close'))return;
+  document.getElementById('photo-viewer').classList.add('hidden');
+  document.body.style.overflow='';
+}
+function downloadPhoto(){
+  const src=document.getElementById('pv-img').src;
+  const a=document.createElement('a');
+  a.href=src;a.download='yap-photo-'+Date.now()+'.jpg';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 </script>
 </body>
