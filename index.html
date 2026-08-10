@@ -676,7 +676,7 @@ body.rt-lite::after{backdrop-filter:none !important;-webkit-backdrop-filter:none
     <div id="psi" class="panel active">
       <div class="fgrp"><div class="lbl">Mobile number</div>
         <div class="row">
-          <select class="inp" id="si-cc" style="width:105px;flex-shrink:0;"><option>🇮🇳 +91</option><option>🇺🇸 +1</option><option>🇬🇧 +44</option><option>🇦🇪 +971</option><option>🇸🇬 +65</option><option>🇦🇺 +61</option></select>
+          <select class="inp" id="si-cc" style="width:105px;flex-shrink:0;"><option>IN +91</option><option>US +1</option><option>GB +44</option><option>AE +971</option><option>SG +65</option><option>AU +61</option></select>
           <input class="inp" type="tel" placeholder="1234567890" id="si-ph" maxlength="15"/>
         </div>
       </div>
@@ -688,7 +688,7 @@ body.rt-lite::after{backdrop-filter:none !important;-webkit-backdrop-filter:none
       <div class="fgrp"><div class="lbl">Full name</div><input class="inp" type="text" placeholder="Jane Doe" id="su-nm"/></div>
       <div class="fgrp"><div class="lbl">Mobile number</div>
         <div class="row">
-          <select class="inp" id="su-cc" style="width:105px;flex-shrink:0;"><option>🇮🇳 +91</option><option>🇺🇸 +1</option><option>🇬🇧 +44</option><option>🇦🇪 +971</option><option>🇸🇬 +65</option><option>🇦🇺 +61</option></select>
+          <select class="inp" id="su-cc" style="width:105px;flex-shrink:0;"><option>IN +91</option><option>US +1</option><option>GB +44</option><option>AE +971</option><option>SG +65</option><option>AU +61</option></select>
           <input class="inp" type="tel" placeholder="1234567890" id="su-ph" maxlength="15"/>
         </div>
       </div>
@@ -1127,11 +1127,11 @@ async function doSI(){
         document.getElementById('su-cc').value=document.getElementById('si-cc').value;
         document.getElementById('su-ph').value=ph;
         setTimeout(()=>document.getElementById('su-nm').focus(),300);
-        showToast('Fill in your details to create account 👆','#ff8f00');
+        showToast('Fill in your details to create account →','#ff8f00');
       },1500);
     } else {
       // Account exists but wrong code
-      showToast('Wrong personal code ❌','#ef4444');
+      showToast('Wrong personal code ✕','#ef4444');
       shake('si-cd');
     }
     return;
@@ -1147,7 +1147,7 @@ async function doSI(){
     return;
   }
   U={id:data.user.id,name:profile.full_name,phone:profile.phone,dob:profile.dob,yapId:profile.yap_id,dpColor:profile.dp_color||'#ff8f00',dpImg:profile.dp_url||null};
-  showToast('Welcome back, '+profile.full_name+'! ✅');
+  showToast('Welcome back, '+profile.full_name+'! ✓');
   await enterApp();
 }
 
@@ -1181,7 +1181,7 @@ async function doSU(){
     const {data:siData,error:siErr}=await supa.auth.signInWithPassword({email:fakeEmail,password:cd});
     if(siErr){
       // Account exists but wrong personal code
-      showToast('Number already registered! Go to Sign in 👆','#ef4444');
+      showToast('Number already registered! Go to Sign in →','#ef4444');
       setTimeout(()=>{
         swtab('si');
         document.getElementById('si-cc').value=document.getElementById('su-cc').value;
@@ -1202,7 +1202,7 @@ async function doSU(){
     // Profile exists — just log them in
     const {data:prof}=await supa.from('profiles').select('*').eq('id',userId).single();
     U={id:userId,name:prof.full_name,phone:prof.phone,dob:prof.dob,yapId:prof.yap_id,dpColor:prof.dp_color||'#ff8f00',dpImg:prof.dp_url||null};
-    showToast('Welcome back, '+prof.full_name+'! ✅');
+    showToast('Welcome back, '+prof.full_name+'! ✓');
     await enterApp();
     return;
   }
@@ -1213,12 +1213,12 @@ async function doSU(){
     phone:phone, dob:db, dp_color:'#ff8f00', dp_url:null
   });
   if(profErr){
-    showToast('Error saving profile. Try again ❌','#ef4444');
+    showToast('Error saving profile. Try again ✕','#ef4444');
     console.error(profErr);
     return;
   }
   U={id:userId,name:nm,phone:phone,dob:db,yapId:yapId,dpColor:'#ff8f00',dpImg:null};
-  showToast('Welcome to Yap!, '+nm+'! 🎉');
+  showToast('Welcome to Yap!, '+nm+'! ✓');
   await enterApp();
 }
 
@@ -1307,7 +1307,7 @@ function requestNotificationPermission(){
   if(!('Notification' in window)) return;
   if(Notification.permission==='default'){
     Notification.requestPermission().then(perm=>{
-      if(perm==='granted') showToast('🔔 Notifications enabled!','#22c55e');
+      if(perm==='granted') showToast('✓ Notifications enabled!','#22c55e');
     });
   }
 }
@@ -1429,7 +1429,7 @@ async function logout(){
   if(realtimeSub){supa.removeChannel(realtimeSub);realtimeSub=null;}
   U=null;contacts=[];chats={};actCid=null;selectMode=false;selectedIds=new Set();
   showScr('screen-auth');
-  showToast('Signed out ✅');
+  showToast('Signed out ✓');
 }
 function backList(){
   actCid=null;
@@ -1501,7 +1501,7 @@ async function deleteSelected(){
     }
   }
   exitSelectMode();
-  showToast(`Deleted ${selectedIds.size||names.split(',').length} contact(s) ✅`);
+  showToast(`Deleted ${selectedIds.size||names.split(',').length} contact(s) ✓`);
   renderList();
 }
 
@@ -1524,7 +1524,7 @@ function renderList(f=''){
         ${isSelected?'<svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="black" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>':''}
       </div>
       <div class="av ${c.online?'on':''}" ${avBg}>${c.dpImg?'':ini(c.name)}</div>
-      <div class="cinfo"><div class="cname">${c.name}</div><div class="cprev">${last?(last.type==='image'?'📷 Photo':last.content):'No messages yet'}</div></div>
+      <div class="cinfo"><div class="cname">${c.name}</div><div class="cprev">${last?(last.type==='image'?'▸ Photo':last.content):'No messages yet'}</div></div>
       <div class="caside"><div class="ctime">${last?relT(last.created_at):''}</div>${unreadCounts[c.id]>0?`<div class="cbadge">${unreadCounts[c.id]}</div>`:''}</div>`;
     // long press to enter select mode
     div.addEventListener('pointerdown',()=>{
@@ -1607,7 +1607,7 @@ function startGlobalSubscription(){
         const {data:senderProfile}=await supa.from('profiles').select('*').eq('id',senderId).maybeSingle();
         if(senderProfile){
           await autoAddContact(senderId);
-          showToast('💬 '+senderProfile.full_name+' messaged you! Added to contacts','#ff8f00');
+          showToast('✉ '+senderProfile.full_name+' messaged you! Added to contacts','#ff8f00');
         }
       }
 
@@ -1626,7 +1626,7 @@ function startGlobalSubscription(){
           // increment unread count
           unreadCounts[senderId]=(unreadCounts[senderId]||0)+1;
           updateNavBadge();
-          showToast('💬 '+name+': '+m.content.slice(0,40),'#1a1a1a');
+          showToast('✉ '+name+': '+m.content.slice(0,40),'#1a1a1a');
           playMsgTone();
           sendPushNotification('Yap! — '+name, m.content, senderId);
         } else {
@@ -1635,7 +1635,7 @@ function startGlobalSubscription(){
       }
     })
     .subscribe(status=>{
-      if(status==='SUBSCRIBED') console.log('✅ Realtime connected');
+      if(status==='SUBSCRIBED') console.log('✓ Realtime connected');
     });
 }
 
@@ -1652,7 +1652,7 @@ function renderMsgs(cid){
   if(msgs.length===0){
     const empty=document.createElement('div');
     empty.style.cssText='text-align:center;color:var(--text3);font-size:13px;margin-top:40px;';
-    empty.textContent='No messages yet. Say hi! 👋';
+    empty.textContent='No messages yet. Say hi!';
     area.appendChild(empty);return;
   }
   const sep=document.createElement('div');sep.className='dsep';sep.textContent='Today';area.appendChild(sep);
@@ -1730,11 +1730,11 @@ async function handleFile(e){
   showToast('Uploading...','#ff8f00');
   const path=`${U.id}/${Date.now()}-${f.name}`;
   const {error:upErr}=await supa.storage.from('yap-files').upload(path,f);
-  if(upErr){showToast('Upload failed ❌','#ef4444');return;}
+  if(upErr){showToast('Upload failed ✕','#ef4444');return;}
   const {data:{publicUrl}}=supa.storage.from('yap-files').getPublicUrl(path);
-  const msg={sender_id:U.id,receiver_id:actCid,content:'📷 Photo',type:'image',file_url:publicUrl};
+  const msg={sender_id:U.id,receiver_id:actCid,content:'▸ Photo',type:'image',file_url:publicUrl};
   await supa.from('messages').insert(msg);
-  showToast('Sent! ✅');
+  showToast('Sent! ✓');
   e.target.value='';
 }
 
@@ -1759,7 +1759,7 @@ const editConfig={
   name:{title:'Edit Name',label:'Full Name',type:'text',get:()=>U.name,set:async(v)=>{await supa.from('profiles').update({full_name:v}).eq('id',U.id);U.name=v;updateProfileUI();}},
   phone:{title:'Edit Mobile',label:'Mobile Number',type:'tel',get:()=>U.phone,set:async(v)=>{await supa.from('profiles').update({phone:v}).eq('id',U.id);U.phone=v;updateProfileUI();}},
   dob:{title:'Edit Date of Birth',label:'Date of Birth',type:'date',get:()=>U.dob,set:async(v)=>{await supa.from('profiles').update({dob:v}).eq('id',U.id);U.dob=v;updateProfileUI();}},
-  code:{title:'Change Personal Code',label:'New Code (min 6 chars)',type:'password',get:()=>'',set:async(v)=>{await supa.auth.updateUser({password:v});showToast('Code updated! ✅');}}
+  code:{title:'Change Personal Code',label:'New Code (min 6 chars)',type:'password',get:()=>'',set:async(v)=>{await supa.auth.updateUser({password:v});showToast('Code updated! ✓');}}
 };
 function openEdit(field){
   editField=field;const cfg=editConfig[field];
@@ -1778,7 +1778,7 @@ async function saveEdit(){
   if(!val){shake('edit-inp');return;}
   if(editField==='code'&&val.length<6){shake('edit-inp');return;}
   await cfg.set(val);
-  closeM('medit');showToast('Saved! ✅');
+  closeM('medit');showToast('Saved! ✓');
 }
 
 // ── DP ──
@@ -1814,14 +1814,14 @@ async function handleDP(e){
   showToast('Uploading photo...','#ff8f00');
   const path=`avatars/${U.id}/${Date.now()}-${f.name}`;
   const {error}=await supa.storage.from('yap-files').upload(path,f,{upsert:true});
-  if(error){showToast('Upload failed ❌','#ef4444');return;}
+  if(error){showToast('Upload failed ✕','#ef4444');return;}
   const {data:{publicUrl}}=supa.storage.from('yap-files').getPublicUrl(path);
   U.dpImg=publicUrl;
   await supa.from('profiles').update({dp_url:publicUrl}).eq('id',U.id);
   const prev=document.getElementById('dp-preview');
   prev.style.backgroundImage=`url(${publicUrl})`;prev.style.backgroundColor='transparent';prev.textContent='';
   document.getElementById('remove-dp-opt').style.display='flex';
-  updateProfileUI();renderList();showToast('Photo updated! ✅');
+  updateProfileUI();renderList();showToast('Photo updated! ✓');
   e.target.value='';
 }
 async function removeDP(){
@@ -1901,20 +1901,20 @@ function startQRScan(){
       if(yapIdMatch){
         document.getElementById('ayid').value=yapIdMatch[0];
         smtab('id');
-        showToast('QR scanned! Tap Add contact ✅','#22c55e');
+        showToast('QR scanned! Tap Add contact ✓','#22c55e');
       } else if(decodedText.length>3){
         document.getElementById('ayid').value=decodedText.trim();
         smtab('id');
-        showToast('QR scanned! ✅','#22c55e');
+        showToast('QR scanned! ✓','#22c55e');
       } else {
-        showToast('Invalid QR code ❌','#ef4444');
+        showToast('Invalid QR code ✕','#ef4444');
       }
     },
     ()=>{}// ignore scan errors
   ).catch(err=>{
     document.getElementById('qr-start-wrap').style.display='block';
     document.getElementById('qr-stop-wrap').style.display='none';
-    showToast('Camera access denied ❌','#ef4444');
+    showToast('Camera access denied ✕','#ef4444');
     console.error(err);
   });
 }
@@ -1938,8 +1938,8 @@ async function addC(){
   showToast('Searching...','#ff8f00');
   // Find user by YAP ID
   const {data:found}=await supa.from('profiles').select('*').eq('yap_id',val).single();
-  if(!found){showToast('YAP ID not found ❌','#ef4444');return;}
-  if(found.id===U.id){showToast('Thats your own ID! ❌','#ef4444');return;}
+  if(!found){showToast('YAP ID not found ✕','#ef4444');return;}
+  if(found.id===U.id){showToast('Thats your own ID! ✕','#ef4444');return;}
   // Check if already a contact
   const {data:existing}=await supa.from('contacts').select('id').eq('user_id',U.id).eq('contact_id',found.id).single();
   if(existing){showToast('Already in contacts!','#ff8f00');closeM('madd');return;}
@@ -1949,7 +1949,7 @@ async function addC(){
   contacts.push(c);chats[c.id]=[];
   closeM('madd');renderList();openChat(c.id);
   document.getElementById('ayid').value='';
-  showToast('Contact added! ✅');
+  showToast('Contact added! ✓');
 }
 
 // ── VIEW CONTACT PROFILE ──
@@ -2153,7 +2153,7 @@ function createGroup(){
   groups.push(group);
   closeM('modal-create-group');
   renderGroupList();
-  showToast('Group "'+name+'" created! ✅');
+  showToast('Group "'+name+'" created! ✓');
   openGroupChat(group.id);
 }
 
@@ -2200,7 +2200,7 @@ function renderGroupMessages(gid){
   const area=document.getElementById('gc-messages');
   area.innerHTML='';
   if(g.messages.length===0){
-    area.innerHTML='<div style="text-align:center;color:var(--text3);font-size:13px;margin-top:40px;">No messages yet. Say hi! 👋</div>';
+    area.innerHTML='<div style="text-align:center;color:var(--text3);font-size:13px;margin-top:40px;">No messages yet. Say hi!</div>';
     return;
   }
   g.messages.forEach(m=>{
@@ -2299,7 +2299,7 @@ async function submitPost(){
     likes:0
   };
   const {data,error}=await supa.from('posts').insert(row).select().single();
-  if(error){ console.error(error); showToast('Could not post ❌','#ef4444'); return; }
+  if(error){ console.error(error); showToast('Could not post ✕','#ef4444'); return; }
   posts.unshift({
     id:data.id, author:data.author_name, authorColor:data.author_color,
     authorImg:data.author_img, text:data.text, likes:data.likes||0,
@@ -2308,7 +2308,7 @@ async function submitPost(){
   document.getElementById('post-text-inp').value='';
   closeM('modal-create-post');
   renderPosts();
-  showToast('Posted! ✅');
+  showToast('Posted! ✓');
 }
 
 function renderPosts(){
