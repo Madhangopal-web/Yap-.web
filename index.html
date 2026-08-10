@@ -114,6 +114,9 @@ select.inp{cursor:pointer}
 .srch input::placeholder{color:var(--text3)}
 .add-btn{margin:0 16px 16px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--orange);border:none;border-radius:14px;padding:14px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;color:#000;transition:background .2s}
 .add-btn:hover{background:var(--orange2)}
+#normal-bar{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s cubic-bezier(.22,1,.36,1),opacity .25s ease;}
+#normal-bar.show{max-height:80px;opacity:1;}
+.pull-hint{display:flex;align-items:center;justify-content:center;gap:6px;padding:4px 0 2px;color:var(--text3);font-size:11px;opacity:.6;user-select:none;}
 .clist{flex:1;overflow-y:auto}
 .clist::-webkit-scrollbar{width:0}
 .ci{display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;transition:background .15s}
@@ -742,6 +745,10 @@ body.rt-lite::after{backdrop-filter:none !important;-webkit-backdrop-filter:none
         <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
         Sign out
       </div>
+    </div>
+    <div class="pull-hint" id="pull-hint">
+      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      Pull down to add contact
     </div>
     <div class="srch">
       <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -2092,6 +2099,47 @@ document.addEventListener('click',e=>{
 let currentTab='messages';
 let groups=[];
 let posts=[];
+
+// ── PULL-DOWN TO REVEAL "ADD CONTACT" ──
+(function(){
+  const sb=document.getElementById('sb');
+  const bar=document.getElementById('normal-bar');
+  const list=document.getElementById('clist');
+  if(!sb||!bar||!list)return;
+  let startY=0,dragging=false,hideTimer=null;
+
+  function showBar(){
+    bar.classList.add('show');
+    clearTimeout(hideTimer);
+    hideTimer=setTimeout(hideBar,4000);
+  }
+  function hideBar(){
+    bar.classList.remove('show');
+  }
+
+  sb.addEventListener('pointerdown',e=>{
+    if(list.scrollTop>0)return; // only reveal when list is scrolled to the top
+    if(bar.contains(e.target))return;
+    startY=e.clientY;
+    dragging=true;
+  });
+  sb.addEventListener('pointermove',e=>{
+    if(!dragging)return;
+    if(e.clientY-startY>50){
+      showBar();
+      dragging=false;
+    }
+  });
+  window.addEventListener('pointerup',()=>{dragging=false;});
+  window.addEventListener('pointercancel',()=>{dragging=false;});
+
+  // Tapping a contact (or anywhere else in the list) while the bar is open closes it again
+  list.addEventListener('pointerdown',()=>{
+    if(bar.classList.contains('show')) hideBar();
+  });
+  // Interacting with the bar itself keeps it open longer
+  bar.addEventListener('pointerdown',()=>{ clearTimeout(hideTimer); });
+})();
 
 function switchTab(tab){
   currentTab=tab;
