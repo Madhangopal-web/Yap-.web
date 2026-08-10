@@ -288,7 +288,6 @@ select.inp{cursor:pointer}
   .sidebar.h{display:none}
   .chat-area.h{display:none}
   #screen-app{flex-direction:column;}
-  .bottom-nav{display:flex;}
   .sidebar{height:calc(100dvh - 100px);}
   .chat-area{height:calc(100dvh - 100px);}
 }
@@ -310,7 +309,6 @@ select.inp{cursor:pointer}
   padding:0 8px;
   box-shadow:0 8px 32px rgba(0,0,0,0.15);
 }
-@media(max-width:700px){.bottom-nav{display:flex;}}
 .nav-item{
   display:flex;flex-direction:column;align-items:center;
   gap:3px;cursor:pointer;padding:8px 14px;border-radius:24px;
@@ -801,7 +799,7 @@ body.rt-lite::after{backdrop-filter:none !important;-webkit-backdrop-filter:none
 </div>
 
 <!-- ══ BOTTOM NAV ══ -->
-<div class="bottom-nav" id="bottom-nav">
+<div class="bottom-nav" id="bottom-nav" style="display:none;">
   <!-- Messages -->
   <div class="nav-item active" id="nav-messages" onclick="switchTab('messages')">
     <div style="position:relative;">
@@ -1371,6 +1369,7 @@ function showScr(id){
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     next.classList.add('active','rt-enter-up');
     setTimeout(()=>next.classList.remove('rt-enter-up'),500);
+    syncBottomNav();
     return;
   }
   rtBusy=true;
@@ -1389,6 +1388,21 @@ function showScr(id){
     document.body.classList.remove('rt-busy');
     rtBusy=false;
   },RT_MS+130);
+  syncBottomNav();
+}
+
+// ── BOTTOM NAV VISIBILITY (single source of truth) ──
+// Nav shows only on the Chats (with no chat open), Groups, or Posts tabs.
+// It's hidden on the Auth screen, Profile screen, and inside an open chat.
+function syncBottomNav(){
+  const bn=document.getElementById('bottom-nav');
+  if(!bn)return;
+  const activeScreen=document.querySelector('.screen.active');
+  const id=activeScreen?activeScreen.id:null;
+  let show=false;
+  if(id==='screen-groups'||id==='screen-posts') show=true;
+  else if(id==='screen-app') show=!actCid;
+  bn.style.display=show?'flex':'none';
 }
 function rtPanel(hideEl,showEl,dir){
   if(!hideEl||!showEl){return;}
@@ -1417,8 +1431,7 @@ function backList(){
   actCid=null;
   document.getElementById('ac').style.display='none';
   document.getElementById('est').style.display='flex';
-  const bn=document.getElementById('bottom-nav');
-  if(bn && currentTab==='messages') bn.style.display='flex';
+  syncBottomNav();
   if(window.innerWidth<=700){rtPanel(document.getElementById('ca'),document.getElementById('sb'),'back');}
 }
 
@@ -1480,8 +1493,7 @@ async function deleteSelected(){
       actCid=null;
       document.getElementById('est').style.display='flex';
       document.getElementById('ac').style.display='none';
-      const bn=document.getElementById('bottom-nav');
-      if(bn && currentTab==='messages') bn.style.display='flex';
+      syncBottomNav();
     }
   }
   exitSelectMode();
@@ -2084,24 +2096,18 @@ function switchTab(tab){
   const navEl=document.getElementById('nav-'+tab);
   if(navEl) navEl.classList.add('active');
 
-  const nav=document.getElementById('bottom-nav');
-
   if(tab==='messages'){
     showScr('screen-app');
-    if(nav) nav.style.display='flex'; // show on messages
   } else if(tab==='groups'){
     showScr('screen-groups');
-    if(nav) nav.style.display='flex';
   } else if(tab==='posts'){
     showScr('screen-posts');
     if(postsLoaded) renderPosts();
     loadPosts();
-    if(nav) nav.style.display='flex';
   } else if(tab==='profile'){
-    // hide nav when going to profile full screen
-    if(nav) nav.style.display='none';
     showProf();
   }
+  syncBottomNav();
 }
 
 // ── GROUP CHAT ──
