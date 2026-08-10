@@ -4,6 +4,9 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"/>
 <title>Yap!</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20110%22%3E%3Crect%20x%3D%225%22%20y%3D%225%22%20width%3D%2290%22%20height%3D%2280%22%20rx%3D%2218%22%20ry%3D%2218%22%20fill%3D%22%23ff8f00%22%2F%3E%3Cpolygon%20points%3D%2230%2C82%2050%2C82%2038%2C105%22%20fill%3D%22%23ff8f00%22%2F%3E%3Cpath%20d%3D%22M28%2020%20L50%2052%20L72%2020%20L62%2020%20L50%2038%20L38%2020%20Z%22%20fill%3D%22white%22%2F%3E%3Crect%20x%3D%2244%22%20y%3D%2250%22%20width%3D%2212%22%20height%3D%2225%22%20rx%3D%222%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E"/>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20110%22%3E%3Crect%20x%3D%225%22%20y%3D%225%22%20width%3D%2290%22%20height%3D%2280%22%20rx%3D%2218%22%20ry%3D%2218%22%20fill%3D%22%23ff8f00%22%2F%3E%3Cpolygon%20points%3D%2230%2C82%2050%2C82%2038%2C105%22%20fill%3D%22%23ff8f00%22%2F%3E%3Cpath%20d%3D%22M28%2020%20L50%2052%20L72%2020%20L62%2020%20L50%2038%20L38%2020%20Z%22%20fill%3D%22white%22%2F%3E%3Crect%20x%3D%2244%22%20y%3D%2250%22%20width%3D%2212%22%20height%3D%2225%22%20rx%3D%222%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E"/>
+<link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20110%22%3E%3Crect%20x%3D%225%22%20y%3D%225%22%20width%3D%2290%22%20height%3D%2280%22%20rx%3D%2218%22%20ry%3D%2218%22%20fill%3D%22%23ff8f00%22%2F%3E%3Cpolygon%20points%3D%2230%2C82%2050%2C82%2038%2C105%22%20fill%3D%22%23ff8f00%22%2F%3E%3Cpath%20d%3D%22M28%2020%20L50%2052%20L72%2020%20L62%2020%20L50%2038%20L38%2020%20Z%22%20fill%3D%22white%22%2F%3E%3Crect%20x%3D%2244%22%20y%3D%2250%22%20width%3D%2212%22%20height%3D%2225%22%20rx%3D%222%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E"/>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23ff8f00'/><path d='M20 25 C20 20 24 16 29 16 L71 16 C76 16 80 20 80 25 L80 58 C80 63 76 67 71 67 L38 67 L25 80 L25 67 L29 67 C24 67 20 63 20 58 Z' fill='black'/></svg>"/>
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23ff8f00'/><path d='M20 25 C20 20 24 16 29 16 L71 16 C76 16 80 20 80 25 L80 58 C80 63 76 67 71 67 L38 67 L25 80 L25 67 L29 67 C24 67 20 63 20 58 Z' fill='black'/></svg>"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -284,7 +287,65 @@ select.inp{cursor:pointer}
   .sidebar{width:100%;min-width:unset}
   .sidebar.h{display:none}
   .chat-area.h{display:none}
+  #screen-app{flex-direction:column;}
+  .bottom-nav{display:flex;}
+  .sidebar{height:calc(100dvh - 100px);}
+  .chat-area{height:calc(100dvh - 100px);}
 }
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  display:none;
+  position:fixed;
+  bottom:16px;
+  left:50%;
+  transform:translateX(-50%);
+  width:calc(100% - 32px);
+  max-width:420px;
+  height:68px;
+  background:#1a1a2e;
+  border-radius:40px;
+  z-index:500;
+  align-items:center;
+  justify-content:space-around;
+  padding:0 8px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.25);
+}
+@media(max-width:700px){.bottom-nav{display:flex;}}
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;
+  gap:3px;cursor:pointer;padding:8px 14px;border-radius:24px;
+  transition:all .25s cubic-bezier(.34,1.56,.64,1);flex:1;position:relative;
+}
+.nav-item.active{background:rgba(255,143,0,0.18);}
+.nav-item svg{width:22px;height:22px;transition:all .2s;stroke:rgba(255,255,255,0.45);}
+.nav-item.active svg{stroke:#ff8f00;transform:scale(1.1);}
+.nav-item span{font-size:10px;font-weight:600;color:rgba(255,255,255,0.4);font-family:"Space Grotesk",sans-serif;transition:all .2s;letter-spacing:0.3px;}
+.nav-item.active span{color:#ff8f00;}
+.nav-badge{position:absolute;top:4px;right:8px;min-width:18px;height:18px;border-radius:9px;background:#ff8f00;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid #1a1a2e;}
+
+/* Group chat screen */
+#screen-groups{flex-direction:column;background:var(--bg);}
+.groups-header{padding:16px 20px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.groups-header h2{font-size:18px;font-weight:700;font-family:"Space Grotesk",sans-serif;}
+.group-item{display:flex;align-items:center;gap:14px;padding:14px 20px;cursor:pointer;transition:background .15s;}
+.group-item:hover{background:var(--bg2);}
+.group-av{width:50px;height:50px;border-radius:16px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:20px;color:white;font-weight:700;flex-shrink:0;}
+.group-list{flex:1;overflow-y:auto;}
+.group-list::-webkit-scrollbar{width:0;}
+
+/* Post screen */
+#screen-posts{flex-direction:column;background:var(--bg);}
+.posts-header{padding:16px 20px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.posts-header h2{font-size:18px;font-weight:700;font-family:"Space Grotesk",sans-serif;}
+.post-feed{flex:1;overflow-y:auto;padding:16px;}
+.post-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;margin-bottom:14px;overflow:hidden;}
+.post-card-header{display:flex;align-items:center;gap:12px;padding:14px;}
+.post-card-body{padding:0 14px 14px;font-size:14px;line-height:1.6;color:var(--text);}
+.post-card-actions{display:flex;gap:16px;padding:10px 14px;border-top:1px solid var(--border);}
+.post-action{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer;transition:color .2s;}
+.post-action:hover{color:var(--orange);}
+.create-post-btn{position:fixed;bottom:80px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--orange);border:none;color:white;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(255,143,0,0.4);z-index:100;transition:all .2s;}
+.create-post-btn:hover{transform:scale(1.1);}
 
 /* ══════════════════════════════════════════════
    GLASSMORPHISM LAYER — frosted glass, blur, rounded
@@ -606,7 +667,7 @@ body.rt-lite::after{backdrop-filter:none !important;-webkit-backdrop-filter:none
 <!-- ══ AUTH ══ -->
 <div id="screen-auth" class="screen active">
   <div class="auth-logo">
-    <div class="logo-icon-big"><svg viewBox="0 0 24 24" fill="black"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>
+    <div class="logo-icon-big"><svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="5" width="90" height="80" rx="18" ry="18" fill="#ff8f00"/><polygon points="30,82 50,82 38,105" fill="#ff8f00"/><path d="M28 20 L50 52 L72 20 L62 20 L50 38 L38 20 Z" fill="white"/><rect x="44" y="50" width="12" height="25" rx="2" fill="white"/></svg></div>
     <div class="app-name">Yap!</div>
     <div class="app-tagline">Private messaging. No phone numbers shared.</div>
   </div>
@@ -652,7 +713,7 @@ body.rt-lite::after{backdrop-filter:none !important;-webkit-backdrop-filter:none
   <div class="sidebar" id="sb">
     <div class="s-top">
       <div class="s-logo">
-        <div class="s-icon"><svg viewBox="0 0 24 24" fill="black" width="20" height="20"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>
+        <div class="s-icon"><svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="5" width="90" height="80" rx="18" ry="18" fill="#ff8f00"/><polygon points="30,82 50,82 38,105" fill="#ff8f00"/><path d="M28 20 L50 52 L72 20 L62 20 L50 38 L38 20 Z" fill="white"/><rect x="44" y="50" width="12" height="25" rx="2" fill="white"/></svg></div>
         <div class="s-name">Yap!</div>
       </div>
       <div class="s-acts">
@@ -713,6 +774,87 @@ body.rt-lite::after{backdrop-filter:none !important;-webkit-backdrop-filter:none
         <textarea class="minp" id="minp" placeholder="Type a message" rows="1" onkeydown="hkey(event)" oninput="agrow(this)"></textarea>
         <button class="sbtn" onclick="sendMsg()"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BOTTOM NAV ══ -->
+<div class="bottom-nav" id="bottom-nav">
+  <!-- Messages -->
+  <div class="nav-item active" id="nav-messages" onclick="switchTab('messages')">
+    <div style="position:relative;">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+      </svg>
+      <div class="nav-badge" id="nav-msg-badge" style="display:none;">0</div>
+    </div>
+    <span>Chats</span>
+  </div>
+  <!-- Groups -->
+  <div class="nav-item" id="nav-groups" onclick="switchTab('groups')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+      <path d="M16 3.13a4 4 0 010 7.75"/>
+    </svg>
+    <span>Groups</span>
+  </div>
+  <!-- Posts -->
+  <div class="nav-item" id="nav-posts" onclick="switchTab('posts')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="3" width="18" height="18" rx="3"/>
+      <line x1="3" y1="9" x2="21" y2="9"/>
+      <line x1="9" y1="21" x2="9" y2="9"/>
+    </svg>
+    <span>Posts</span>
+  </div>
+  <!-- Profile -->
+  <div class="nav-item" id="nav-profile" onclick="switchTab('profile')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+    </svg>
+    <span>Profile</span>
+  </div>
+</div>
+
+<!-- ══ GROUPS SCREEN ══ -->
+<div id="screen-groups" class="screen">
+  <div class="groups-header">
+    <h2>Group Chats</h2>
+    <div class="ibtn" onclick="openCreateGroup()">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </div>
+  </div>
+  <div class="group-list" id="group-list">
+    <div style="text-align:center;padding:60px 20px;color:var(--text3);">
+      <div style="width:70px;height:70px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="rgba(255,143,0,0.5)" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <div style="font-size:16px;font-weight:600;color:var(--text2);margin-bottom:8px;">No groups yet</div>
+      <div style="font-size:13px;">Create a group to chat with multiple people</div>
+      <button class="btnp" style="margin-top:20px;width:auto;padding:12px 24px;border-radius:50px;" onclick="openCreateGroup()">Create Group</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ POSTS SCREEN ══ -->
+<div id="screen-posts" class="screen">
+  <div class="posts-header">
+    <h2>Posts</h2>
+    <div class="ibtn" onclick="openCreatePost()">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </div>
+  </div>
+  <div class="post-feed" id="post-feed">
+    <div style="text-align:center;padding:60px 20px;color:var(--text3);">
+      <div style="width:70px;height:70px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:margin:0 auto 16px;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="rgba(255,143,0,0.5)" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </div>
+      <div style="font-size:16px;font-weight:600;color:var(--text2);margin-bottom:8px;">No posts yet</div>
+      <div style="font-size:13px;">Share something with the Yap! community</div>
+      <button class="btnp" style="margin-top:20px;width:auto;padding:12px 24px;border-radius:50px;" onclick="openCreatePost()">Create Post</button>
     </div>
   </div>
 </div>
@@ -1052,6 +1194,7 @@ async function doSU(){
 // ── ENTER APP ──
 async function enterApp(){
   showScr('screen-app');
+  document.getElementById('bottom-nav').style.display='flex';
   await loadContacts();
   startGlobalSubscription();
   startPresence();
@@ -1227,6 +1370,7 @@ function rtPanel(hideEl,showEl,dir){
 
 function goBack(){showScr('screen-app');}
 async function logout(){
+  document.getElementById('bottom-nav').style.display='none';
   if(presenceChannel){await presenceChannel.untrack();supa.removeChannel(presenceChannel);presenceChannel=null;}
   await supa.auth.signOut();
   if(realtimeSub){supa.removeChannel(realtimeSub);realtimeSub=null;}
@@ -1756,7 +1900,7 @@ function cpContactId(){
 function msgContact(){closeM('mcontact');}
 
 // Close modals on overlay click
-['madd','medit','mdp'].forEach(id=>{
+['madd','medit','mdp','modal-create-group','modal-create-post'].forEach(id=>{
   const el=document.getElementById(id);
   if(el)el.addEventListener('click',e=>{if(e.target===el)closeM(id);});
 });
@@ -1855,7 +1999,272 @@ function msgContact(){
 document.getElementById('mcontact').addEventListener('click',e=>{
   if(e.target===document.getElementById('mcontact'))closeM('mcontact');
 });
+
+// ── BOTTOM NAV TAB SWITCHING ──
+let currentTab='messages';
+let groups=[];
+let posts=[];
+
+function switchTab(tab){
+  currentTab=tab;
+  // Update nav items
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('nav-'+tab).classList.add('active');
+
+  // Show correct screen
+  if(tab==='messages'){
+    showScr('screen-app');
+  } else if(tab==='groups'){
+    showScr('screen-groups');
+  } else if(tab==='posts'){
+    showScr('screen-posts');
+    renderPosts();
+  } else if(tab==='profile'){
+    showProf();
+  }
+}
+
+// ── GROUP CHAT ──
+function openCreateGroup(){
+  if(contacts.length===0){showToast('Add contacts first to create a group!','#ef4444');return;}
+  // Build contact checkboxes
+  const list=contacts.map((c,i)=>`
+    <label style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-radius:12px;transition:background .15s;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">
+      <input type="checkbox" id="gc-${c.id}" value="${c.id}" style="width:18px;height:18px;accent-color:var(--orange);cursor:pointer;"/>
+      <div style="width:36px;height:36px;border-radius:50%;background:${c.color};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;">${ini(c.name)}</div>
+      <span style="font-size:14px;font-weight:500;">${c.name}</span>
+    </label>`).join('');
+
+  document.getElementById('create-group-body').innerHTML=`
+    <div class="input-group" style="margin-bottom:16px;">
+      <div class="lbl">Group Name</div>
+      <input class="inp" type="text" placeholder="e.g. Friends, Team Yap!" id="group-name-inp" style="width:100%;"/>
+    </div>
+    <div class="lbl" style="margin-bottom:8px;">Add Members</div>
+    <div style="max-height:200px;overflow-y:auto;">${list}</div>`;
+  document.getElementById('modal-create-group').classList.remove('hidden');
+}
+
+function createGroup(){
+  const name=document.getElementById('group-name-inp')?.value.trim();
+  if(!name){shake('group-name-inp');return;}
+  const memberIds=[...document.querySelectorAll('[id^="gc-"]:checked')].map(el=>el.value);
+  if(memberIds.length===0){showToast('Select at least one member!','#ef4444');return;}
+
+  const group={
+    id:'grp-'+Date.now(),
+    name,
+    members:[U.id,...memberIds],
+    avatar:name[0].toUpperCase(),
+    color:['#ff8f00','#8b5cf6','#06b6d4','#10b981'][groups.length%4],
+    messages:[],
+    createdAt:new Date()
+  };
+  groups.push(group);
+  closeM('modal-create-group');
+  renderGroupList();
+  showToast('Group "'+name+'" created! ✅');
+  openGroupChat(group.id);
+}
+
+function renderGroupList(){
+  const list=document.getElementById('group-list');
+  if(groups.length===0){
+    list.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text3);">
+      <div style="width:70px;height:70px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="rgba(255,143,0,0.5)" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <div style="font-size:16px;font-weight:600;color:var(--text2);margin-bottom:8px;">No groups yet</div>
+      <div style="font-size:13px;">Create a group to chat with multiple people</div>
+      <button class="btnp" style="margin-top:20px;width:auto;padding:12px 24px;border-radius:50px;" onclick="openCreateGroup()">Create Group</button>
+    </div>`;
+    return;
+  }
+  list.innerHTML=groups.map(g=>{
+    const last=g.messages[g.messages.length-1];
+    return `<div class="group-item" onclick="openGroupChat('${g.id}')">
+      <div class="group-av" style="background:${g.color};">${g.avatar}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:15px;font-weight:600;margin-bottom:3px;">${g.name}</div>
+        <div style="font-size:13px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${last?last.text:'No messages yet'}</div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);">${last?fmt(last.time):''}</div>
+    </div>`;
+  }).join('');
+}
+
+let activeGroupId=null;
+function openGroupChat(gid){
+  activeGroupId=gid;
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  document.getElementById('gc-topbar-name').textContent=g.name;
+  document.getElementById('gc-topbar-members').textContent=g.members.length+' members';
+  document.getElementById('gc-topbar-av').style.background=g.color;
+  document.getElementById('gc-topbar-av').textContent=g.avatar;
+  renderGroupMessages(gid);
+  document.getElementById('modal-group-chat').classList.remove('hidden');
+}
+
+function renderGroupMessages(gid){
+  const g=groups.find(x=>x.id===gid);if(!g)return;
+  const area=document.getElementById('gc-messages');
+  area.innerHTML='';
+  if(g.messages.length===0){
+    area.innerHTML='<div style="text-align:center;color:var(--text3);font-size:13px;margin-top:40px;">No messages yet. Say hi! 👋</div>';
+    return;
+  }
+  g.messages.forEach(m=>{
+    const out=m.senderId===U.id;
+    const row=document.createElement('div');
+    row.className='mrow '+(out?'out':'in');
+    if(!out){
+      row.innerHTML=`<div style="display:flex;flex-direction:column;max-width:72%;">
+        <div style="font-size:11px;color:var(--orange);font-weight:600;margin-bottom:2px;padding-left:4px;">${m.senderName}</div>
+        <div class="bbl">${m.text}<div class="btime">${fmt(m.time)}</div></div>
+      </div>`;
+    } else {
+      row.innerHTML=`<div class="bbl">${m.text}<div class="btime">${fmt(m.time)}</div></div>`;
+    }
+    area.appendChild(row);
+  });
+  area.scrollTop=area.scrollHeight;
+}
+
+function sendGroupMsg(){
+  if(!activeGroupId)return;
+  const inp=document.getElementById('gc-inp');
+  const text=inp.value.trim();if(!text)return;
+  const g=groups.find(x=>x.id===activeGroupId);if(!g)return;
+  g.messages.push({text,senderId:U.id,senderName:U.name,time:new Date()});
+  inp.value='';
+  renderGroupMessages(activeGroupId);
+  renderGroupList();
+}
+
+// ── POSTS ──
+function openCreatePost(){
+  const av=document.getElementById('cp-post-av');
+  const nm=document.getElementById('cp-post-name');
+  if(U){
+    if(U.dpImg){av.style.backgroundImage='url('+U.dpImg+')';av.style.backgroundSize='cover';av.textContent='';}
+    else{av.style.background=U.dpColor||'#ff8f00';av.textContent=ini(U.name);}
+    nm.textContent=U.name;
+  }
+  document.getElementById('modal-create-post').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('post-text-inp').focus(),100);
+}
+
+function submitPost(){
+  const text=document.getElementById('post-text-inp').value.trim();
+  if(!text){shake('post-text-inp');return;}
+  posts.unshift({
+    id:'post-'+Date.now(),
+    author:U.name,
+    authorColor:U.dpColor||'#ff8f00',
+    authorImg:U.dpImg||null,
+    text,
+    likes:0,
+    liked:false,
+    comments:0,
+    time:new Date()
+  });
+  document.getElementById('post-text-inp').value='';
+  closeM('modal-create-post');
+  renderPosts();
+  showToast('Posted! ✅');
+}
+
+function renderPosts(){
+  const feed=document.getElementById('post-feed');
+  if(posts.length===0){
+    feed.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--text3);">
+      <div style="font-size:16px;font-weight:600;color:var(--text2);margin-bottom:8px;">No posts yet</div>
+      <div style="font-size:13px;">Share something with the Yap! community</div>
+      <button class="btnp" style="margin-top:20px;width:auto;padding:12px 24px;border-radius:50px;" onclick="openCreatePost()">Create Post</button>
+    </div>`;
+    return;
+  }
+  feed.innerHTML=posts.map(p=>`
+    <div class="post-card">
+      <div class="post-card-header">
+        <div style="width:40px;height:40px;border-radius:50%;background:${p.authorImg?'transparent':p.authorColor};background-image:${p.authorImg?'url('+p.authorImg+')':'none'};background-size:cover;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:15px;">${p.authorImg?'':ini(p.author)}</div>
+        <div>
+          <div style="font-size:14px;font-weight:600;">${p.author}</div>
+          <div style="font-size:11px;color:var(--text3);">${relT(p.time)}</div>
+        </div>
+      </div>
+      <div class="post-card-body">${p.text}</div>
+      <div class="post-card-actions">
+        <div class="post-action" onclick="likePost('${p.id}')" style="${p.liked?'color:var(--orange);':''}">
+          <svg width="16" height="16" fill="${p.liked?'var(--orange)':'none'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          ${p.likes} Like${p.likes!==1?'s':''}
+        </div>
+        <div class="post-action">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          ${p.comments} Comment${p.comments!==1?'s':''}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function likePost(pid){
+  const p=posts.find(x=>x.id===pid);if(!p)return;
+  p.liked=!p.liked;
+  p.likes+=p.liked?1:-1;
+  renderPosts();
+}
 </script>
+
+<!-- ══ MODAL: Create Group ══ -->
+<div class="ov-center hidden" id="modal-create-group">
+  <div class="modal-center" style="max-width:420px;">
+    <div class="mtitle">Create Group</div>
+    <div id="create-group-body"></div>
+    <div class="macts">
+      <button class="btng" onclick="closeM('modal-create-group')">Cancel</button>
+      <button class="btnp" style="flex:1;margin-top:0;border-radius:50px;" onclick="createGroup()">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Group Chat ══ -->
+<div class="ov-center hidden" id="modal-group-chat" style="align-items:stretch;padding:0;">
+  <div style="width:100%;max-width:500px;height:100dvh;display:flex;flex-direction:column;background:var(--bg);margin:0 auto;">
+    <div class="c-topbar">
+      <div class="c-back" onclick="closeM('modal-group-chat')">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <div class="group-av" id="gc-topbar-av" style="width:40px;height:40px;border-radius:12px;font-size:16px;"></div>
+      <div style="flex:1;">
+        <div class="c-name" id="gc-topbar-name"></div>
+        <div style="font-size:11px;color:var(--text2);" id="gc-topbar-members"></div>
+      </div>
+    </div>
+    <div class="msgs" id="gc-messages"></div>
+    <div class="inp-row">
+      <textarea class="minp" id="gc-inp" placeholder="Message group..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendGroupMsg();}" oninput="agrow(this)"></textarea>
+      <button class="sbtn" onclick="sendGroupMsg()">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Create Post ══ -->
+<div class="ov-center hidden" id="modal-create-post">
+  <div class="modal-center" style="max-width:420px;">
+    <div class="mtitle">Create Post</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <div id="cp-post-av" style="width:38px;height:38px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:14px;flex-shrink:0;"></div>
+      <div style="font-size:14px;font-weight:600;" id="cp-post-name"></div>
+    </div>
+    <textarea class="inp" id="post-text-inp" placeholder="What's on your mind?" style="width:100%;height:120px;resize:none;border-radius:14px;padding:14px;"></textarea>
+    <div class="macts">
+      <button class="btng" onclick="closeM('modal-create-post')">Cancel</button>
+      <button class="btnp" style="flex:1;margin-top:0;border-radius:50px;" onclick="submitPost()">Post</button>
+    </div>
+  </div>
+</div>
 
 <!-- ══ PHOTO VIEWER ══ -->
 <div class="photo-viewer hidden" id="photo-viewer" onclick="closePhotoViewer(event)">
