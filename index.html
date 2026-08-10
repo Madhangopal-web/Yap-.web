@@ -302,13 +302,13 @@ select.inp{cursor:pointer}
   width:calc(100% - 32px);
   max-width:420px;
   height:68px;
-  background:#1a1a2e;
+  background:#ffffff;
   border-radius:40px;
   z-index:500;
   align-items:center;
   justify-content:space-around;
   padding:0 8px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.25);
+  box-shadow:0 8px 32px rgba(0,0,0,0.15);
 }
 @media(max-width:700px){.bottom-nav{display:flex;}}
 .nav-item{
@@ -316,12 +316,12 @@ select.inp{cursor:pointer}
   gap:3px;cursor:pointer;padding:8px 14px;border-radius:24px;
   transition:all .25s cubic-bezier(.34,1.56,.64,1);flex:1;position:relative;
 }
-.nav-item.active{background:rgba(255,143,0,0.18);}
-.nav-item svg{width:22px;height:22px;transition:all .2s;stroke:rgba(255,255,255,0.45);}
+.nav-item.active{background:rgba(255,143,0,0.15);}
+.nav-item svg{width:22px;height:22px;transition:all .2s;stroke:rgba(0,0,0,0.35);}
 .nav-item.active svg{stroke:#ff8f00;transform:scale(1.1);}
-.nav-item span{font-size:10px;font-weight:600;color:rgba(255,255,255,0.4);font-family:"Space Grotesk",sans-serif;transition:all .2s;letter-spacing:0.3px;}
+.nav-item span{font-size:10px;font-weight:600;color:rgba(0,0,0,0.35);font-family:"Space Grotesk",sans-serif;transition:all .2s;letter-spacing:0.3px;}
 .nav-item.active span{color:#ff8f00;}
-.nav-badge{position:absolute;top:4px;right:8px;min-width:18px;height:18px;border-radius:9px;background:#ff8f00;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid #1a1a2e;}
+.nav-badge{position:absolute;top:4px;right:8px;min-width:18px;height:18px;border-radius:9px;background:#ff8f00;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid #fff;}
 
 /* Group chat screen */
 #screen-groups{flex-direction:column;background:var(--bg);}
@@ -711,7 +711,7 @@ body.rt-lite::after{backdrop-filter:none !important;-webkit-backdrop-filter:none
 <div id="screen-app" class="screen">
   <!-- Sidebar -->
   <div class="sidebar" id="sb">
-    <div class="s-top" style="background:#fff;border-bottom:1px solid var(--border);">
+    <div class="s-top">
       <div class="s-logo">
         <div class="s-icon"><svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="5" width="90" height="80" rx="18" ry="18" fill="#ff8f00"/><polygon points="30,82 50,82 38,105" fill="#ff8f00"/><path d="M28 20 L50 52 L72 20 L62 20 L50 38 L38 20 Z" fill="white"/><rect x="44" y="50" width="12" height="25" rx="2" fill="white"/></svg></div>
         <div class="s-name">YAP!</div>
@@ -2045,17 +2045,24 @@ function switchTab(tab){
   currentTab=tab;
   // Update nav items
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
-  document.getElementById('nav-'+tab).classList.add('active');
+  const navEl=document.getElementById('nav-'+tab);
+  if(navEl) navEl.classList.add('active');
 
-  // Show correct screen
+  const nav=document.getElementById('bottom-nav');
+
   if(tab==='messages'){
     showScr('screen-app');
+    if(nav) nav.style.display='flex'; // show on messages
   } else if(tab==='groups'){
     showScr('screen-groups');
+    if(nav) nav.style.display='flex';
   } else if(tab==='posts'){
     showScr('screen-posts');
     renderPosts();
+    if(nav) nav.style.display='flex';
   } else if(tab==='profile'){
+    // hide nav when going to profile full screen
+    if(nav) nav.style.display='none';
     showProf();
   }
 }
