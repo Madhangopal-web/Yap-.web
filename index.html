@@ -737,9 +737,9 @@ body.rt-lite::after{backdrop-filter:none !important;-webkit-backdrop-filter:none
         <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
         Profile
       </div>
-      <div onclick="openAdd();toggleSideMenu();" style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;font-size:14px;font-weight:500;color:var(--orange);transition:background .15s;border-top:1px solid var(--border);" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">
-        <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-        New Contact
+      <div onclick="openSettings();toggleSideMenu();" style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;font-size:14px;font-weight:500;color:var(--orange);transition:background .15s;border-top:1px solid var(--border);" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">
+        <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Settings
       </div>
       <div onclick="logout();toggleSideMenu();" style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;font-size:14px;font-weight:500;color:var(--orange);border-top:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">
         <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
@@ -1018,6 +1018,45 @@ body.rt-lite::after{backdrop-filter:none !important;-webkit-backdrop-filter:none
 </div>
 
 <!-- ══ MODAL: Edit Field ══ -->
+<!-- ══ SETTINGS MODAL ══ -->
+<div class="ov-center hidden" id="modal-settings">
+  <div class="modal-center">
+    <div class="mtitle">Settings</div>
+
+    <div class="psect" style="margin-top:4px;">
+      <div class="theme-toggle">
+        <div class="theme-toggle-left">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--orange)" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          Dark Mode
+        </div>
+        <div class="toggle-switch" id="settings-dark-toggle" onclick="toggleTheme()">
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prow" style="cursor:pointer;" onclick="requestNotificationPermission()">
+      <div class="prow-left"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Enable Notifications</div>
+      <div class="prow-edit">Enable</div>
+    </div>
+
+    <div class="prow" style="cursor:pointer;" onclick="closeM('modal-settings');switchTab('profile');">
+      <div class="prow-left"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Edit Profile</div>
+      <div class="prow-edit">Open</div>
+    </div>
+
+    <div class="prow" style="cursor:pointer;" onclick="closeM('modal-settings');openEdit('code');">
+      <div class="prow-left"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Personal Code</div>
+      <div class="prow-edit">Change</div>
+    </div>
+
+    <div class="macts" style="margin-top:16px;">
+      <button class="btng" onclick="closeM('modal-settings')">Close</button>
+      <button class="btnp" style="background:#ef4444;color:#fff;margin-top:0;" onclick="closeM('modal-settings');logout();">Sign out</button>
+    </div>
+  </div>
+</div>
+
 <div class="ov-center hidden" id="medit">
   <div class="modal-center">
     <div class="mtitle" id="edit-title">Edit</div>
@@ -1878,6 +1917,7 @@ function renderQR(containerId){
 
 // ── ADD CONTACT ──
 function openAdd(){document.getElementById('madd').classList.remove('hidden');}
+function openSettings(){document.getElementById('modal-settings').classList.remove('hidden');}
 function closeM(id){
   document.getElementById(id).classList.add('hidden');
   // Stop QR scanner if modal closed
@@ -1981,7 +2021,7 @@ function cpContactId(){
 function msgContact(){closeM('mcontact');}
 
 // Close modals on overlay click
-['madd','medit','mdp','modal-create-group','modal-create-post'].forEach(id=>{
+['madd','medit','mdp','modal-create-group','modal-create-post','modal-settings'].forEach(id=>{
   const el=document.getElementById(id);
   if(el)el.addEventListener('click',e=>{if(e.target===el)closeM(id);});
 });
