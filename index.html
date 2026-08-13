@@ -1451,6 +1451,7 @@ function backList(){
 
 // ── LOAD CONTACTS ──
 async function loadContacts(){
+  // Load saved contacts
   const {data}=await supa.from('contacts').select('contact_id, profiles!contacts_contact_id_fkey(id,full_name,yap_id,dp_color,dp_url)').eq('user_id',U.id);
   contacts=(data||[]).map(r=>({
     id:r.profiles.id,
@@ -1460,6 +1461,32 @@ async function loadContacts(){
     dpImg:r.profiles.dp_url||null,
     online:false
   }));
+
+  // Also find people who messaged you but aren't saved yet
+  const {data:inboxMsgs}=await supa.from('messages')
+    .select('sender_id')
+    .eq('receiver_id',U.id)
+    .order('created_at',{ascending:false});
+
+  if(inboxMsgs&&inboxMsgs.length>0){
+    const unknownIds=[...new Set(inboxMsgs.map(m=>m.sender_id))]
+      .filter(id=>id!==U.id&&!contacts.find(c=>c.id===id));
+
+    if(unknownIds.length>0){
+      for(const uid of unknownIds){
+        const {data:prof}=await supa.from('profiles').select('*').eq('id',uid).maybeSingle();
+        if(prof){
+          // Auto add to contacts DB
+          await supa.from('contacts').insert({user_id:U.id,contact_id:uid}).throwOnError().catch(()=>{});
+          contacts.push({
+            id:prof.id, name:prof.full_name, yapId:prof.yap_id,
+            color:prof.dp_color||'#ff8f00', dpImg:prof.dp_url||null, online:false
+          });
+        }
+      }
+    }
+  }
+
   renderList();
 }
 
