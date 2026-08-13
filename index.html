@@ -114,8 +114,8 @@ select.inp{cursor:pointer}
 .srch input::placeholder{color:var(--text3)}
 .add-btn{margin:0 16px 16px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--orange);border:none;border-radius:14px;padding:14px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;color:#000;transition:background .2s}
 .add-btn:hover{background:var(--orange2)}
-#normal-bar{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s cubic-bezier(.22,1,.36,1),opacity .25s ease;}
-#normal-bar.show{max-height:80px;opacity:1;}
+#normal-bar{max-height:80px;opacity:1;overflow:hidden;transition:max-height .3s cubic-bezier(.22,1,.36,1),opacity .25s ease;}
+#normal-bar.hidden-bar{max-height:0;opacity:0;}
 .pull-hint{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 0 4px;color:var(--orange);font-size:11px;font-weight:600;opacity:.6;user-select:none;transition:transform .15s ease,opacity .15s ease;cursor:pointer;}
 .clist{flex:1;overflow-y:auto}
 .clist::-webkit-scrollbar{width:0}
@@ -1451,32 +1451,34 @@ function backList(){
 
 // ── LOAD CONTACTS ──
 async function loadContacts(){
-  // Load saved contacts
-  const {data}=await supa.from('contacts').select('contact_id, profiles!contacts_contact_id_fkey(id,full_name,yap_id,dp_color,dp_url)').eq('user_id',U.id);
-  contacts=(data||[]).map(r=>({
-    id:r.profiles.id,
-    name:r.profiles.full_name,
-    yapId:r.profiles.yap_id,
-    color:r.profiles.dp_color||'#ff8f00',
-    dpImg:r.profiles.dp_url||null,
-    online:false
-  }));
+  try{
+    // Load saved contacts using simple two-step query
+    const {data:contactRows}=await supa.from('contacts').select('contact_id').eq('user_id',U.id);
+    const savedIds=(contactRows||[]).map(r=>r.contact_id);
 
-  // Also find people who messaged you but aren't saved yet
-  const {data:inboxMsgs}=await supa.from('messages')
-    .select('sender_id')
-    .eq('receiver_id',U.id)
-    .order('created_at',{ascending:false});
+    if(savedIds.length>0){
+      const {data:profiles}=await supa.from('profiles').select('*').in('id',savedIds);
+      contacts=(profiles||[]).map(p=>({
+        id:p.id, name:p.full_name, yapId:p.yap_id,
+        color:p.dp_color||'#ff8f00', dpImg:p.dp_url||null, online:false
+      }));
+    } else {
+      contacts=[];
+    }
 
-  if(inboxMsgs&&inboxMsgs.length>0){
-    const unknownIds=[...new Set(inboxMsgs.map(m=>m.sender_id))]
-      .filter(id=>id!==U.id&&!contacts.find(c=>c.id===id));
+    // Also find people who messaged you but aren't saved yet
+    const {data:inboxMsgs}=await supa.from('messages')
+      .select('sender_id')
+      .eq('receiver_id',U.id)
+      .order('created_at',{ascending:false});
 
-    if(unknownIds.length>0){
+    if(inboxMsgs&&inboxMsgs.length>0){
+      const unknownIds=[...new Set(inboxMsgs.map(m=>m.sender_id))]
+        .filter(id=>id!==U.id&&!contacts.find(c=>c.id===id));
+
       for(const uid of unknownIds){
         const {data:prof}=await supa.from('profiles').select('*').eq('id',uid).maybeSingle();
         if(prof){
-          // Auto add to contacts DB
           await supa.from('contacts').insert({user_id:U.id,contact_id:uid}).throwOnError().catch(()=>{});
           contacts.push({
             id:prof.id, name:prof.full_name, yapId:prof.yap_id,
@@ -1485,8 +1487,10 @@ async function loadContacts(){
         }
       }
     }
+  } catch(e){
+    console.error('loadContacts error:',e);
+    contacts=[];
   }
-
   renderList();
 }
 
@@ -1499,7 +1503,7 @@ function enterSelectMode(cid){
   selectMode=true;
   selectedIds=new Set([cid]);
   document.getElementById('clist').classList.add('select-mode');
-  document.getElementById('normal-bar').style.display='none';
+  document.getElementById('normal-bar').classList.add('hidden-bar');
   document.getElementById('sel-bar').classList.add('active');
   updateSelCount();
   renderList();
@@ -1508,7 +1512,7 @@ function exitSelectMode(){
   selectMode=false;
   selectedIds=new Set();
   document.getElementById('clist').classList.remove('select-mode');
-  document.getElementById('normal-bar').style.display='block';
+  document.getElementById('normal-bar').classList.remove('hidden-bar');
   document.getElementById('sel-bar').classList.remove('active');
   renderList();
 }
