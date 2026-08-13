@@ -1977,20 +1977,40 @@ async function addC(){
   const val=document.getElementById('ayid').value.trim();
   if(!val){shake('ayid');return;}
   showToast('Searching...','#ff8f00');
+
   // Find user by YAP ID
-  const {data:found}=await supa.from('profiles').select('*').eq('yap_id',val).single();
-  if(!found){showToast('YAP ID not found ✕','#ef4444');return;}
+  const {data:found,error:ferr}=await supa.from('profiles').select('*').eq('yap_id',val).maybeSingle();
+  if(!found||ferr){showToast('YAP ID not found ✕','#ef4444');return;}
   if(found.id===U.id){showToast('Thats your own ID! ✕','#ef4444');return;}
-  // Check if already a contact
-  const {data:existing}=await supa.from('contacts').select('id').eq('user_id',U.id).eq('contact_id',found.id).single();
-  if(existing){showToast('Already in contacts!','#ff8f00');closeM('madd');return;}
-  // Add contact
+
+  // Check if already a contact using maybeSingle (won't throw if no row found)
+  const {data:existing}=await supa.from('contacts').select('id').eq('user_id',U.id).eq('contact_id',found.id).maybeSingle();
+
+  if(existing){
+    // Already in DB but maybe not in local array — add to local and show
+    if(!contacts.find(c=>c.id===found.id)){
+      const c={id:found.id,name:found.full_name,yapId:found.yap_id,color:found.dp_color||'#ff8f00',dpImg:found.dp_url||null,online:false};
+      contacts.push(c);
+      chats[c.id]=chats[c.id]||[];
+    }
+    renderList();
+    closeM('madd');
+    showToast('Contact loaded! ✓','#22c55e');
+    const c=contacts.find(x=>x.id===found.id);
+    if(c) openChat(c.id);
+    return;
+  }
+
+  // Add contact to DB
   await supa.from('contacts').insert({user_id:U.id,contact_id:found.id});
   const c={id:found.id,name:found.full_name,yapId:found.yap_id,color:found.dp_color||'#ff8f00',dpImg:found.dp_url||null,online:false};
-  contacts.push(c);chats[c.id]=[];
-  closeM('madd');renderList();openChat(c.id);
+  contacts.push(c);
+  chats[c.id]=[];
+  closeM('madd');
+  renderList();
+  openChat(c.id);
   document.getElementById('ayid').value='';
-  showToast('Contact added! ✓');
+  showToast('Contact added! ✓','#22c55e');
 }
 
 // ── VIEW CONTACT PROFILE ──
