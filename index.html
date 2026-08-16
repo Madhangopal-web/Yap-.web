@@ -1452,32 +1452,53 @@ function backList(){
 // ── LOAD CONTACTS ──
 async function loadContacts(){
   try{
+    // Get current session to ensure auth token is fresh
+    const {data:{session}}=await supa.auth.getSession();
+    if(!session){console.error('No session!');return;}
+
     // Step 1: Get contact IDs
-    const {data:contactRows, error:e1}=await supa.from('contacts').select('contact_id').eq('user_id',U.id);
-    if(e1) console.error('Contacts fetch error:',e1);
+    const {data:contactRows, error:e1}=await supa
+      .from('contacts')
+      .select('contact_id')
+      .eq('user_id',U.id);
+
+    if(e1){
+      console.error('Contacts RLS error:',JSON.stringify(e1));
+      showToast('Error loading contacts: '+e1.message,'#ef4444');
+    }
 
     const savedIds=(contactRows||[]).map(r=>r.contact_id).filter(Boolean);
-    console.log('Saved contact IDs:',savedIds.length);
+    console.log('Found contact IDs:',savedIds.length, savedIds);
 
     if(savedIds.length>0){
-      // Step 2: Get profiles for those IDs
-      const {data:profiles, error:e2}=await supa.from('profiles').select('*').in('id',savedIds);
-      if(e2) console.error('Profiles fetch error:',e2);
-      console.log('Profiles loaded:',profiles?.length);
+      // Step 2: Get profiles
+      const {data:profiles, error:e2}=await supa
+        .from('profiles')
+        .select('id,full_name,yap_id,dp_color,dp_url')
+        .in('id',savedIds);
+
+      if(e2) console.error('Profiles RLS error:',JSON.stringify(e2));
+      console.log('Profiles fetched:',profiles?.length, profiles);
 
       contacts=(profiles||[]).map(p=>({
-        id:p.id, name:p.full_name, yapId:p.yap_id,
-        color:p.dp_color||'#ff8f00', dpImg:p.dp_url||null, online:false
+        id:p.id,
+        name:p.full_name||'Unknown',
+        yapId:p.yap_id,
+        color:p.dp_color||'#ff8f00',
+        dpImg:p.dp_url||null,
+        online:false
       }));
     } else {
       contacts=[];
     }
 
-    // Step 3: Also check inbox for unsaved senders
-    const {data:inboxMsgs, error:e3}=await supa.from('messages')
+    // Step 3: Check inbox for unsaved senders
+    const {data:inboxMsgs,error:e3}=await supa
+      .from('messages')
       .select('sender_id')
       .eq('receiver_id',U.id);
-    if(e3) console.error('Inbox fetch error:',e3);
+
+    if(e3) console.error('Inbox error:',JSON.stringify(e3));
 
     if(inboxMsgs&&inboxMsgs.length>0){
       const unknownIds=[...new Set(inboxMsgs.map(m=>m.sender_id))]
@@ -1488,17 +1509,16 @@ async function loadContacts(){
         if(prof){
           await supa.from('contacts').insert({user_id:U.id,contact_id:uid}).catch(()=>{});
           contacts.push({
-            id:prof.id, name:prof.full_name, yapId:prof.yap_id,
-            color:prof.dp_color||'#ff8f00', dpImg:prof.dp_url||null, online:false
+            id:prof.id,name:prof.full_name,yapId:prof.yap_id,
+            color:prof.dp_color||'#ff8f00',dpImg:prof.dp_url||null,online:false
           });
         }
       }
     }
 
-    console.log('Total contacts to show:',contacts.length);
-  } catch(e){
+    console.log('Total contacts rendered:',contacts.length);
+  }catch(e){
     console.error('loadContacts crash:',e);
-    contacts=[];
   }
   renderList();
 }
