@@ -1452,73 +1452,59 @@ function backList(){
 // ── LOAD CONTACTS ──
 async function loadContacts(){
   try{
-    // Get current session to ensure auth token is fresh
     const {data:{session}}=await supa.auth.getSession();
-    if(!session){console.error('No session!');return;}
+    if(!session) return;
 
-    // Step 1: Get contact IDs
-    const {data:contactRows, error:e1}=await supa
-      .from('contacts')
-      .select('contact_id')
-      .eq('user_id',U.id);
+    contacts=[];
 
-    if(e1){
-      console.error('Contacts RLS error:',JSON.stringify(e1));
-      showToast('Error loading contacts: '+e1.message,'#ef4444');
-    }
+    // Step 1: Get saved contact IDs
+    const {data:contactRows,error:e1}=await supa
+      .from('contacts').select('contact_id').eq('user_id',U.id);
+    if(e1) console.error('contacts error:',e1.message);
 
     const savedIds=(contactRows||[]).map(r=>r.contact_id).filter(Boolean);
-    console.log('Found contact IDs:',savedIds.length, savedIds);
 
-    if(savedIds.length>0){
-      // Step 2: Get profiles
-      const {data:profiles, error:e2}=await supa
-        .from('profiles')
-        .select('id,full_name,yap_id,dp_color,dp_url')
-        .in('id',savedIds);
+    // Step 2: Get ALL people who have EVER messaged you (inbox scan)
+    const {data:inboxRows,error:e2}=await supa
+      .from('messages').select('sender_id').eq('receiver_id',U.id);
+    if(e2) console.error('inbox error:',e2.message);
 
-      if(e2) console.error('Profiles RLS error:',JSON.stringify(e2));
-      console.log('Profiles fetched:',profiles?.length, profiles);
+    // Get ALL people you have EVER messaged (outbox scan)
+    const {data:outboxRows,error:e3}=await supa
+      .from('messages').select('receiver_id').eq('sender_id',U.id);
+    if(e3) console.error('outbox error:',e3.message);
 
-      contacts=(profiles||[]).map(p=>({
-        id:p.id,
-        name:p.full_name||'Unknown',
-        yapId:p.yap_id,
-        color:p.dp_color||'#ff8f00',
-        dpImg:p.dp_url||null,
-        online:false
-      }));
-    } else {
-      contacts=[];
+    // Combine all unique IDs
+    const inboxIds=(inboxRows||[]).map(r=>r.sender_id).filter(Boolean);
+    const outboxIds=(outboxRows||[]).map(r=>r.receiver_id).filter(Boolean);
+    const allIds=[...new Set([...savedIds,...inboxIds,...outboxIds])].filter(id=>id!==U.id);
+
+    console.log('All contact IDs found:',allIds.length);
+
+    if(allIds.length===0){renderList();return;}
+
+    // Step 3: Fetch all profiles at once
+    const {data:profiles,error:e4}=await supa
+      .from('profiles').select('*').in('id',allIds);
+    if(e4) console.error('profiles error:',e4.message);
+
+    contacts=(profiles||[]).map(p=>({
+      id:p.id, name:p.full_name||'Unknown',
+      yapId:p.yap_id, color:p.dp_color||'#ff8f00',
+      dpImg:p.dp_url||null, online:false
+    }));
+
+    // Step 4: Auto-save any inbox senders not yet in contacts table
+    const unsavedIds=allIds.filter(id=>!savedIds.includes(id));
+    for(const uid of unsavedIds){
+      await supa.from('contacts')
+        .insert({user_id:U.id,contact_id:uid})
+        .catch(()=>{});
     }
 
-    // Step 3: Check inbox for unsaved senders
-    const {data:inboxMsgs,error:e3}=await supa
-      .from('messages')
-      .select('sender_id')
-      .eq('receiver_id',U.id);
-
-    if(e3) console.error('Inbox error:',JSON.stringify(e3));
-
-    if(inboxMsgs&&inboxMsgs.length>0){
-      const unknownIds=[...new Set(inboxMsgs.map(m=>m.sender_id))]
-        .filter(id=>id&&id!==U.id&&!contacts.find(c=>c.id===id));
-
-      for(const uid of unknownIds){
-        const {data:prof}=await supa.from('profiles').select('*').eq('id',uid).maybeSingle();
-        if(prof){
-          await supa.from('contacts').insert({user_id:U.id,contact_id:uid}).catch(()=>{});
-          contacts.push({
-            id:prof.id,name:prof.full_name,yapId:prof.yap_id,
-            color:prof.dp_color||'#ff8f00',dpImg:prof.dp_url||null,online:false
-          });
-        }
-      }
-    }
-
-    console.log('Total contacts rendered:',contacts.length);
+    console.log('Contacts loaded:',contacts.length);
   }catch(e){
-    console.error('loadContacts crash:',e);
+    console.error('loadContacts crash:',e.message);
   }
   renderList();
 }
@@ -1671,41 +1657,57 @@ function startGlobalSubscription(){
       const m=payload.new;
       const senderId=m.sender_id;
 
-      // ── AUTO ADD CONTACT ──
-      const alreadyContact=contacts.find(c=>c.id===senderId);
-      if(!alreadyContact){
-        const {data:senderProfile}=await supa.from('profiles').select('*').eq('id',senderId).maybeSingle();
-        if(senderProfile){
-          await autoAddContact(senderId);
-          showToast('✉ '+senderProfile.full_name+' messaged you! Added to contacts','#ff8f00');
+      // ── AUTO ADD CONTACT if not already saved ──
+      let senderContact=contacts.find(c=>c.id===senderId);
+      if(!senderContact){
+        // Fetch sender profile
+        const {data:prof}=await supa.from('profiles').select('*').eq('id',senderId).maybeSingle();
+        if(prof){
+          // Save to DB contacts
+          await supa.from('contacts').insert({user_id:U.id,contact_id:senderId}).catch(()=>{});
+          // Add to local contacts array immediately
+          senderContact={
+            id:prof.id, name:prof.full_name, yapId:prof.yap_id,
+            color:prof.dp_color||'#ff8f00', dpImg:prof.dp_url||null, online:false
+          };
+          contacts.push(senderContact);
+          chats[senderId]=chats[senderId]||[];
+          showToast(prof.full_name+' messaged you! Added to contacts','#ff8f00');
         }
       }
 
-      // Store message in the right chat
+      // ── STORE MESSAGE ──
       if(!chats[senderId])chats[senderId]=[];
       if(!chats[senderId].find(x=>x.id===m.id)){
         chats[senderId].push(m);
-        // If this chat is currently open, render it
-        if(actCid===senderId) renderMsgs(senderId);
-        // Update chat list preview
-        renderList();
-        // Show notification toast if chat is not open
-        if(actCid!==senderId){
-          const sender=contacts.find(c=>c.id===senderId);
-          const name=sender?sender.name:'Someone';
-          // increment unread count
+
+        // Re-render if chat is open
+        if(actCid===senderId){
+          renderMsgs(senderId);
+          playMsgTone();
+        } else {
+          // Update unread count and notify
           unreadCounts[senderId]=(unreadCounts[senderId]||0)+1;
           updateNavBadge();
-          showToast('✉ '+name+': '+m.content.slice(0,40),'#1a1a1a');
+          const name=senderContact?senderContact.name:'Someone';
+          showToast(name+': '+m.content.slice(0,40),'#1a1a2e');
           playMsgTone();
           sendPushNotification('Yap! — '+name, m.content, senderId);
-        } else {
-          playMsgTone();
         }
+
+        // Always update chat list to show new message preview
+        renderList();
       }
     })
-    .subscribe(status=>{
-      if(status==='SUBSCRIBED') console.log('✓ Realtime connected');
+    .subscribe(async status=>{
+      console.log('Realtime status:',status);
+      if(status==='SUBSCRIBED'){
+        console.log('✓ Realtime connected for user:',U.id);
+      }
+      if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'){
+        console.log('Realtime error, reconnecting...');
+        setTimeout(()=>startGlobalSubscription(), 3000);
+      }
     });
 }
 
