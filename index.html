@@ -793,6 +793,21 @@ body.rt-lite::after{backdrop-filter:none !important;-webkit-backdrop-filter:none
         <div class="c-acts">
           <div class="ibtn"><svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 5.18a2 2 0 011.99-2H8"/></svg></div>
           <div class="ibtn"><svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+          <div class="ibtn" onclick="showChatOptions()" title="More options">
+            <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Options Dropdown -->
+      <div id="chat-options-menu" style="display:none;position:absolute;top:64px;right:12px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.2);z-index:200;min-width:180px;overflow:hidden;">
+        <div onclick="clearChatMessages()" style="display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;font-size:14px;font-weight:500;transition:background .15s;" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='transparent'">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="var(--orange)" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+          Clear Messages
+        </div>
+        <div onclick="deleteChat()" style="display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;font-size:14px;font-weight:500;color:#ef4444;border-top:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='rgba(239,68,68,0.08)'" onmouseout="this.style.background='transparent'">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#ef4444" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="8" x2="23" y2="8"/></svg>
+          Delete Contact
         </div>
       </div>
       <div class="msgs" id="msgs"></div>
@@ -2479,7 +2494,7 @@ function startPostsSubscription(){
       const p=payload.new;
       if(posts.find(x=>x.id===p.id)) return;
       posts.unshift({
-        id:p.id, author:p.author_name, authorColor:p.author_color||'#ff8f00',
+        id:p.id, author:p.author_name, authorId:p.user_id, authorColor:p.author_color||'#ff8f00',
         authorImg:p.author_img||null, text:p.text, likes:p.likes||0,
         liked:false, comments:0, time:new Date(p.created_at)
       });
@@ -2519,7 +2534,7 @@ async function submitPost(){
   const {data,error}=await supa.from('posts').insert(row).select().single();
   if(error){ console.error(error); showToast('Could not post ✕','#ef4444'); return; }
   posts.unshift({
-    id:data.id, author:data.author_name, authorColor:data.author_color,
+    id:data.id, author:data.author_name, authorId:data.user_id, authorColor:data.author_color,
     authorImg:data.author_img, text:data.text, likes:data.likes||0,
     liked:false, comments:0, time:new Date(data.created_at)
   });
@@ -2527,6 +2542,49 @@ async function submitPost(){
   closeM('modal-create-post');
   renderPosts();
   showToast('Posted! ✓');
+}
+
+// ── CHAT OPTIONS ──
+function showChatOptions(){
+  const menu=document.getElementById('chat-options-menu');
+  if(!menu)return;
+  menu.style.display=menu.style.display==='none'?'block':'none';
+}
+document.addEventListener('click',e=>{
+  const menu=document.getElementById('chat-options-menu');
+  if(menu&&!menu.contains(e.target)&&!e.target.closest('[onclick="showChatOptions()"]')){
+    menu.style.display='none';
+  }
+});
+async function clearChatMessages(){
+  document.getElementById('chat-options-menu').style.display='none';
+  if(!actCid)return;
+  if(!confirm('Clear all messages in this chat?'))return;
+  showToast('Clearing...','#ff8f00');
+  await supa.from('messages').delete()
+    .or(`and(sender_id.eq.${U.id},receiver_id.eq.${actCid}),and(sender_id.eq.${actCid},receiver_id.eq.${U.id})`);
+  chats[actCid]=[];
+  renderMsgs(actCid);
+  renderList();
+  showToast('Messages cleared ✓','#22c55e');
+}
+async function deleteChat(){
+  document.getElementById('chat-options-menu').style.display='none';
+  if(!actCid)return;
+  const c=contacts.find(x=>x.id===actCid);
+  if(!confirm('Delete chat with '+(c?.name||'this contact')+'?'))return;
+  showToast('Deleting...','#ff8f00');
+  await supa.from('messages').delete()
+    .or(`and(sender_id.eq.${U.id},receiver_id.eq.${actCid}),and(sender_id.eq.${actCid},receiver_id.eq.${U.id})`);
+  await supa.from('contacts').delete().eq('user_id',U.id).eq('contact_id',actCid);
+  contacts=contacts.filter(x=>x.id!==actCid);
+  delete chats[actCid];
+  actCid=null;
+  document.getElementById('est').style.display='flex';
+  document.getElementById('ac').style.display='none';
+  backList();
+  renderList();
+  showToast('Chat deleted ✓','#22c55e');
 }
 
 function renderPosts(){
@@ -2540,13 +2598,17 @@ function renderPosts(){
     return;
   }
   feed.innerHTML=posts.map(p=>`
-    <div class="post-card">
+    <div class="post-card" id="post-${p.id}">
       <div class="post-card-header">
         <div style="width:40px;height:40px;border-radius:50%;background:${p.authorImg?'transparent':p.authorColor};background-image:${p.authorImg?'url('+p.authorImg+')':'none'};background-size:cover;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:15px;">${p.authorImg?'':ini(p.author)}</div>
-        <div>
+        <div style="flex:1;">
           <div style="font-size:14px;font-weight:600;">${p.author}</div>
           <div style="font-size:11px;color:var(--text3);">${relT(p.time)}</div>
         </div>
+        ${p.authorId===U.id?`
+        <div onclick="deletePost('${p.id}')" style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text3);transition:all .2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)';this.style.color='#ef4444'" onmouseout="this.style.background='transparent';this.style.color='var(--text3)'">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        </div>`:''}
       </div>
       <div class="post-card-body">${p.text}</div>
       <div class="post-card-actions">
@@ -2560,6 +2622,15 @@ function renderPosts(){
         </div>
       </div>
     </div>`).join('');
+}
+
+function deletePost(pid){
+  if(!confirm('Delete this post?')) return;
+  posts=posts.filter(p=>p.id!==pid);
+  renderPosts();
+  showToast('Post deleted ✓','#22c55e');
+  // Delete from Supabase if it's a real post
+  supa.from('posts').delete().eq('id',pid).catch(()=>{});
 }
 
 async function likePost(pid){
